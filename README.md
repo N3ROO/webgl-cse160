@@ -6,6 +6,7 @@ Made for the CSE160 class at UCSC. Written by Lilian Gallon.
 
 - Complete initialization
 - Shaders loader
+- Converter between canvas coords and webGL coords
 
 ### Libs
 

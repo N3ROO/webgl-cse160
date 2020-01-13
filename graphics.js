@@ -112,6 +112,38 @@ function shadersLoaded() {
     return VSHADER_SOURCE !== null && FSHADER_SOURCE !== null;
 }
 
+/**
+ * It returns the canvas.
+ *
+ * ERROR:
+ * It does not return anything if the canvas could not be found.
+ */
+function getCanvas() {
+    let canvas = document.getElementById(CANVAS_ID);
+    if (!canvas) {
+        console.log('Could not find canvas with id "' + CANVAS_ID + '"');
+        return;
+    }
+
+    return canvas;
+}
+
+/**
+ * From coordinates on the canvas, it returns the coordinates on the
+ * WebGL world.
+ * @param {Float} x x canvas coordinate
+ * @param {Float} y y canvas coordinate
+ * @param {Array} r bounding rect of cursor
+ */
+function canvasToWebglCoords(x, y, r) {
+    let c = getCanvas();
+
+    return [
+        ((x - r.left) - c.height/2) / (c.height/2),
+        (c.width/2 - (y - r.top)) / (c.width/2)
+    ];
+}
+
 // Init //
 
 /**
@@ -120,13 +152,7 @@ function shadersLoaded() {
  * It will call postInit once done.
  */
 function init() {
-    let canvas = document.getElementById(CANVAS_ID);
-    if (!canvas) {
-        console.log('Could not find canvas with id "' + CANVAS_ID + '"');
-        return;
-    }
-
-    let gl = getWebGLContext(canvas);
+    let gl = getWebGLContext(getCanvas());
     if (!gl) {
         console.log('Failed to get the rendering context for WebGL');
         return;
