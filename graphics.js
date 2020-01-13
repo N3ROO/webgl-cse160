@@ -36,6 +36,7 @@
 
 var VSHADER_SOURCE = null; // contains the vertex shader source code
 var FSHADER_SOURCE = null; // contains the fragment shader source code
+var CANVAS_ID = 'webgl'; // The canvas's id
 
 // Utility functions //
 
@@ -123,7 +124,11 @@ function shadersLoaded() {
  * It will call postInit once done.
  */
 function init() {
-    let canvas = document.getElementById('webgl');
+    let canvas = document.getElementById(CANVAS_ID);
+    if (!canvas) {
+        console.log('Could not find canvas with id "' + CANVAS_ID + '"');
+        return;
+    }
 
     let gl = getWebGLContext(canvas);
     if (!gl) {
@@ -151,8 +156,8 @@ function init() {
 function postInit(gl) {
     if (!initShaders(gl, VSHADER_SOURCE, FSHADER_SOURCE)) {
         console.log('Failed to initialize shaders:');
-        console.log("vertex shader code:", VSHADER_SOURCE);
-        console.log("fragment shader code:", FSHADER_SOURCE);
+        console.log("Vertex shader code:", VSHADER_SOURCE);
+        console.log("Fragment shader code:", FSHADER_SOURCE);
         return;
     }
 
