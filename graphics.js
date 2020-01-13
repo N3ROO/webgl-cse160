@@ -205,20 +205,41 @@ function start(gl) {
         return;
     }
 
+    let u_FragColor = gl.getUniformLocation(gl.program, 'u_FragColor');
+    if (u_FragColor < 0) {
+        console.log('Failed to get the storage location of u_FragColor');
+        return;
+    }
+
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT);
 
     let points = [];
 
     getCanvas().onmousedown = (e) => {
-        let pos = canvasToWebglCoords(e.clientX, e.clientY, e.target.getBoundingClientRect());
-        points.push(pos);
+        let point = canvasToWebglCoords(e.clientX, e.clientY, e.target.getBoundingClientRect());
+
+        let color;
+        if (point[0] >= 0.0 && point[1] >= 0.0) {
+            color = [1.0, 0.0, 0.0, 1.0];
+        } else if (point[0] < 0.0 && point[1] < 0.0) {
+            color = [0.0, 1.0, 0.0, 1.0];
+        } else {
+            color = [1.0, 1.0, 1.0, 1.0];
+        }
+        point.push(color)
+
+        points.push(point);
 
         gl.clearColor(0.0, 0.0, 0.0, 1.0);
         gl.clear(gl.COLOR_BUFFER_BIT);
 
         for (point of points) {
+            // Position
             gl.vertexAttrib3f(a_Position, point[0], point[1], 0.0);
+            // Color
+            gl.uniform4f(u_FragColor, point[2][0], point[2][1], point[2][2], point[2][3])
+            // Draw
             gl.drawArrays(gl.POINTS, 0, 1);
         }
     }
