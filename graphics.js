@@ -204,10 +204,22 @@ function start(gl) {
         console.log('Failed to get the storage location of a_Position');
         return;
     }
-    gl.vertexAttrib3f(a_Position, 0.0, 0.0, 0.0);
 
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT);
 
-    gl.drawArrays(gl.POINTS, 0, 1);
+    let points = [];
+
+    getCanvas().onmousedown = (e) => {
+        let pos = canvasToWebglCoords(e.clientX, e.clientY, e.target.getBoundingClientRect());
+        points.push(pos);
+
+        gl.clearColor(0.0, 0.0, 0.0, 1.0);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+
+        for (point of points) {
+            gl.vertexAttrib3f(a_Position, point[0], point[1], 0.0);
+            gl.drawArrays(gl.POINTS, 0, 1);
+        }
+    }
 }
