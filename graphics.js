@@ -48,8 +48,6 @@ var CANVAS_ID = 'webgl'; // The canvas's id
  * It loads a shader's source code. It must be called two times with the
  * vertex shader source code and the fragment shader source code.
  *
- * TODO: better error handling
- *
  * @param {WebGL2RenderingContext} gl WebGL context
  * @param {String} path shader path (../../../filename.extension)
  * @param {Shader} shader kind of shader (gl.VERTEX_SHADER or gl.FRAGMENT_SHADER)
