@@ -55,18 +55,16 @@ var CANVAS_ID = 'webgl'; // The canvas's id
  * @param {Shader} shader kind of shader (gl.VERTEX_SHADER or gl.FRAGMENT_SHADER)
  */
 function loadShaderFile(gl, path, shader) {
-    let request = new XMLHttpRequest();
-
-    request.onreadystatechange = () => {
-        // 4 -> response received, 200 -> success
-        if (request.readyState === 4 && request.status === 200) {
-            onLoadShader(gl, request.responseText, shader);
+    // ES7 async code
+    (async() => {
+        try {
+            let response = await fetch(path);
+            let code = await response.text();
+            onLoadShader(gl, code, shader);
+        } catch (e) {
+            console.log(e);
         }
-    }
-
-    // Open path using the GET HTTP protocol and using ajax
-    request.open('GET', path, true);
-    request.send();
+    })();
 }
 
 /**
