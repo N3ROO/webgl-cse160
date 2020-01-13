@@ -161,6 +161,8 @@ function init() {
         return;
     }
 
+    start(gl); return; //TODO: remove
+
     loadShaderFile(gl, 'shaders/fshader.glsl', gl.FRAGMENT_SHADER);
     loadShaderFile(gl, 'shaders/vshader.glsl', gl.VERTEX_SHADER);
 
@@ -197,50 +199,6 @@ function postInit(gl) {
  * @param {WebGL2RenderingContext} gl WebGL Context
  */
 function start(gl) {
-    // Sample code
-
-    let a_Position = gl.getAttribLocation(gl.program, 'a_Position');
-    if (a_Position < 0) {
-        console.log('Failed to get the storage location of a_Position');
-        return;
-    }
-
-    let u_FragColor = gl.getUniformLocation(gl.program, 'u_FragColor');
-    if (u_FragColor < 0) {
-        console.log('Failed to get the storage location of u_FragColor');
-        return;
-    }
-
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT);
-
-    let points = [];
-
-    getCanvas().onmousedown = (e) => {
-        let point = canvasToWebglCoords(e.clientX, e.clientY, e.target.getBoundingClientRect());
-
-        let color;
-        if (point[0] >= 0.0 && point[1] >= 0.0) {
-            color = [1.0, 0.0, 0.0, 1.0];
-        } else if (point[0] < 0.0 && point[1] < 0.0) {
-            color = [0.0, 1.0, 0.0, 1.0];
-        } else {
-            color = [1.0, 1.0, 1.0, 1.0];
-        }
-        point.push(color)
-
-        points.push(point);
-
-        gl.clearColor(0.0, 0.0, 0.0, 1.0);
-        gl.clear(gl.COLOR_BUFFER_BIT);
-
-        for (point of points) {
-            // Position
-            gl.vertexAttrib3f(a_Position, point[0], point[1], 0.0);
-            // Color
-            gl.uniform4f(u_FragColor, point[2][0], point[2][1], point[2][2], point[2][3])
-            // Draw
-            gl.drawArrays(gl.POINTS, 0, 1);
-        }
-    }
 }
