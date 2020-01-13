@@ -1,5 +1,6 @@
 /**
  * File created by Lilian Gallon, 01/13/2020.
+ * https://nero.dev
  * CSE160 / CSE160L
  *
  *
@@ -112,6 +113,40 @@ function shadersLoaded() {
     return VSHADER_SOURCE !== null && FSHADER_SOURCE !== null;
 }
 
+/**
+ * It returns the canvas.
+ *
+ * ERROR:
+ * It does not return anything if the canvas could not be found.
+ */
+function getCanvas() {
+    let canvas = document.getElementById(CANVAS_ID);
+    if (!canvas) {
+        console.log('Could not find canvas with id "' + CANVAS_ID + '"');
+        return;
+    }
+
+    return canvas;
+}
+
+/**
+ * From coordinates on the canvas, it returns the coordinates on the
+ * WebGL world.
+ * @param {Float} x x canvas coordinate
+ * @param {Float} y y canvas coordinate
+ * @param {Array} r bounding rect of cursor
+ *
+ * @returns A 2D array containing [x, y], the coordinates in the WebGL world
+ */
+function canvasToWebglCoords(x, y, r) {
+    let c = getCanvas();
+
+    return [
+        ((x - r.left) - c.height/2) / (c.height/2),
+        (c.width/2 - (y - r.top)) / (c.width/2)
+    ];
+}
+
 // Init //
 
 /**
@@ -120,13 +155,7 @@ function shadersLoaded() {
  * It will call postInit once done.
  */
 function init() {
-    let canvas = document.getElementById(CANVAS_ID);
-    if (!canvas) {
-        console.log('Could not find canvas with id "' + CANVAS_ID + '"');
-        return;
-    }
-
-    let gl = getWebGLContext(canvas);
+    let gl = getWebGLContext(getCanvas());
     if (!gl) {
         console.log('Failed to get the rendering context for WebGL');
         return;
@@ -175,10 +204,43 @@ function start(gl) {
         console.log('Failed to get the storage location of a_Position');
         return;
     }
-    gl.vertexAttrib3f(a_Position, 0.0, 0.0, 0.0);
+
+    let u_FragColor = gl.getUniformLocation(gl.program, 'u_FragColor');
+    if (u_FragColor < 0) {
+        console.log('Failed to get the storage location of u_FragColor');
+        return;
+    }
 
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT);
 
-    gl.drawArrays(gl.POINTS, 0, 1);
+    let points = [];
+
+    getCanvas().onmousedown = (e) => {
+        let point = canvasToWebglCoords(e.clientX, e.clientY, e.target.getBoundingClientRect());
+
+        let color;
+        if (point[0] >= 0.0 && point[1] >= 0.0) {
+            color = [1.0, 0.0, 0.0, 1.0];
+        } else if (point[0] < 0.0 && point[1] < 0.0) {
+            color = [0.0, 1.0, 0.0, 1.0];
+        } else {
+            color = [1.0, 1.0, 1.0, 1.0];
+        }
+        point.push(color)
+
+        points.push(point);
+
+        gl.clearColor(0.0, 0.0, 0.0, 1.0);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+
+        for (point of points) {
+            // Position
+            gl.vertexAttrib3f(a_Position, point[0], point[1], 0.0);
+            // Color
+            gl.uniform4f(u_FragColor, point[2][0], point[2][1], point[2][2], point[2][3])
+            // Draw
+            gl.drawArrays(gl.POINTS, 0, 1);
+        }
+    }
 }
