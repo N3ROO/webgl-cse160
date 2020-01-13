@@ -135,6 +135,8 @@ function getCanvas() {
  * @param {Float} x x canvas coordinate
  * @param {Float} y y canvas coordinate
  * @param {Array} r bounding rect of cursor
+ *
+ * @returns A 2D array containing [x, y], the coordinates in the WebGL world
  */
 function canvasToWebglCoords(x, y, r) {
     let c = getCanvas();
