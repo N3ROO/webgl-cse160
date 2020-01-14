@@ -40,6 +40,7 @@ var FSHADER_SOURCE = null; // contains the fragment shader source code
 var CANVAS_ID = 'webgl'; // The canvas's id
 
 // Controls
+var C_CLEAR_BUTTON = 'clear';
 var C_DRAWING_MODE = 0;
 var C_RED = 0.5;
 var C_GREEN = 0.0;
@@ -155,6 +156,15 @@ function canvasToWebglCoords(x, y, r) {
     ];
 }
 
+/**
+ * It clears the screen to black.
+ * @param {WebGL2RenderingContext} gl WebGL context
+ */
+function clear(gl) {
+    gl.clearColor(0.0, 0.0, 0.0, 1.0);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+}
+
 // Init //
 
 /**
@@ -206,14 +216,18 @@ function postInit(gl) {
  */
 function start(gl) {
 
-    gl.clearColor(0.0, 0.0, 0.0, 1.0);
-    gl.clear(gl.COLOR_BUFFER_BIT);
+    clear(gl);
 
     let a_Position = gl.getAttribLocation(gl.program, 'a_Position');
     let a_PointSize = gl.getAttribLocation(gl.program, 'a_PointSize');
     let u_FragColor = gl.getUniformLocation(gl.program, 'u_FragColor');
 
     let shapes = [];
+
+    document.getElementById(C_CLEAR_BUTTON).onclick = e => {
+        clear(gl);
+        shapes = [];
+    }
 
     getCanvas().onmousedown = e => {
         let coords = canvasToWebglCoords(e.clientX, e.clientY, e.target.getBoundingClientRect());
@@ -226,8 +240,7 @@ function start(gl) {
         ];
 
         // Clearing
-        gl.clearColor(0.0, 0.0, 0.0, 1.0);
-        gl.clear(gl.COLOR_BUFFER_BIT);
+        clear(gl);
 
         shapes.push(shape);
 
