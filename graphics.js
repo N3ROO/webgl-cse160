@@ -47,6 +47,7 @@ var C_GREEN = 0.0;
 var C_BLUE = 1.0;
 var C_SIZE = 40.0;
 var C_SEGS = 10;
+var C_DELAY = 100;
 
 // Utility functions //
 
@@ -216,21 +217,39 @@ function postInit(gl) {
  */
 function start(gl) {
 
+    // We clear the screen while there is no events
     clear(gl);
 
+    // We need to access to these varaibles to update the shape's properties
     let a_Position = gl.getAttribLocation(gl.program, 'a_Position');
     let a_PointSize = gl.getAttribLocation(gl.program, 'a_PointSize');
     let u_FragColor = gl.getUniformLocation(gl.program, 'u_FragColor');
 
+    // We will store all the shapes in this container to render them
     let shapes = [];
 
+    // This is used to know the state of the mouse
+    let mouseDown = false;
+
+    // We don't want to put gl and shapes as global variables. So we create a
+    // listener on the clear button since we have access to theses variables here
     document.getElementById(C_CLEAR_BUTTON).onclick = e => {
         clear(gl);
         shapes = [];
     }
 
-    getCanvas().onmousedown = e => {
-        let coords = canvasToWebglCoords(e.clientX, e.clientY, e.target.getBoundingClientRect());
+    // This function returns true if the delay has been reached. It is used to know
+    // if we will draw the shape on the screen when the mouse is moving. It prevent
+    // creating a *huge* amount of shapes
+    let lastTime = Date.now();
+    function delayReached() {
+        return Date.now() - lastTime >= C_DELAY;
+    }
+
+    // This function creates a shape on the specified coordinates (canvas coordinates)
+    function createShape(x, y, r) {
+        // Convert canvas coordinates to WebGL coordinates
+        let coords = canvasToWebglCoords(x, y, r);
 
         // Building the shape
         let shape = [
@@ -239,10 +258,13 @@ function start(gl) {
             [C_RED, C_GREEN, C_BLUE]    // Shape's color
         ];
 
+        shapes.push(shape);
+    }
+
+    // This function renders all the shapes on the screen
+    function updateScreen() {
         // Clearing
         clear(gl);
-
-        shapes.push(shape);
 
         // Drawing
         for (shape of shapes) {
@@ -254,6 +276,33 @@ function start(gl) {
             gl.uniform4f(u_FragColor, shape[2][0], shape[2][1], shape[2][2], 1.0);
             // Draw
             gl.drawArrays(gl.POINTS, 0, 1);
+        }
+    }
+
+    // Called whenever the mouse is released
+    getCanvas().onmouseup = e => {
+        mouseDown = false;
+    }
+
+    // Called whenever the mouse is pressed
+    getCanvas().onmousedown = e => {
+        // If the user just clicked, we want to reset the delay and to create a shape
+        if (mouseDown === false) {
+            createShape(e.clientX, e.clientY, e.target.getBoundingClientRect());
+            updateScreen();
+            lastTime = Date.now();
+        }
+        mouseDown = true;
+    }
+
+    // Called whenever the mouse is moving over the canvas
+    getCanvas().onmousemove = e => {
+        // We need to make sure that the delay is reached and that the mouse is pressed
+        // to add a new shape on the screen
+        if (mouseDown && delayReached()) {
+            createShape(e.clientX, e.clientY, e.target.getBoundingClientRect());
+            updateScreen();
+            lastTime = Date.now();
         }
     }
 }
