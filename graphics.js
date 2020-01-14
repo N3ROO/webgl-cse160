@@ -169,8 +169,6 @@ function init() {
         return;
     }
 
-    start(gl); return; //TODO: remove
-
     loadShaderFile(gl, 'shaders/fshader.glsl', gl.FRAGMENT_SHADER);
     loadShaderFile(gl, 'shaders/vshader.glsl', gl.VERTEX_SHADER);
 
@@ -207,6 +205,42 @@ function postInit(gl) {
  * @param {WebGL2RenderingContext} gl WebGL Context
  */
 function start(gl) {
+
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT);
+
+    let a_Position = gl.getAttribLocation(gl.program, 'a_Position');
+    let a_PointSize = gl.getAttribLocation(gl.program, 'a_PointSize');
+    let u_FragColor = gl.getUniformLocation(gl.program, 'u_FragColor');
+
+    let shapes = [];
+
+    getCanvas().onmousedown = e => {
+        let coords = canvasToWebglCoords(e.clientX, e.clientY, e.target.getBoundingClientRect());
+
+        // Building the shape
+        let shape = [
+            coords,                     // Shape's coordinates
+            C_SIZE,                     // Shape's size
+            [C_RED, C_GREEN, C_BLUE]    // Shape's color
+        ];
+
+        // Clearing
+        gl.clearColor(0.0, 0.0, 0.0, 1.0);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+
+        shapes.push(shape);
+
+        // Drawing
+        for (shape of shapes) {
+            // Position
+            gl.vertexAttrib3f(a_Position, shape[0][0], shape[0][1], 0.0);
+            // Size
+            gl.vertexAttrib1f(a_PointSize, shape[1]);
+            // Color
+            gl.uniform4f(u_FragColor, shape[2][0], shape[2][1], shape[2][2], 1.0);
+            // Draw
+            gl.drawArrays(gl.POINTS, 0, 1);
+        }
+    }
 }
