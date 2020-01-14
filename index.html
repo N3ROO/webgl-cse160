@@ -10,6 +10,27 @@
             Please use the browser supporting "canvas"
         </canvas>
 
+        <br>
+        <button>Clear canvas</button>
+
+        <br><br>
+
+        <h4>Drawing mode:</h4>
+        <button onclick="C_DRAWING_MODE=0;">Square</button>
+        <button onclick="C_DRAWING_MODE=1;">Triangle</button>
+        <button onclick="C_DRAWING_MODE=3;">Circle</button>
+
+        <h4>Shape color:</h4>
+        Red: <input id="red" type="range" min="0.0" max="1.0" value="0.5" step="0.01" oninput="C_RED=red.value;">
+        Green: <input id="green" type="range" min="0.0" max="1.0" value="0" step="0.01" oninput="C_GREEN=green.value;">
+        Blue: <input id="blue" type="range" min="0.0" max="1.0" value="1.0" step="0.01" oninput="C_BLUE=blue.value;">
+
+        <br>
+
+        <h4>Shape properties:</h4>
+        Size: <input id="size" type="range" min="0.0" max="100.0" value="40.0" oninput="C_SIZE=size.value">
+        (Circle) Segment count: <input id="seg" type="range" min="0" max="100" value="10" oninput="C_SEGS=seg.value">
+
         <script src="libs/webgl-utils.js"></script>
         <script src="libs/webgl-debug.js"></script>
         <script src="libs/cuon-utils.js"></script>

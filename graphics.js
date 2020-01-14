@@ -39,6 +39,14 @@ var VSHADER_SOURCE = null; // contains the vertex shader source code
 var FSHADER_SOURCE = null; // contains the fragment shader source code
 var CANVAS_ID = 'webgl'; // The canvas's id
 
+// Controls
+var C_DRAWING_MODE = 0;
+var C_RED = 0.5;
+var C_GREEN = 0.0;
+var C_BLUE = 1.0;
+var C_SIZE = 40.0;
+var C_SEGS = 10;
+
 // Utility functions //
 
 /**
