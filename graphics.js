@@ -227,7 +227,6 @@ function start(gl) {
 
     // We need to access to these varaibles to update the shape's properties
     let a_Position = gl.getAttribLocation(gl.program, 'a_Position');
-    //let a_PointSize = gl.getAttribLocation(gl.program, 'a_PointSize');
     let u_FragColor = gl.getUniformLocation(gl.program, 'u_FragColor');
 
     // We will store all the shapes in this container to render them
@@ -289,7 +288,6 @@ function start(gl) {
             // Used to clarify everything
             let x = shape[1][0]
             let y = shape[1][1];
-            let z = 0;
             let size = shape[2];
             let r = shape[3][0];
             let g = shape[3][1];
