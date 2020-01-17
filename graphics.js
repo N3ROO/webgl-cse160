@@ -49,6 +49,11 @@ var C_SIZE = 40.0;
 var C_SEGS = 10;
 var C_DELAY = 100;
 
+// Magic numbers (used by C_DRAWING_MODE)
+var M_SQUARE = 0;
+var M_TRIANGLE = 1;
+var M_CIRCLE = 2;
+
 // Utility functions //
 
 /**
@@ -222,7 +227,7 @@ function start(gl) {
 
     // We need to access to these varaibles to update the shape's properties
     let a_Position = gl.getAttribLocation(gl.program, 'a_Position');
-    let a_PointSize = gl.getAttribLocation(gl.program, 'a_PointSize');
+    //let a_PointSize = gl.getAttribLocation(gl.program, 'a_PointSize');
     let u_FragColor = gl.getUniformLocation(gl.program, 'u_FragColor');
 
     // We will store all the shapes in this container to render them
@@ -253,9 +258,11 @@ function start(gl) {
 
         // Building the shape
         let shape = [
+            C_DRAWING_MODE,             // Shape type (0: square, 1: triangle, 2: circle)
             coords,                     // Shape's coordinates
             C_SIZE,                     // Shape's size
-            [C_RED, C_GREEN, C_BLUE]    // Shape's color
+            [C_RED, C_GREEN, C_BLUE],   // Shape's color
+            C_SEGS                      // Shape's number of segments (used for circles)
         ];
 
         shapes.push(shape);
@@ -266,17 +273,79 @@ function start(gl) {
         // Clearing
         clear(gl);
 
+        // Setting up a buffer to send data to the GPU
+        let buffer = gl.createBuffer();
+        if (!buffer) {
+            console.log("Failed to create a buffer object")
+            return;
+        }
+        // We say that this buffer is an array
+        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+        // We connect this buffer with the variable a_Position
+        gl.vertexAttribPointer(a_Position, 2, gl.FLOAT, false, 0, 0);
+
         // Drawing
         for (shape of shapes) {
-            // Position
-            gl.vertexAttrib3f(a_Position, shape[0][0], shape[0][1], 0.0);
-            // Size
-            gl.vertexAttrib1f(a_PointSize, shape[1]);
-            // Color
-            gl.uniform4f(u_FragColor, shape[2][0], shape[2][1], shape[2][2], 1.0);
-            // Draw
-            gl.drawArrays(gl.POINTS, 0, 1);
+            // Used to clarify everything
+            let x = shape[1][0]
+            let y = shape[1][1];
+            let z = 0;
+            let size = shape[2];
+            let r = shape[3][0];
+            let g = shape[3][1];
+            let b = shape[3][2];
+            let a = 1.0;
+
+            // Let's say that we want a size of 40 *PIXELS*!
+            // We know the canvas' dimensions. The WebGL dimensions
+            // are 2 in both axis. Because it starts in the middle and
+            // it goes from -1 to 1.
+            // - So the size X (width) will be size * 2 / canvas' width
+            // - And the size Y (height) will be size * 2 / canvas' height
+            // Here are the computations:
+            let sizeX = size * 2 / getCanvas().width;
+            let sizeY = size * 2 / getCanvas().height;
+
+            let vertices = null;
+
+            switch (shape[0]) {
+                case M_SQUARE:
+                    vertices = new Float32Array([
+                        x - sizeX/2, y - sizeY/2, // Bottom-left corner
+                        x - sizeX/2, y + sizeY/2, // Top-left corner
+                        x + sizeX/2, y + sizeY/2, // Top-right corner
+                        x + sizeX/2, y - sizeY/2  // Bottom-right corner
+                    ])
+
+                    gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW); // We put the data inside of the buffer
+                    gl.enableVertexAttribArray(a_Position); // We send the data to the variable
+                    gl.uniform4f(u_FragColor, r, g, b, a);  // Color
+                    gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);   // Draw
+                    break;
+
+                case M_TRIANGLE:
+                    vertices = new Float32Array([
+                        x - sizeX/2.0, y - sizeY/2.0, // bottom left corner
+                        x, y + sizeY/2.0,             // top corner
+                        x + sizeX/2.0, y - sizeY/2.0  // bottom right corner
+                    ]);
+
+                    gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW); // We put the data inside of the buffer
+                    gl.enableVertexAttribArray(a_Position); // We send the data to the variable
+                    gl.uniform4f(u_FragColor, r, g, b, a);  // Color
+                    gl.drawArrays(gl.TRIANGLES, 0, 3); // Draw
+                    break;
+
+                case M_CIRCLE:
+                    break;
+
+                default:
+                    console.log("Unknown drawing mode: ", shape[0]);
+            }
         }
+
+        // We destroy the buffer since we won't use it anymore
+        gl.deleteBuffer(buffer);
     }
 
     // Called whenever the mouse is released
