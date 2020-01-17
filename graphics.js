@@ -285,7 +285,7 @@ function start(gl) {
         gl.vertexAttribPointer(a_Position, 2, gl.FLOAT, false, 0, 0);
 
         // Drawing
-        for (shape of shapes) {
+        for (let shape of shapes) {
             // Used to clarify everything
             let x = shape[1][0]
             let y = shape[1][1];
@@ -295,6 +295,7 @@ function start(gl) {
             let g = shape[3][1];
             let b = shape[3][2];
             let a = 1.0;
+            let segs = shape[4];
 
             // Let's say that we want a size of 40 *PIXELS*!
             // We know the canvas' dimensions. The WebGL dimensions
@@ -333,10 +334,37 @@ function start(gl) {
                     gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW); // We put the data inside of the buffer
                     gl.enableVertexAttribArray(a_Position); // We send the data to the variable
                     gl.uniform4f(u_FragColor, r, g, b, a);  // Color
-                    gl.drawArrays(gl.TRIANGLES, 0, 3); // Draw
+                    gl.drawArrays(gl.TRIANGLES, 0, 3); // Draw 3 triangles
                     break;
 
                 case M_CIRCLE:
+                    // We want C_SEGS segments, so C_SEGS triangles. We will conenct triangles with
+                    // TRIANGLE_FAN. We multiply by 2 because a point is defined by two coordinates (x, y).
+                    // "+4" Comes from the fact that we need to include:
+                    // - The center of the circle (x, y),
+                    // - The end of the circle (a point that already exists).
+                    let n = segs * 2 + 4;
+                    vertices = new Float32Array(n);
+
+                    // Center of the circle
+                    vertices[0] = x;
+                    vertices[1] = y;
+
+                    // First free index of thhe array "vertices"
+                    let index = 2;
+
+                    // Basic trigonometry
+                    for (let seg = 0; seg <= segs; seg ++) {
+                        vertices[index] = x + sizeX/2 * Math.cos(seg * 2*Math.PI / segs);
+                        index++;
+                        vertices[index] = y + sizeY/2 * - Math.sin(seg * 2*Math.PI / segs);
+                        index ++;
+                    }
+
+                    gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW); // We put the data inside of the buffer
+                    gl.enableVertexAttribArray(a_Position); // We send the data to the variable
+                    gl.uniform4f(u_FragColor, r, g, b, a);  // Color
+                    gl.drawArrays(gl.TRIANGLE_FAN, 0, n/2); // Draw
                     break;
 
                 default:
