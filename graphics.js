@@ -39,6 +39,26 @@ var VSHADER_SOURCE = null; // contains the vertex shader source code
 var FSHADER_SOURCE = null; // contains the fragment shader source code
 var CANVAS_ID = 'webgl'; // The canvas's id
 
+// Controls
+var C_CLEAR_BUTTON = 'clear';
+var C_DRAWING_MODE = 0;
+var C_RED = 0.5;
+var C_GREEN = 0.0;
+var C_BLUE = 1.0;
+var C_SIZE = 40.0;
+var C_SEGS = 10;
+var C_DELAY = 100;
+
+// Translation
+var C_TX = 0.0;
+var C_TY = 0.0;
+var C_STEP = 0.01;
+
+// Magic numbers (used by C_DRAWING_MODE)
+var M_SQUARE = 0;
+var M_TRIANGLE = 1;
+var M_CIRCLE = 2;
+
 // Utility functions //
 
 /**
@@ -142,9 +162,18 @@ function canvasToWebglCoords(x, y, r) {
     let c = getCanvas();
 
     return [
-        ((x - r.left) - c.height/2) / (c.height/2),
-        (c.width/2 - (y - r.top)) / (c.width/2)
+        ((x - r.left) - c.height/2) / (c.height/2) - C_TX,
+        (c.width/2 - (y - r.top)) / (c.width/2) - C_TY
     ];
+}
+
+/**
+ * It clears the screen to black.
+ * @param {WebGL2RenderingContext} gl WebGL context
+ */
+function clear(gl) {
+    gl.clearColor(0.0, 0.0, 0.0, 1.0);
+    gl.clear(gl.COLOR_BUFFER_BIT);
 }
 
 // Init //
@@ -197,50 +226,238 @@ function postInit(gl) {
  * @param {WebGL2RenderingContext} gl WebGL Context
  */
 function start(gl) {
-    // Sample code
 
+    // We clear the screen while there is no events
+    clear(gl);
+
+    // We need to access to these varaibles to update the shape's properties
     let a_Position = gl.getAttribLocation(gl.program, 'a_Position');
-    if (a_Position < 0) {
-        console.log('Failed to get the storage location of a_Position');
-        return;
-    }
-
+    let u_Translation = gl.getUniformLocation(gl.program, 'u_Translation');
     let u_FragColor = gl.getUniformLocation(gl.program, 'u_FragColor');
-    if (u_FragColor < 0) {
-        console.log('Failed to get the storage location of u_FragColor');
-        return;
+
+    // We will store all the shapes in this container to render them
+    let shapes = [];
+
+    // This is used to know the state of the mouse
+    let mouseDown = false;
+
+    // We don't want to put gl and shapes as global variables. So we create a
+    // listener on the clear button since we have access to theses variables here
+    document.getElementById(C_CLEAR_BUTTON).onclick = e => {
+        clear(gl);
+        shapes = [];
     }
 
-    gl.clearColor(0.0, 0.0, 0.0, 1.0);
-    gl.clear(gl.COLOR_BUFFER_BIT);
+    // This function returns true if the delay has been reached. It is used to know
+    // if we will draw the shape on the screen when the mouse is moving. It prevent
+    // creating a *huge* amount of shapes
+    let lastTime = Date.now();
+    function delayReached() {
+        return Date.now() - lastTime >= C_DELAY;
+    }
 
-    let points = [];
+    // This function creates a shape on the specified coordinates (canvas coordinates)
+    function createShape(x, y, r) {
+        // Convert canvas coordinates to WebGL coordinates
+        let coords = canvasToWebglCoords(x, y, r);
 
-    getCanvas().onmousedown = (e) => {
-        let point = canvasToWebglCoords(e.clientX, e.clientY, e.target.getBoundingClientRect());
+        // Building the shape
+        let shape = [
+            C_DRAWING_MODE,             // Shape type (0: square, 1: triangle, 2: circle)
+            coords,                     // Shape's coordinates
+            C_SIZE,                     // Shape's size
+            [C_RED, C_GREEN, C_BLUE],   // Shape's color
+            C_SEGS                      // Shape's number of segments (used for circles)
+        ];
 
-        let color;
-        if (point[0] >= 0.0 && point[1] >= 0.0) {
-            color = [1.0, 0.0, 0.0, 1.0];
-        } else if (point[0] < 0.0 && point[1] < 0.0) {
-            color = [0.0, 1.0, 0.0, 1.0];
-        } else {
-            color = [1.0, 1.0, 1.0, 1.0];
+        shapes.push(shape);
+    }
+
+    // This function renders all the shapes on the screen
+    function updateScreen() {
+        // Used for statistics
+        let shapesDrawn = 0;
+        let startingTime = Date.now();
+
+        // Clearing
+        clear(gl);
+
+        // Setting up a buffer to send data to the GPU
+        let buffer = gl.createBuffer();
+        if (!buffer) {
+            console.log("Failed to create a buffer object")
+            return;
         }
-        point.push(color)
+        // We say that this buffer is an array
+        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+        // We connect this buffer with the variable a_Position
+        gl.vertexAttribPointer(a_Position, 2, gl.FLOAT, false, 0, 0);
 
-        points.push(point);
+        // Drawing
+        for (let shape of shapes) {
+            // Used to clarify everything
+            let x = shape[1][0]
+            let y = shape[1][1];
+            let size = shape[2];
+            let r = shape[3][0];
+            let g = shape[3][1];
+            let b = shape[3][2];
+            let a = 1.0;
+            let segs = shape[4];
 
-        gl.clearColor(0.0, 0.0, 0.0, 1.0);
-        gl.clear(gl.COLOR_BUFFER_BIT);
+            // Let's say that we want a size of 40 *PIXELS*!
+            // We know the canvas' dimensions. The WebGL dimensions
+            // are 2 in both axis. Because it starts in the middle and
+            // it goes from -1 to 1.
+            // - So the size X (width) will be size * 2 / canvas' width
+            // - And the size Y (height) will be size * 2 / canvas' height
+            // Here are the computations:
+            let sizeX = size * 2 / getCanvas().width;
+            let sizeY = size * 2 / getCanvas().height;
 
-        for (point of points) {
-            // Position
-            gl.vertexAttrib3f(a_Position, point[0], point[1], 0.0);
-            // Color
-            gl.uniform4f(u_FragColor, point[2][0], point[2][1], point[2][2], point[2][3])
-            // Draw
-            gl.drawArrays(gl.POINTS, 0, 1);
+            // This is an optimization. We won't draw the shapes that are outside
+            // the canvas
+            if ( (x + sizeX/2 + C_TX < - 1.0) || // out left
+                 (x - sizeX/2 + C_TX > + 1.0) || // out right
+                 (y + sizeY/2 + C_TY < - 1.0) || // out bottom
+                 (y - sizeY/2 + C_TY > + 1.0)    // out top
+                ) {
+                continue;
+            }
+
+            let vertices = null;
+
+            switch (shape[0]) {
+                case M_SQUARE:
+                    vertices = new Float32Array([
+                        x - sizeX/2, y - sizeY/2, // Bottom-left corner
+                        x - sizeX/2, y + sizeY/2, // Top-left corner
+                        x + sizeX/2, y + sizeY/2, // Top-right corner
+                        x + sizeX/2, y - sizeY/2  // Bottom-right corner
+                    ])
+
+                    gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW); // We put the data inside of the buffer
+                    gl.enableVertexAttribArray(a_Position); // We send the data to the variable
+                    gl.uniform4f(u_FragColor, r, g, b, a);  // Color
+                    gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);   // Draw
+                    shapesDrawn ++;
+                    break;
+
+                case M_TRIANGLE:
+                    vertices = new Float32Array([
+                        x - sizeX/2.0, y - sizeY/2.0, // bottom left corner
+                        x, y + sizeY/2.0,             // top corner
+                        x + sizeX/2.0, y - sizeY/2.0  // bottom right corner
+                    ]);
+
+                    gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW); // We put the data inside of the buffer
+                    gl.enableVertexAttribArray(a_Position); // We send the data to the variable
+                    gl.uniform4f(u_FragColor, r, g, b, a);  // Color
+                    gl.drawArrays(gl.TRIANGLES, 0, 3); // Draw 3 triangles
+                    shapesDrawn ++;
+                    break;
+
+                case M_CIRCLE:
+                    // We want C_SEGS segments, so C_SEGS triangles. We will conenct triangles with
+                    // TRIANGLE_FAN. We multiply by 2 because a point is defined by two coordinates (x, y).
+                    // "+4" Comes from the fact that we need to include:
+                    // - The center of the circle (x, y),
+                    // - The end of the circle (a point that already exists).
+                    let n = segs * 2 + 4;
+                    vertices = new Float32Array(n);
+
+                    // Center of the circle
+                    vertices[0] = x;
+                    vertices[1] = y;
+
+                    // First free index of thhe array "vertices"
+                    let index = 2;
+
+                    // Basic trigonometry
+                    for (let seg = 0; seg <= segs; seg ++) {
+                        vertices[index] = x + sizeX/2 * Math.cos(seg * 2*Math.PI / segs);
+                        index++;
+                        vertices[index] = y + sizeY/2 * - Math.sin(seg * 2*Math.PI / segs);
+                        index ++;
+                    }
+
+                    gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW); // We put the data inside of the buffer
+                    gl.enableVertexAttribArray(a_Position); // We send the data to the variable
+                    gl.uniform4f(u_FragColor, r, g, b, a);  // Color
+                    gl.drawArrays(gl.TRIANGLE_FAN, 0, n/2); // Draw
+                    shapesDrawn ++;
+                    break;
+
+                default:
+                    console.log("Unknown drawing mode: ", shape[0]);
+            }
+        }
+
+        // We destroy the buffer since we won't use it anymore
+        gl.deleteBuffer(buffer);
+
+        // Update statistics
+        updateStatistics(shapesDrawn, Date.now() - startingTime);
+    }
+
+    // It translates the shapes with the given deltas
+    function translate(dx, dy) {
+        C_TX += dx;
+        C_TY += dy;
+        gl.uniform4f(u_Translation, C_TX, C_TY, 0.0, 0.0);
+        updateScreen();
+    }
+
+    function updateStatistics(shapesDrawn, timeElapsed) {
+        document.getElementById('stats').innerText =
+            shapesDrawn + " shape(s) drawn in " + timeElapsed + " ms.";
+
+        let color = "grey";
+        if (timeElapsed <= 50) color = "green";
+        else if (timeElapsed > 50 && timeElapsed < 80) color = "orange";
+        else color = "red";
+
+        document.getElementById('stats').style.color = color;
+    }
+
+    // Called whenever the mouse is released
+    getCanvas().onmouseup = e => {
+        mouseDown = false;
+    }
+
+    // Called whenever the mouse is pressed
+    getCanvas().onmousedown = e => {
+        // If the user just clicked, we want to reset the delay and to create a shape
+        if (mouseDown === false) {
+            createShape(e.clientX, e.clientY, e.target.getBoundingClientRect());
+            updateScreen();
+            lastTime = Date.now();
+        }
+        mouseDown = true;
+    }
+
+    // Called whenever the mouse is moving over the canvas
+    getCanvas().onmousemove = e => {
+        // We need to make sure that the delay is reached and that the mouse is pressed
+        // to add a new shape on the screen
+        if (mouseDown && delayReached()) {
+            createShape(e.clientX, e.clientY, e.target.getBoundingClientRect());
+            updateScreen();
+            lastTime = Date.now();
         }
     }
+
+    // Called whenever a key is down while the canvas is focused
+    getCanvas().onkeydown = e => {
+        if (e.keyCode === 65) translate(-C_STEP, 0); // left: a
+        if (e.keyCode === 87) translate(0, +C_STEP); // up: w
+        if (e.keyCode === 68) translate(+C_STEP, 0); // right: d
+        if (e.keyCode === 83) translate(0, -C_STEP); // down: s
+    }
+
+    // Buttons to translate
+    document.getElementById('translate-up').onclick    = e => { translate(0, + C_STEP); }
+    document.getElementById('translate-down').onclick  = e => { translate(0, - C_STEP); }
+    document.getElementById('translate-right').onclick = e => { translate(+ C_STEP, 0); }
+    document.getElementById('translate-left').onclick  = e => { translate(- C_STEP, 0); }
 }

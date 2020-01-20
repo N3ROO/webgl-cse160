@@ -1,8 +1,6 @@
-// Sample code
-
 attribute vec4 a_Position;
+uniform vec4 u_Translation;
 
 void main() {
-    gl_Position = a_Position;
-    gl_PointSize = 10.0;
+    gl_Position = a_Position + u_Translation;
 }

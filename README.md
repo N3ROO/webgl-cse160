@@ -12,6 +12,7 @@ Made for the CSE160 class at UCSC. Written by Lilian Gallon.
 
 - template: Project template, with all the initializations and the utilities functions
 - assignmentX: Assignment #X
+- master: Contains the latest finished assignment
 
 ### Libs
 
