@@ -6,7 +6,7 @@
     </head>
 
     <body onload="init()">
-        <canvas id="webgl" width="400" height="400">
+        <canvas id="webgl" width="400" height="400" tabindex="1">
             Please use the browser supporting "canvas"
         </canvas>
 
@@ -32,8 +32,28 @@
         (Circle) Segment count: <input id="seg" type="range" min="0" max="100" value="10" oninput="C_SEGS=seg.value;">
 
         <br>
-        <h4>Other:</h4>
+        <br>
+        <hr>
+
+        <h3>Bonus:</h3>
+
         Delay (ms): <input id="delay" type="range" min="0" max="1000" value="100" oninput="C_DELAY=delay.value;">
+        <br><small>You can update this slider to fill the gaps during mouse drag</small>
+
+        <br><br>
+
+        Translation: <small>You have to use the W-A-S-D keys to translate the shapes (make sure that the canvas is focused)</small> <br>
+        Step: <input id="tstep" type="range" min="0.005" max="0.2" value="0.01" step="0.01" oninput="C_STEP=tstep.value;">
+        <button id="translate-up">UP</button>
+        <button id="translate-down">DOWN</button>
+        <button id="translate-right">RIGHT</button>
+        <button id="translate-left">LEFT</button>
+
+        <br><br>
+        Notes:
+        <ul>
+            <li>Optimization: The shapes that are not in the visible area are not drawn.</li>
+        </ul>
 
         <script src="libs/webgl-utils.js"></script>
         <script src="libs/webgl-debug.js"></script>

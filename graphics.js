@@ -49,6 +49,11 @@ var C_SIZE = 40.0;
 var C_SEGS = 10;
 var C_DELAY = 100;
 
+// Translation
+var C_TX = 0.0;
+var C_TY = 0.0;
+var C_STEP = 0.01;
+
 // Magic numbers (used by C_DRAWING_MODE)
 var M_SQUARE = 0;
 var M_TRIANGLE = 1;
@@ -157,8 +162,8 @@ function canvasToWebglCoords(x, y, r) {
     let c = getCanvas();
 
     return [
-        ((x - r.left) - c.height/2) / (c.height/2),
-        (c.width/2 - (y - r.top)) / (c.width/2)
+        ((x - r.left) - c.height/2) / (c.height/2) - C_TX,
+        (c.width/2 - (y - r.top)) / (c.width/2) - C_TY
     ];
 }
 
@@ -227,6 +232,7 @@ function start(gl) {
 
     // We need to access to these varaibles to update the shape's properties
     let a_Position = gl.getAttribLocation(gl.program, 'a_Position');
+    let u_Translation = gl.getUniformLocation(gl.program, 'u_Translation');
     let u_FragColor = gl.getUniformLocation(gl.program, 'u_FragColor');
 
     // We will store all the shapes in this container to render them
@@ -305,6 +311,16 @@ function start(gl) {
             let sizeX = size * 2 / getCanvas().width;
             let sizeY = size * 2 / getCanvas().height;
 
+            // This is an optimization. We won't draw the shapes that are outside
+            // the canvas
+            if ( (x + sizeX/2 + C_TX < - 1.0) || // out left
+                 (x - sizeX/2 + C_TX > + 1.0) || // out right
+                 (y + sizeY/2 + C_TY < - 1.0) || // out bottom
+                 (y - sizeY/2 + C_TY > + 1.0)    // out top
+                ) {
+                continue;
+            }
+
             let vertices = null;
 
             switch (shape[0]) {
@@ -374,6 +390,14 @@ function start(gl) {
         gl.deleteBuffer(buffer);
     }
 
+    // It translates the shapes with the given deltas
+    function translate(dx, dy) {
+        C_TX += dx;
+        C_TY += dy;
+        gl.uniform4f(u_Translation, C_TX, C_TY, 0.0, 0.0);
+        updateScreen();
+    }
+
     // Called whenever the mouse is released
     getCanvas().onmouseup = e => {
         mouseDown = false;
@@ -400,4 +424,18 @@ function start(gl) {
             lastTime = Date.now();
         }
     }
+
+    // Called whenever a key is down while the canvas is focused
+    getCanvas().onkeydown = e => {
+        if (e.keyCode === 65) translate(-C_STEP, 0); // left: a
+        if (e.keyCode === 87) translate(0, +C_STEP); // up: w
+        if (e.keyCode === 68) translate(+C_STEP, 0); // right: d
+        if (e.keyCode === 83) translate(0, -C_STEP); // down: s
+    }
+
+    // Buttons to translate
+    document.getElementById('translate-up').onclick    = e => { translate(0, + C_STEP); }
+    document.getElementById('translate-down').onclick  = e => { translate(0, - C_STEP); }
+    document.getElementById('translate-right').onclick = e => { translate(+ C_STEP, 0); }
+    document.getElementById('translate-left').onclick  = e => { translate(- C_STEP, 0); }
 }
