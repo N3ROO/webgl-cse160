@@ -370,7 +370,7 @@ function start(gl) {
                     vertices[0] = x;
                     vertices[1] = y;
 
-                    // First free index of thhe array "vertices"
+                    // First free index of the array "vertices"
                     let index = 2;
 
                     // Basic trigonometry
