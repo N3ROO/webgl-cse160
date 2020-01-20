@@ -275,6 +275,10 @@ function start(gl) {
 
     // This function renders all the shapes on the screen
     function updateScreen() {
+        // Used for statistics
+        let shapesDrawn = 0;
+        let startingTime = Date.now();
+
         // Clearing
         clear(gl);
 
@@ -336,6 +340,7 @@ function start(gl) {
                     gl.enableVertexAttribArray(a_Position); // We send the data to the variable
                     gl.uniform4f(u_FragColor, r, g, b, a);  // Color
                     gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);   // Draw
+                    shapesDrawn ++;
                     break;
 
                 case M_TRIANGLE:
@@ -349,6 +354,7 @@ function start(gl) {
                     gl.enableVertexAttribArray(a_Position); // We send the data to the variable
                     gl.uniform4f(u_FragColor, r, g, b, a);  // Color
                     gl.drawArrays(gl.TRIANGLES, 0, 3); // Draw 3 triangles
+                    shapesDrawn ++;
                     break;
 
                 case M_CIRCLE:
@@ -379,6 +385,7 @@ function start(gl) {
                     gl.enableVertexAttribArray(a_Position); // We send the data to the variable
                     gl.uniform4f(u_FragColor, r, g, b, a);  // Color
                     gl.drawArrays(gl.TRIANGLE_FAN, 0, n/2); // Draw
+                    shapesDrawn ++;
                     break;
 
                 default:
@@ -388,6 +395,9 @@ function start(gl) {
 
         // We destroy the buffer since we won't use it anymore
         gl.deleteBuffer(buffer);
+
+        // Update statistics
+        updateStatistics(shapesDrawn, Date.now() - startingTime);
     }
 
     // It translates the shapes with the given deltas
@@ -396,6 +406,18 @@ function start(gl) {
         C_TY += dy;
         gl.uniform4f(u_Translation, C_TX, C_TY, 0.0, 0.0);
         updateScreen();
+    }
+
+    function updateStatistics(shapesDrawn, timeElapsed) {
+        document.getElementById('stats').innerText =
+            shapesDrawn + " shape(s) drawn in " + timeElapsed + " ms.";
+
+        let color = "grey";
+        if (timeElapsed <= 50) color = "green";
+        else if (timeElapsed > 50 && timeElapsed < 80) color = "orange";
+        else color = "red";
+
+        document.getElementById('stats').style.color = color;
     }
 
     // Called whenever the mouse is released

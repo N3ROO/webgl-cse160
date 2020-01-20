@@ -13,7 +13,9 @@
         <br>
         <button id="clear">Clear canvas</button>
 
-        <br><br>
+        <br> <br>
+        <small id="stats" style="color: green;">0 shapes drawn in 0 ms.</small>
+        <br>
 
         <h4>Drawing mode:</h4>
         <button onclick="C_DRAWING_MODE=M_SQUARE;">Square</button>
@@ -52,7 +54,9 @@
         <br><br>
         Notes:
         <ul>
-            <li>Optimization: The shapes that are not in the visible area are not drawn.</li>
+            <li>Optimization: The shapes that are not in the visible area are not drawn. You can see that with the statistics (see the note below).</li>
+            <li>Statistics: Below the canvas, there is a text saying "[x] shapes drawn in [y] ms".
+                This way, we can easily see how many shapes were drawn, and how much time it took.</li>
         </ul>
 
         <script src="libs/webgl-utils.js"></script>
