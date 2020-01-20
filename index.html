@@ -3,6 +3,11 @@
     <head>
         <meta charset="utf-8" />
         <title>Clear canvas</title>
+        <style>
+            span {
+                display: inline-block; /* Used to make min-width working */
+            }
+        </style>
     </head>
 
     <body onload="init()">
@@ -22,16 +27,16 @@
         <button onclick="C_DRAWING_MODE=M_TRIANGLE;">Triangle</button>
         <button onclick="C_DRAWING_MODE=M_CIRCLE;">Circle</button>
 
-        <h4>Shape color:</h4>
-        Red: <input id="red" type="range" min="0.0" max="1.0" value="0.5" step="0.01" oninput="C_RED=red.value;">
-        Green: <input id="green" type="range" min="0.0" max="1.0" value="0" step="0.01" oninput="C_GREEN=green.value;">
-        Blue: <input id="blue" type="range" min="0.0" max="1.0" value="1.0" step="0.01" oninput="C_BLUE=blue.value;">
+        <h4>Shape color: <span id="color-preview" style="background:rgb(127.5, 0, 255);">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></h4>
+        Red: <input id="red" type="range" min="0.0" max="1.0" value="0.5" step="0.01" oninput="updateColors();">
+        Green: <input id="green" type="range" min="0.0" max="1.0" value="0" step="0.01" oninput="updateColors();">
+        Blue: <input id="blue" type="range" min="0.0" max="1.0" value="1.0" step="0.01" oninput="updateColors();">
 
         <br>
 
         <h4>Shape properties:</h4>
-        Size: <input id="shape_size" type="range" min="0" max="100" value="40" step="1" oninput="C_SIZE=shape_size.value;">
-        (Circle) Segment count: <input id="seg" type="range" min="3" max="100" value="10" oninput="C_SEGS=seg.value;">
+        Size (<span style="min-width:30px;">40</span>): <input id="shape_size" type="range" min="0" max="100" value="40" step="1" oninput="C_SIZE=shape_size.value; shape_size.previousElementSibling.innerHTML = C_SIZE;">
+        (Circle) Segment count (<span style="min-width:30px;">10</span>): <input id="seg" type="range" min="3" max="100" value="10" oninput="C_SEGS=seg.value; seg.previousElementSibling.innerHTML = C_SEGS;">
 
         <br>
         <br>
@@ -39,13 +44,13 @@
 
         <h3>Bonus:</h3>
 
-        Delay (ms): <input id="delay" type="range" min="0" max="1000" value="100" oninput="C_DELAY=delay.value;">
+        Delay (<span style="min-width:40px;">100</span> ms): <input id="delay" type="range" min="0" max="1000" value="100" oninput="C_DELAY=delay.value; delay.previousElementSibling.innerHTML = C_DELAY;">
         <br><small>You can update this slider to fill the gaps during mouse drag</small>
 
         <br><br>
 
         Translation: <small>You can also use the W-A-S-D keys to translate the shapes (make sure that the canvas is focused)</small> <br>
-        Step: <input id="tstep" type="range" min="0.005" max="0.2" value="0.01" step="0.01" oninput="C_STEP=tstep.value;">
+        Step (<span style="min-width:50px;">0.01</span>): <input id="tstep" type="range" min="0.01" max="0.2" value="0.01" step="0.01" oninput="C_STEP=tstep.value; tstep.previousElementSibling.innerHTML = C_STEP;">
         <button id="translate-up">UP</button>
         <button id="translate-down">DOWN</button>
         <button id="translate-right">RIGHT</button>
@@ -57,6 +62,8 @@
             <li>Optimization: The shapes that are not in the visible area are not drawn. You can see that with the statistics (see the note below).</li>
             <li>Statistics: Below the canvas, there is a text saying "[x] shapes drawn in [y] ms".
                 This way, we can easily see how many shapes were drawn, and how much time it took.</li>
+            <li>Color preview: We can see the color when updating the sliders</li>
+            <li>Value preview: We can see the actual value when updating the sliders</li>
         </ul>
 
         <script src="libs/webgl-utils.js"></script>

@@ -461,3 +461,18 @@ function start(gl) {
     document.getElementById('translate-right').onclick = e => { translate(+ C_STEP, 0); }
     document.getElementById('translate-left').onclick  = e => { translate(- C_STEP, 0); }
 }
+
+// Controls
+
+function updateColors() {
+    let r = document.getElementById('red');
+    let g = document.getElementById('green');
+    let b = document.getElementById('blue');
+    let p = document.getElementById('color-preview');
+
+    C_RED = r.value;
+    C_GREEN = g.value;
+    C_BLUE = b.value;
+
+    p.style.background = "rgb(" + C_RED*255 + "," + C_GREEN*255 + "," + C_BLUE*255 + ")"
+}
