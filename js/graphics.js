@@ -84,6 +84,16 @@ function main(gl) {
         // We connect this buffer with the variable a_Position
         gl.vertexAttribPointer(a_Position, 2, gl.FLOAT, false, 0, 0);
 
+        // The array is related linked to a_Position
+        gl.enableVertexAttribArray(a_Position);
+
+        // We set the color here because it costs a lot of time to do it everytime
+        // We will update it only if the shape has a different color than the last one
+        gl.uniform4f(u_FragColor, C_RED, C_GREEN, C_BLUE, 1.0);
+        let lastRed = C_RED;
+        let lastGreen = C_GREEN;
+        let lastBlue = C_BLUE;
+
         // Drawing
         for (let shape of shapes) {
             // Used to clarify everything
@@ -114,6 +124,14 @@ function main(gl) {
 
             let vertices = null;
 
+            // We update the color only if needed, because it costs a lot of time
+            if (r !== lastRed || g !== lastGreen || b !== lastBlue) {
+                gl.uniform4f(u_FragColor, r, g, b, 1.0);  // Color
+                lastRed = r;
+                lastBlue = b;
+                lastGreen = g;
+            }
+
             switch (shape[0]) {
                 case M_SQUARE:
                     vertices = new Float32Array([
@@ -123,9 +141,7 @@ function main(gl) {
                         x + sizeX/2, y - sizeY/2  // Bottom-right corner
                     ])
 
-                    gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW); // We put the data inside of the buffer
-                    gl.enableVertexAttribArray(a_Position); // We send the data to the variable
-                    gl.uniform4f(u_FragColor, r, g, b, a);  // Color
+                    gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.DYNAMIC_DRAW); // We put the data inside of the buffer
                     gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);   // Draw
                     shapesDrawn ++;
                     break;
@@ -137,9 +153,7 @@ function main(gl) {
                         x + sizeX/2.0, y - sizeY/2.0  // bottom right corner
                     ]);
 
-                    gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW); // We put the data inside of the buffer
-                    gl.enableVertexAttribArray(a_Position); // We send the data to the variable
-                    gl.uniform4f(u_FragColor, r, g, b, a);  // Color
+                    gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.DYNAMIC_DRAW); // We put the data inside of the buffer
                     gl.drawArrays(gl.TRIANGLES, 0, 3); // Draw 3 triangles
                     shapesDrawn ++;
                     break;
@@ -168,9 +182,7 @@ function main(gl) {
                         index ++;
                     }
 
-                    gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW); // We put the data inside of the buffer
-                    gl.enableVertexAttribArray(a_Position); // We send the data to the variable
-                    gl.uniform4f(u_FragColor, r, g, b, a);  // Color
+                    gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.DYNAMIC_DRAW); // We put the data inside of the buffer
                     gl.drawArrays(gl.TRIANGLE_FAN, 0, n/2); // Draw
                     shapesDrawn ++;
                     break;
