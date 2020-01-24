@@ -35,3 +35,7 @@ These libraries are provided by Khronos (the GL standardization body) & Kanda an
 - cuon-utils.js
 - webgl-debug.js
 - webgl-utils.js
+
+### License:
+
+js/* & index.html files under the [MIT License](LICENSE).
