@@ -10,7 +10,6 @@ Made for the CSE160 class at UCSC (Winter 2020). Written by Lilian Gallon.
 
 ### Branches
 
-- template: Project template, with all the initializations and the utilities functions
 - assignmentX: Assignment #X
 - master: Contains the latest finished assignment
 
