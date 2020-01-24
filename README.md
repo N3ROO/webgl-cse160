@@ -1,12 +1,12 @@
-# WebGL Project Template
+# UCSC - CSE160 - WebGL
 
-Made for the CSE160 class at UCSC. Written by Lilian Gallon.
+Made for the CSE160 class at UCSC (Winter 2020). Written by Lilian Gallon.
 
-### Features
+### Assignments:
 
-- Complete initialization
-- Shaders loader
-- Converter between canvas coords and webGL coords
+- Assignment 1: Painting - Grade ?/10
+
+![Assignment1 Screenshot](.github/screenshots/assignment1.png)
 
 ### Branches
 
