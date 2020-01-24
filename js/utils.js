@@ -58,3 +58,30 @@ function getElement(id) {
 
     return elem;
 }
+
+/**
+ * This function returns true if the delay has been reached.
+ * @param {*} time time to compare (ms),
+ * @param {*} delay delay (ms).
+ */
+function delayReached(time, delay) {
+    return Date.now() - time >= delay;
+}
+
+/**
+ * This functions returns true if the given square is outside of
+ * the screen.
+ * @param {*} x position of the middle of the square (x)
+ * @param {*} y position of the middle of the square (y)
+ * @param {*} width width of the square
+ * @param {*} height height of the square
+ * @param {*} worldX world x (if the center of the canvas is not 0,0)
+ * @param {*} worldY world y (if the center of the canvas is not 0,0)
+ */
+function outsideOfScreen(x, y, width, height, worldX, worldY) {
+    return ( (x + width/2 + worldX < - 1.0) || // out left
+        (x - width/2 + worldX > + 1.0) || // out right
+        (y + height/2 + worldY < - 1.0) || // out bottom
+        (y - height/2 + worldY > + 1.0)    // out top
+    )
+}

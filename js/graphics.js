@@ -42,13 +42,10 @@ function main(gl) {
         shapes = [];
     }
 
-    // This function returns true if the delay has been reached. It is used to know
-    // if we will draw the shape on the screen when the mouse is moving. It prevent
-    // creating a *huge* amount of shapes
+    // This var will be used when calling dealayReached(). It is used to know
+    // if we will draw the shape on the screen when the mouse is moving. It
+    // prevent creating a *huge* amount of shapes.
     let lastTime = Date.now();
-    function delayReached() {
-        return Date.now() - lastTime >= C_DELAY;
-    }
 
     // This function creates a shape on the specified coordinates (canvas coordinates)
     function createShape(x, y, r) {
@@ -90,13 +87,13 @@ function main(gl) {
         // Drawing
         for (let shape of shapes) {
             // Used to clarify everything
-            let x = shape[1][0]
-            let y = shape[1][1];
+            let x    = shape[1][0]
+            let y    = shape[1][1];
             let size = shape[2];
-            let r = shape[3][0];
-            let g = shape[3][1];
-            let b = shape[3][2];
-            let a = 1.0;
+            let r    = shape[3][0];
+            let g    = shape[3][1];
+            let b    = shape[3][2];
+            let a    = 1.0;
             let segs = shape[4];
 
             // Let's say that we want a size of 40 *PIXELS*!
@@ -111,11 +108,7 @@ function main(gl) {
 
             // This is an optimization. We won't draw the shapes that are outside
             // the canvas
-            if ( (x + sizeX/2 + C_TX < - 1.0) || // out left
-                 (x - sizeX/2 + C_TX > + 1.0) || // out right
-                 (y + sizeY/2 + C_TY < - 1.0) || // out bottom
-                 (y - sizeY/2 + C_TY > + 1.0)    // out top
-                ) {
+            if (outsideOfScreen(x, y, sizeX, sizeY, C_TX, C_TY)){
                 continue;
             }
 
@@ -140,7 +133,7 @@ function main(gl) {
                 case M_TRIANGLE:
                     vertices = new Float32Array([
                         x - sizeX/2.0, y - sizeY/2.0, // bottom left corner
-                        x, y + sizeY/2.0,             // top corner
+                        x            , y + sizeY/2.0, // top corner
                         x + sizeX/2.0, y - sizeY/2.0  // bottom right corner
                     ]);
 
@@ -183,7 +176,7 @@ function main(gl) {
                     break;
 
                 default:
-                    console.log("Unknown drawing mode: ", shape[0]);
+                    console.error("Unknown drawing mode: ", shape[0]);
             }
         }
 
@@ -234,7 +227,7 @@ function main(gl) {
     getElement(CANVAS_ID).onmousemove = e => {
         // We need to make sure that the delay is reached and that the mouse is pressed
         // to add a new shape on the screen
-        if (mouseDown && delayReached()) {
+        if (mouseDown && delayReached(lastTime, C_DELAY)) {
             createShape(e.clientX, e.clientY, e.target.getBoundingClientRect());
             updateScreen();
             lastTime = Date.now();
