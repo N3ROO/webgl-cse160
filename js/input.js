@@ -5,7 +5,7 @@
  * https://nero.dev
  *
  * Required:
- *  Nothing.
+ *  - utils.js
  *
  * Description:
  *  It contains variables and functions which keep track of the
@@ -47,4 +47,24 @@ function updateColors() {
     C_BLUE = b.value;
 
     p.style.background = "rgb(" + C_RED*255 + "," + C_GREEN*255 + "," + C_BLUE*255 + ")"
+}
+
+/**
+ * It updates the statistics tag.
+ * @param {*} shapesDrawn number of shapes drawn,
+ * @param {*} timeElapsed time it took to draw them.
+ */
+function updateStatistics(shapesDrawn, timeElapsed) {
+    getElement('stats').innerText = shapesDrawn + " shape(s) drawn in " + timeElapsed + " ms.";
+
+    let color = "grey";
+    if (timeElapsed <= 50) {
+        color = "green";
+    } else if (timeElapsed > 50 && timeElapsed < 80) {
+        color = "orange";
+    } else {
+        color = "red";
+    }
+
+    getElement('stats').style.color = color;
 }

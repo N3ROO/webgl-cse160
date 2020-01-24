@@ -122,8 +122,6 @@ function main(gl) {
                 continue;
             }
 
-            let vertices = null;
-
             // We update the color only if needed, because it costs a lot of time
             if (r !== lastRed || g !== lastGreen || b !== lastBlue) {
                 gl.uniform4f(u_FragColor, r, g, b, 1.0);  // Color
@@ -132,13 +130,15 @@ function main(gl) {
                 lastGreen = g;
             }
 
+            let vertices = null;
+
             switch (shape[0]) {
                 case M_SQUARE:
                     vertices = new Float32Array([
-                        x - sizeX/2, y - sizeY/2, // Bottom-left corner
-                        x - sizeX/2, y + sizeY/2, // Top-left corner
-                        x + sizeX/2, y + sizeY/2, // Top-right corner
-                        x + sizeX/2, y - sizeY/2  // Bottom-right corner
+                        x - sizeX/2.0, y - sizeY/2.0, // Bottom-left corner
+                        x - sizeX/2.0, y + sizeY/2.0, // Top-left corner
+                        x + sizeX/2.0, y + sizeY/2.0, // Top-right corner
+                        x + sizeX/2.0, y - sizeY/2.0  // Bottom-right corner
                     ])
 
                     gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.DYNAMIC_DRAW); // We put the data inside of the buffer
@@ -176,9 +176,9 @@ function main(gl) {
 
                     // Basic trigonometry
                     for (let seg = 0; seg <= segs; seg ++) {
-                        vertices[index] = x + sizeX/2 * Math.cos(seg * 2*Math.PI / segs);
+                        vertices[index] = x + sizeX/2.0 * Math.cos(seg * 2.0*Math.PI / segs);
                         index++;
-                        vertices[index] = y + sizeY/2 * - Math.sin(seg * 2*Math.PI / segs);
+                        vertices[index] = y + sizeY/2.0 * - Math.sin(seg * 2.0*Math.PI / segs);
                         index ++;
                     }
 
@@ -205,18 +205,6 @@ function main(gl) {
         C_TY += dy;
         gl.uniform4f(u_Translation, C_TX, C_TY, 0.0, 0.0);
         updateScreen();
-    }
-
-    function updateStatistics(shapesDrawn, timeElapsed) {
-        getElement('stats').innerText =
-            shapesDrawn + " shape(s) drawn in " + timeElapsed + " ms.";
-
-        let color = "grey";
-        if (timeElapsed <= 50) color = "green";
-        else if (timeElapsed > 50 && timeElapsed < 80) color = "orange";
-        else color = "red";
-
-        getElement('stats').style.color = color;
     }
 
     // Called whenever the mouse is released
