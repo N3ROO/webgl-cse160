@@ -5,10 +5,11 @@
  * https://nero.dev
  *
  * Required:
- *  TODO:
+ *  Nothing.
  *
  * Description:
- *  TODO:
+ *  It contains variables and functions which keep track of the
+ *  user's input.
  */
 
 // Controls

@@ -11,7 +11,7 @@
  * - input.js
  *
  * Description:
- *  TODO:
+ *  It contains the code to create, and draw things on the screen.
  */
 
  /**
