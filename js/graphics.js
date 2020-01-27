@@ -39,7 +39,7 @@ function main(gl) {
 
         clear(gl);
 
-        mvpMatrix.rotate(1, 1, 0, 1);
+        mvpMatrix.rotate(1, -1, 0.5, 0.5);
         gl.uniformMatrix4fv(u_MvpMatrix, false, mvpMatrix.elements);
 
         cube.build();

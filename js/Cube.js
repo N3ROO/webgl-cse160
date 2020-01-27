@@ -66,7 +66,12 @@ class Cube {
         }
 
         this._bind(this.vertices, 3, this.gl.FLOAT, 'a_Position');
-        this._bind(this.colors  , 3, this.gl.FLOAT, 'a_Color');
+
+        // We update the colors only if needed (it will work if nothing else than this class is used)
+        if (Cube.lastCube === null || Cube.lastCube.getColors() !== this.colors) {
+            this._bind(this.colors  , 3, this.gl.FLOAT, 'a_Color');
+            Cube.lastCube = this;
+        }
 
         this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
         this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, this.indices, this.gl.STATIC_DRAW);
@@ -108,4 +113,10 @@ class Cube {
         this.gl.vertexAttribPointer(a_attr, num, type, false, 0, 0);
         this.gl.enableVertexAttribArray(a_attr);
     }
+
+    getColors() {
+        return this.colors;
+    }
 }
+
+Cube.lastCube = null;
