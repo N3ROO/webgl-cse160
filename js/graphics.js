@@ -43,10 +43,11 @@ function main(gl) {
     m1 = m1.scale(0.5, 0.5, 0.5);
 
     let m2 = new Matrix4();
-    m2 = m2.rotate(50, 1, 0, 0);
+    m2 = m2.scale(0.5, 0.5, 0.5);
+    m2 = m2.translate(-2, 0, 0);
 
     cubes.push(new Cube(gl, m1));
-    //cubes.push(new Cube(gl, m2));
+    cubes.push(new Cube(gl, m2));
 
     //// LOOP ////
 
@@ -57,6 +58,7 @@ function main(gl) {
     let fpsmeter = new FPSMeter({ decimals: 0, graph: true, theme: 'transparent', left: '10px', top: '10px' });
 
     function tick() {
+
         fpsmeter.tickStart();
 
         let now = timestamp();
@@ -80,7 +82,7 @@ function main(gl) {
     //// UPDATE ////
 
     function update(dt) {
-        //globalMatrix.rotate(10 * dt, -1, 0.5, 0.5);
+        globalMatrix.rotate(10 * dt, -1, 0.5, 0.5);
         gl.uniformMatrix4fv(u_GlobalMatrix, false, globalMatrix.elements);
     }
 
