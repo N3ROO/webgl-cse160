@@ -30,12 +30,46 @@ function main(gl) {
 
     gl.uniformMatrix4fv(u_MvpMatrix, false, mvpMatrix.elements);
 
-    // Draw the cube
+    let cube = new Cube(gl);
+
+    let last = Date.now();
+    let frames = 0;
+
+    function tick() {
+
+        clear(gl);
+
+        mvpMatrix.rotate(1, 1, 0, 1);
+        gl.uniformMatrix4fv(u_MvpMatrix, false, mvpMatrix.elements);
+
+        cube.build();
+        cube.draw();
+
+        if(delayReached(last, 1000)) {
+            (async() => {
+                try {
+                    getElement('stats').innerHTML = frames + ' fps';
+                    last = Date.now();
+                    frames = 0;
+                } catch (err) {
+                    console.log(err);
+                }
+            })();
+        }
+
+        frames++;
+        requestAnimationFrame(tick);
+    }
+
+    requestAnimationFrame(tick);
+}
+
+function clear(gl) {
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.enable(gl.DEPTH_TEST);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+}
 
-    let cube = new Cube(gl);
-    cube.build();
-    cube.draw();
+function timestamp() {
+    return window.performance && window.performance.now ? window.performance.now() : new Date().getTime();
 }
