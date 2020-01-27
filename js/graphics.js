@@ -34,7 +34,7 @@ function main(gl) {
 
     // Cubes
     let cubes = [];
-    let cube = new Cube(gl);
+    let cube = new Cube(gl, new Matrix4());
     cubes.push(cube);
 
     //// LOOP ////
