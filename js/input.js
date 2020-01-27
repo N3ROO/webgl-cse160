@@ -12,6 +12,24 @@
  *  user's input.
  */
 
+//// MOUSE EVENTS ////
+var M_DOWN = false;
+var M_DX = null;
+var M_DY = null;
+var M_DR = null;
+var M_UX = null;
+var M_UY = null;
+var M_UR = null;
+
+//// KEYBOARD EVENTS ////
+var KEYS = {
+    UP: false,
+    DOWN: false,
+    RIGHT: false,
+    LEFT: false
+};
+
+
 /**
  * It updates the statistics tag.
  * @param {*} shapesDrawn number of shapes drawn,
@@ -30,4 +48,34 @@ function updateStatistics(shapesDrawn, timeElapsed) {
     }
 
     getElement('stats').style.color = color;
+}
+
+getElement(CANVAS_ID).onmousedown = e => {
+    M_DOWN = true;
+    M_DX = e.clientX;
+    M_DY = e.clientY;
+    M_DR = e.target.getBoundingClientRect();
+
+    console.log(canvasToWebglCoords(M_DX, M_DY, M_DR, 0, 0));
+}
+
+getElement(CANVAS_ID).onmouseup = e => {
+    M_DOWN = false;
+    M_UX = e.clientX;
+    M_UY = e.clientY;
+    M_UR = e.target.getBoundingClientRect();
+}
+
+getElement(CANVAS_ID).onkeydown = e => {
+    if (e.keyCode === 37) KEYS.LEFT = true;
+    if (e.keyCode === 38) KEYS.UP = true;
+    if (e.keyCode === 39) KEYS.RIGHT = true;
+    if (e.keyCode === 40) KEYS.DOWN = true;
+}
+
+getElement(CANVAS_ID).onkeyup = e => {
+    if (e.keyCode === 37) KEYS.LEFT = false;
+    if (e.keyCode === 38) KEYS.UP = false;
+    if (e.keyCode === 39) KEYS.RIGHT = false;
+    if (e.keyCode === 40) KEYS.DOWN = false;
 }

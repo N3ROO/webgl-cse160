@@ -43,7 +43,7 @@ function clear(gl) {
 }
 
 /**
- * It returns the element if the specified id. It writes an
+ * It returns the element with the specified id. It writes an
  * error if the id could not be found.
  *
  * ERROR:

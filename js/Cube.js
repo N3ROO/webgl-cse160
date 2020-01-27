@@ -85,7 +85,7 @@ class Cube {
         }
 
         if (updateColor) {
-            this._bindAttrib(this.colors  , 3, this.gl.FLOAT, 'a_Color');
+            this._bindAttrib(this.colors, 3, this.gl.FLOAT, 'a_Color');
         }
 
         if (updatePosition) {

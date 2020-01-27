@@ -49,6 +49,8 @@ function main(gl) {
     cubes.push(new Cube(gl, m1));
     cubes.push(new Cube(gl, m2));
 
+    let axis = new Axis(gl, [1,0,0], [0,1,0], [0,0,1]);
+
     //// LOOP ////
 
     let last = timestamp();
@@ -82,8 +84,21 @@ function main(gl) {
     //// UPDATE ////
 
     function update(dt) {
-        globalMatrix.rotate(10 * dt, -1, 0.5, 0.5);
-        gl.uniformMatrix4fv(u_GlobalMatrix, false, globalMatrix.elements);
+        //globalMatrix.rotate(10 * dt, -1, 0.5, 0.5);
+        //gl.uniformMatrix4fv(u_GlobalMatrix, false, globalMatrix.elements);
+
+        let dx = 0;
+        let dy = 0;
+
+        if (KEYS.UP)    dy =  0.4 * dt;
+        if (KEYS.DOWN)  dy = -0.4 * dt;
+        if (KEYS.RIGHT) dx = -0.4 * dt;
+        if (KEYS.LEFT)  dx =  0.4 * dt;
+
+        if (dx !== 0 || dy !== 0) {
+            globalMatrix.translate(dx, dy, 0);
+            gl.uniformMatrix4fv(u_GlobalMatrix, false, globalMatrix.elements);
+        }
     }
 
     //// RENDER ////
@@ -95,5 +110,30 @@ function main(gl) {
             cube.build();
             cube.draw();
         }
+
+        axis.build();
+        axis.draw();
     }
+
+    //// MOUSE ////
+
+    getElement(CANVAS_ID).onmousemove = e => {
+        if(M_DOWN) {
+            let lastCoords = canvasToWebglCoords(M_DX, M_DY, M_DR, 0, 0);
+            let currCoords = canvasToWebglCoords(e.clientX, e.clientY, e.target.getBoundingClientRect(), 0, 0);
+            let factor = 50;
+
+            let dx = factor * (currCoords[0] - lastCoords[0]);
+            let dy = factor * (currCoords[1] - lastCoords[1]);
+
+            globalMatrix = globalMatrix.rotate(dy, 1, 0, 0);
+            globalMatrix = globalMatrix.rotate(dx, 0, 1, 0);
+            gl.uniformMatrix4fv(u_GlobalMatrix, false, globalMatrix.elements);
+
+            M_DX = e.clientX;
+            M_DY = e.clientY;
+        }
+    };
+
+    //// KEYBOARD ////
 }
