@@ -21,55 +21,66 @@
  */
 function main(gl) {
 
-    // MVP MATRIX
-    let u_MvpMatrix = gl.getUniformLocation(gl.program, 'u_MvpMatrix');
+    //// INIT ////
 
-    let mvpMatrix = new Matrix4();
-    mvpMatrix.setPerspective(30, 1, 1, 100);
-    mvpMatrix.lookAt(3, 3, 7, 0, 0, 0, 0, 1, 0);
+    // Global matrix
+    let u_GlobalMatrix = gl.getUniformLocation(gl.program, 'u_GlobalMatrix');
 
-    gl.uniformMatrix4fv(u_MvpMatrix, false, mvpMatrix.elements);
+    let globalMatrix = new Matrix4();
+    globalMatrix.setPerspective(30, 1, 1, 100);
+    globalMatrix.lookAt(3, 3, 7, 0, 0, 0, 0, 1, 0);
 
+    gl.uniformMatrix4fv(u_GlobalMatrix, false, globalMatrix.elements);
+
+    // Cubes
+    let cubes = [];
     let cube = new Cube(gl);
+    cubes.push(cube);
 
-    let last = Date.now();
-    let frames = 0;
+    //// LOOP ////
+
+    let last = timestamp();
+    let dt = 0;
+    let step = 1/60; // We want 60 fps
+
+    let fpsmeter = new FPSMeter({ decimals: 0, graph: true, theme: 'transparent', left: '10px', top: '10px' });
 
     function tick() {
+        fpsmeter.tickStart();
 
-        clear(gl);
+        let now = timestamp();
+        dt = dt + Math.min(1, (now - last) / 1000);
 
-        mvpMatrix.rotate(1, -1, 0.5, 0.5);
-        gl.uniformMatrix4fv(u_MvpMatrix, false, mvpMatrix.elements);
-
-        cube.build();
-        cube.draw();
-
-        if(delayReached(last, 1000)) {
-            (async() => {
-                try {
-                    getElement('stats').innerHTML = frames + ' fps';
-                    last = Date.now();
-                    frames = 0;
-                } catch (err) {
-                    console.log(err);
-                }
-            })();
+        while (dt > step) {
+            dt = dt - step;
+            update(step);
         }
 
-        frames++;
+        render(dt);
+
+        fpsmeter.tick();
+
+        last = now;
         requestAnimationFrame(tick);
     }
 
     requestAnimationFrame(tick);
-}
 
-function clear(gl) {
-    gl.clearColor(0.0, 0.0, 0.0, 1.0);
-    gl.enable(gl.DEPTH_TEST);
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-}
+    //// UPDATE ////
 
-function timestamp() {
-    return window.performance && window.performance.now ? window.performance.now() : new Date().getTime();
+    function update(dt) {
+        globalMatrix.rotate(10 * dt, -1, 0.5, 0.5);
+        gl.uniformMatrix4fv(u_GlobalMatrix, false, globalMatrix.elements);
+    }
+
+    //// RENDER ////
+
+    function render(dt) {
+        clear(gl)
+
+        for (let cube of cubes) {
+            cube.build();
+            cube.draw();
+        }
+    }
 }

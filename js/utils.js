@@ -39,7 +39,7 @@ function canvasToWebglCoords(x, y, r, worldX=0.0, worldY=0.0) {
  */
 function clear(gl) {
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
-    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 }
 
 /**
@@ -85,3 +85,10 @@ function outsideOfScreen(x, y, width, height, worldX, worldY) {
         (y - height/2 + worldY > + 1.0)    // out top
     )
 }
+
+/**
+ * Returns the timestamp in ms.
+ */
+function timestamp() {
+    return window.performance && window.performance.now ? window.performance.now() : new Date().getTime();
+  }

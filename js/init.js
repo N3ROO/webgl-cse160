@@ -132,5 +132,7 @@ function postInit(gl) {
         return;
     }
 
+    gl.enable(gl.DEPTH_TEST);
+
     main(gl);
 }
