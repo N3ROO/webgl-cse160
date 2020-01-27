@@ -59,25 +59,52 @@ class Cube {
 
     /**
      * It fills the buffer with the vertices to draw a cube.
+     * The function is optimized if there is no variation between cubes (ex: same
+     * color, same model matrix & same position).
+     * @return null if an error occured, the current instance otherwise.
      */
     build() {
         let indexBuffer = this.gl.createBuffer();
         if (!indexBuffer) {
             console.error('Could not create a buffer');
-            return false;
+            return null;
         }
 
-        this._bindAttrib(this.vertices, 3, this.gl.FLOAT, 'a_Position');
+        let updateColor = false;
+        let updatePosition = false;
+        let updateMatrix = false;
 
-        // We update the colors only if needed (it will work if nothing else than this class is used)
-        if (Cube.lastCube === null || Cube.lastCube.colors !== this.colors) {
+        if (Cube.lastCube === null) {
+            updateColor = true;
+            updatePosition = true;
+            updateMatrix = true;
+        } else {
+            updateColor = Cube.lastCube.colors !== this.colors;
+            updatePosition = Cube.lastCube.vertices !== this.vertices;
+            updateMatrix = Cube.lastCube.matrix !== this.matrix;
+        }
+
+        if (updateColor) {
             this._bindAttrib(this.colors  , 3, this.gl.FLOAT, 'a_Color');
-            Cube.lastCube = this;
         }
-        this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-        this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, this.indices, this.gl.STATIC_DRAW);
 
-        return true;
+        if (updatePosition) {
+            this._bindAttrib(this.vertices, 3, this.gl.FLOAT, 'a_Position');
+        }
+
+        if (updateMatrix) {
+            let u_ModelMatrix = this.gl.getUniformLocation(this.gl.program, 'u_ModelMatrix');
+            this.gl.uniformMatrix4fv(u_ModelMatrix, false, this.matrix.elements);
+        }
+
+        if (updateColor || updatePosition || updateMatrix) {
+            this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+            this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, this.indices, this.gl.STATIC_DRAW);
+        }
+
+        Cube.lastCube = this;
+
+        return this;
     }
 
     /**
@@ -122,20 +149,18 @@ class Cube {
     /**
      * Returns the model matrix of the cube
      */
-    get matrix() {
-        return this._matrix;
+    getMatrix() {
+        return this.matrix;
     }
 
     //// SETTERS ////
 
     /**
-     * Dynamically updates the model matrix of the cube
-     * @param {Matrix4} matrix model matrix of the cube.
+     * Updates the model matrix of the cube.
+     * @param {Matrix4} matrix model matrix of the cube
      */
-    set matrix(matrix) {
-        this._matrix = matrix;
-        let u_ModelMatrix = this.gl.getUniformLocation(this.gl.program, 'u_ModelMatrix');
-        this.gl.uniformMatrix4fv(u_ModelMatrix, false, this.matrix.elements);
+    setMatrix(matrix) {
+        this.matrix = matrix;
     }
 
     //// GRAVEYARD ////

@@ -27,21 +27,32 @@ function main(gl) {
     let u_GlobalMatrix = gl.getUniformLocation(gl.program, 'u_GlobalMatrix');
 
     let globalMatrix = new Matrix4();
+    // It looks good this way
     globalMatrix.setPerspective(30, 1, 1, 100);
-    globalMatrix.lookAt(3, 3, 7, 0, 0, 0, 0, 1, 0);
+    // Eye placed at (x, y, z), looking at (x, y, z) with the up vector being (x, y ,z)
+    // Here: Eye (x=0, y=0, z=-10) looking at the center with  he up vector being Y positive
+    globalMatrix.lookAt(0, 0, -10, 0, 0, 0, 0, 1, 0);
 
     gl.uniformMatrix4fv(u_GlobalMatrix, false, globalMatrix.elements);
 
     // Cubes
     let cubes = [];
-    let cube = new Cube(gl, new Matrix4());
-    cubes.push(cube);
+
+    let m1 = new Matrix4();
+    //m1 = m1.translate(1.5, 1.5, 0);
+    m1 = m1.scale(0.5, 0.5, 0.5);
+
+    let m2 = new Matrix4();
+    m2 = m2.rotate(50, 1, 0, 0);
+
+    cubes.push(new Cube(gl, m1));
+    //cubes.push(new Cube(gl, m2));
 
     //// LOOP ////
 
     let last = timestamp();
     let dt = 0;
-    let step = 1/60; // We want 60 fps
+    let step = 1/60; // -> We want 60 updates per seconds
 
     let fpsmeter = new FPSMeter({ decimals: 0, graph: true, theme: 'transparent', left: '10px', top: '10px' });
 
@@ -69,7 +80,7 @@ function main(gl) {
     //// UPDATE ////
 
     function update(dt) {
-        globalMatrix.rotate(10 * dt, -1, 0.5, 0.5);
+        //globalMatrix.rotate(10 * dt, -1, 0.5, 0.5);
         gl.uniformMatrix4fv(u_GlobalMatrix, false, globalMatrix.elements);
     }
 
