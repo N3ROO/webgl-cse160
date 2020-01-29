@@ -36,4 +36,25 @@ class Shape {
         this.gl.vertexAttribPointer(a_attr, num, type, false, 0, 0);
         this.gl.enableVertexAttribArray(a_attr);
     }
+
+    //// GETTERS ////
+
+    /**
+     * Returns the model matrix of the cube
+     */
+    getMatrix() {
+        return this.matrix;
+    }
+
+    //// SETTERS ////
+
+    /**
+     * Updates the model matrix of the cube.
+     * @param {Matrix4} matrix model matrix of the cube
+     */
+    setMatrix(matrix) {
+        this.matrix = matrix;
+    }
 }
+
+Shape.lastShape = null;

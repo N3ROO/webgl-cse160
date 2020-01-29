@@ -96,7 +96,7 @@ class Cube extends Shape {
         let updatePosition = false;
         let updateMatrix = false;
 
-        if (Cube.lastCube === null) {
+        if (Cube.lastCube === null || !(Cube.lastCube instanceof Cube)) {
             updateColor = true;
             updatePosition = true;
             updateMatrix = true;
@@ -136,25 +136,6 @@ class Cube extends Shape {
      */
     draw() {
         this.gl.drawElements(this.gl.TRIANGLES, this.indices.length, this.gl.UNSIGNED_BYTE, 0);
-    }
-
-    //// GETTERS ////
-
-    /**
-     * Returns the model matrix of the cube
-     */
-    getMatrix() {
-        return this.matrix;
-    }
-
-    //// SETTERS ////
-
-    /**
-     * Updates the model matrix of the cube.
-     * @param {Matrix4} matrix model matrix of the cube
-     */
-    setMatrix(matrix) {
-        this.matrix = matrix;
     }
 
     //// GRAVEYARD ////
@@ -202,4 +183,4 @@ class Cube extends Shape {
     } */
 }
 
-Cube.lastCube = null;
+Shape.lastShape = null;
