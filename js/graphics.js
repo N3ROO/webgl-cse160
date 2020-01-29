@@ -31,7 +31,7 @@ function main(gl) {
     globalMatrix.setPerspective(30, 1, 1, 100);
     // Eye placed at (x, y, z), looking at (x, y, z) with the up vector being (x, y ,z)
     // Here: Eye (x=0, y=0, z=-10) looking at the center with  he up vector being Y positive
-    globalMatrix.lookAt(0, 0, -10, 0, 0, 0, 0, 1, 0);
+    globalMatrix.lookAt(0, 10, -20, 0, 0, 0, 0, 1, 0);
 
     gl.uniformMatrix4fv(u_GlobalMatrix, false, globalMatrix.elements);
 

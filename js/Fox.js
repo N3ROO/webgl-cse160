@@ -19,53 +19,85 @@ class Fox extends Animal {
         super(gl, matrix);
 
         let color = [0.7, 0.65, 0.72];
+        let m = null;
 
         //// Body ////
-        this.shapes.push(new Cube(gl, new Matrix4(), color));
+        m = (new Matrix4()).scale(1, 1, 2).translate(0, 0, 1);
+        this.shapes.push(new Cube(gl, m, [1, 0.5, 0]));
 
-        //// Feet ////
-        let m = new Matrix4();
-        m.scale(0.2, 0.2, 0.2);
+        //// FEET ///
+        color = [1, 0.4, 0];
 
-        // Front right: index 1
-        m.translate(4, -6, -4);
-        this.shapes.push(new Cube(gl, new Matrix4(m), color));
+        m = new Matrix4();
+        m.translate(0.5, -1, 0.5);
+        m.scale(0.4, 0.8, 0.4);
+        this.shapes.push(new Cube(gl, m, color)); // front right (relative to fox)
 
-        // Front left: index 2
-        m.translate(-8, 0, 0);
-        this.shapes.push(new Cube(gl, new Matrix4(m), color));
+        m = new Matrix4();
+        m.translate(-0.5, -1, 0.5);
+        m.scale(0.4, 0.8, 0.4);
+        this.shapes.push(new Cube(gl, m, color)); // front left (relative to fox)
 
-        // Back left: index 3
-        m.translate(0, 0, 8);
-        this.shapes.push(new Cube(gl, new Matrix4(m), color));
+        m = new Matrix4();
+        m.translate(-0.5, -1, 3.5);
+        m.scale(0.4, 0.8, 0.4);
+        this.shapes.push(new Cube(gl, m, color)); // back right (relative to fox)
 
-        // Back right: index 4
-        m.translate(8, 0, 0);
-        this.shapes.push(new Cube(gl, m, color));
+        m = new Matrix4();
+        m.translate(0.5, -1, 3.5);
+        m.scale(0.4, 0.8, 0.4);
+        this.shapes.push(new Cube(gl, m, color)); // back left (relative to fox)
 
         //// TAIL ////
-/*
-        // Tail part1: index 5
-        m = new Matrix4();
-        m.scale(0.2, 0.2, 0.4);
-        m.translate(0, -2, 3);
-        this.shapes.push(new Cube(gl, m, color));
+        let length = 0.6;
 
-        // Tail part2: index 6
         m = new Matrix4();
-        m.rotate(10, 0, 1, 0);
-        m.scale(0.2, 0.2, 0.4);
-        m.translate(-1.5, -2, 4.8);
+        m.translate(0, 0, 4.5);
+        m.scale(0.3, 0.3, length);
         this.shapes.push(new Cube(gl, new Matrix4(m), color));
 
-        // Tail part2: index 7
+        m.translate(0, 0, length + 1);
+        m.scale(1, 1, 0.6);
+        this.shapes.push(new Cube(gl, m, [0.1,0.1,0.1]));
+
+        //// EARS ////
+        color = [0.2, 0.2, 0.2];
+
         m = new Matrix4();
-        m.rotate(-10, 0, 1, 0);
-        m.scale(0.2, 0.2, 0.4);
-        m.translate(2.5, -2, 6.8);
-        //m.translate(1.5, -2, 6.8);
-        this.shapes.push(new Cube(gl, m));*/
+        m.translate(0.5, 1, 0.5);
+        m.scale(0.3, 0.5, 0.2);
+        this.shapes.push(new Cube(gl, m, color));
 
+        m = new Matrix4();
+        m.translate(-0.5, 1, 0.5);
+        m.scale(0.3, 0.5, 0.2);
+        this.shapes.push(new Cube(gl, m, color));
 
+        //// NOSE ////
+        m = new Matrix4();
+        m.translate(0, -0.3, 0);
+        m.scale(0.25, 0.25, 0.6);
+        this.shapes.push(new Cube(gl, m, color));
+
+        //// EYES ////
+        color = [1, 1, 1];
+
+        m = new Matrix4();
+        m.translate(0.4, 0.25, 0);
+        m.scale(0.2, 0.2, 0.1);
+        this.shapes.push(new Cube(gl, new Matrix4(m), color)); // right eye
+
+        m.scale(0.5, 0.5, 1);
+        m.translate(0, 0, -0.1)
+        this.shapes.push(new Cube(gl, new Matrix4(m), [0.1,0.1,0.1]));
+
+        m = new Matrix4();
+        m.translate(-0.4, 0.25, 0);
+        m.scale(0.2, 0.2, 0.1);
+        this.shapes.push(new Cube(gl, new Matrix4(m), color)); // right eye
+
+        m.scale(0.5, 0.5, 1);
+        m.translate(0, 0, -0.1)
+        this.shapes.push(new Cube(gl, new Matrix4(m), [0.1,0.1,0.1]));
     }
 }
