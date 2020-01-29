@@ -7,10 +7,12 @@ class Axis extends Shape{
         this.yColor = yColor;
         this.zColor = zColor;
 
+        let depth = 20;
+
         this.vertices = new Float32Array([
-            -50, 0, 0,  50, 0, 0,
-            0, -50, 0,  0, 50, 0,
-            0, 0, -50,  0, 0, 50
+            -depth, 0, 0,  depth, 0, 0,
+            0, -depth, 0,  0, depth, 0,
+            0, 0, -depth,  0, 0, depth
         ]);
 
         this.colors = new Float32Array([
