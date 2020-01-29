@@ -37,7 +37,7 @@ function main(gl) {
 
     // Cubes
     let shapes = [];
-    shapes.push(new Cat(gl, new Matrix4()));
+    shapes.push(new Fox(gl, new Matrix4()));
     shapes.push(new Axis(gl, [1,0,0], [0,1,0], [0,0,1])); // Needs to be at the end for performance improvements
 
     //// LOOP ////

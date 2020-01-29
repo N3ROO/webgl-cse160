@@ -6,20 +6,17 @@
  *
  * Required:
  * - libs/
- * - Shape.js
- * - Cube.js
+ * - Animal.js
  *
  * Description:
  *  This class creates a beautiful cubic cat!
  */
 
 
-class Cat extends Shape {
+class Fox extends Animal {
 
     constructor(gl, matrix) {
         super(gl, matrix);
-
-        this.shapes = [];
 
         let color = [0.7, 0.65, 0.72];
 
@@ -70,14 +67,5 @@ class Cat extends Shape {
         this.shapes.push(new Cube(gl, m));*/
 
 
-    }
-
-    build() { }
-
-    draw() {
-        for (let shape of this.shapes) {
-            shape.build();
-            shape.draw();
-        }
     }
 }
