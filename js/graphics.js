@@ -40,10 +40,10 @@ function main(gl) {
 
     let m1 = new Matrix4();
     //m1 = m1.translate(1.5, 1.5, 0);
-    m1 = m1.scale(0.5, 0.5, 0.5);
+    m1 = m1.scale(1, 1, 1);
 
     let m2 = new Matrix4();
-    m2 = m2.scale(0.5, 0.5, 0.5);
+    m2 = m2.scale(1, 1, 1);
     m2 = m2.translate(-2, 0, 0);
 
     cubes.push(new Cube(gl, m1));
