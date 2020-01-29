@@ -38,6 +38,8 @@ class Axis extends Shape{
 
         this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, buffer);
         this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, this.indices, this.gl.STATIC_DRAW);
+
+        Shape.lastShape = this;
     }
 
     draw() {

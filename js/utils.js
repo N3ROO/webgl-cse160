@@ -91,4 +91,13 @@ function outsideOfScreen(x, y, width, height, worldX, worldY) {
  */
 function timestamp() {
     return window.performance && window.performance.now ? window.performance.now() : new Date().getTime();
-  }
+}
+
+function float32Equals(source, target) {
+    if (source === null || target === null) return false;
+    if (source.length !== target.length) return false;
+    for (let i = 0; i < source.length; i++) {
+        if (source[i] !== target[i]) return false;
+    }
+    return true;
+}

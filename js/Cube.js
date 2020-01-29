@@ -97,15 +97,16 @@ class Cube extends Shape {
         let updatePosition = false;
         let updateMatrix = false;
 
-        if (Cube.lastCube === null || !(Cube.lastCube instanceof Cube)) {
+        if (Shape.lastShape === null || !(Shape.lastShape instanceof Cube)) {
             updateColor = true;
             updatePosition = true;
             updateMatrix = true;
         } else {
-            updateColor = Cube.lastCube.colors !== this.colors;
-            updatePosition = Cube.lastCube.vertices !== this.vertices;
-            updateMatrix = Cube.lastCube.matrix !== this.matrix;
+            updateColor = !float32Equals(Shape.lastShape.colors, this.colors);
+            updatePosition = !float32Equals(Shape.lastShape.vertices, this.vertices);
+            updateMatrix = Shape.lastShape.matrix !== this.matrix;
         }
+
 
         if (updateColor) {
             this._bindAttrib(this.colors, 3, this.gl.FLOAT, 'a_Color');
@@ -125,7 +126,7 @@ class Cube extends Shape {
             this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, this.indices, this.gl.STATIC_DRAW);
         }
 
-        Cube.lastCube = this;
+        Shape.lastShape = this;
 
         return this;
     }
@@ -183,5 +184,3 @@ class Cube extends Shape {
         this._matrix = matrix;
     } */
 }
-
-Shape.lastShape = null;

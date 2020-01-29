@@ -21,8 +21,9 @@ class Shape {
 
     //// ABSTRACT METHODS ////
 
-    build() {}
-    draw () {}
+    draw      () {}
+    render     () {}
+    getInstance() {}
 
     //// UTILITY METHODS /////
 

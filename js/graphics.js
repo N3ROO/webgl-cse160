@@ -37,17 +37,7 @@ function main(gl) {
 
     // Cubes
     let shapes = [];
-
-    let m1 = new Matrix4();
-    //m1 = m1.translate(1.5, 1.5, 0);
-    m1 = m1.scale(1, 1, 1);
-
-    let m2 = new Matrix4();
-    m2 = m2.scale(1, 1, 1);
-    m2 = m2.translate(-2, 0, 0);
-
-    shapes.push(new Cube(gl, m1));
-    shapes.push(new Cube(gl, m2));
+    shapes.push(new Cat(gl, new Matrix4()));
     shapes.push(new Axis(gl, [1,0,0], [0,1,0], [0,0,1])); // Needs to be at the end for performance improvements
 
     //// LOOP ////
