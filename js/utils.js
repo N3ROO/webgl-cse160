@@ -93,6 +93,11 @@ function timestamp() {
     return window.performance && window.performance.now ? window.performance.now() : new Date().getTime();
 }
 
+/**
+ * Returns true if the arrays are the same.
+ * @param {Float32Array} source
+ * @param {Float32Array} target
+ */
 function float32Equals(source, target) {
     if (source === null || target === null) return false;
     if (source.length !== target.length) return false;
