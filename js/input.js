@@ -55,8 +55,6 @@ getElement(CANVAS_ID).onmousedown = e => {
     M_DX = e.clientX;
     M_DY = e.clientY;
     M_DR = e.target.getBoundingClientRect();
-
-    console.log(canvasToWebglCoords(M_DX, M_DY, M_DR, 0, 0));
 }
 
 getElement(CANVAS_ID).onmouseup = e => {

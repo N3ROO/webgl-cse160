@@ -1,7 +1,8 @@
-class Axis {
+class Axis extends Shape{
 
     constructor(gl, xColor, yColor, zColor) {
-        this.gl = gl;
+        super(gl, new Matrix4());
+
         this.xColor = xColor;
         this.yColor = yColor;
         this.zColor = zColor;
@@ -41,31 +42,5 @@ class Axis {
 
     draw() {
         this.gl.drawElements(this.gl.LINES, this.indices.length, this.gl.UNSIGNED_BYTE, 0);
-    }
-
-        /**
-     * It binds the given data to the specified variable in the GPU.
-     * @param {Float32Array} data the data,
-     * @param {GLint} num the size,
-     * @param {GLenum} type the variable type,
-     * @param {String} attr the variable name (attribute)
-     */
-    _bindAttrib(data, num, type, attr) {
-        let buffer = this.gl.createBuffer();
-        if (!buffer) {
-            console.error('Could not create a buffer');
-            return false;
-        }
-
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffer);
-        this.gl.bufferData(this.gl.ARRAY_BUFFER, data, this.gl.STATIC_DRAW);
-
-        let a_attr = this.gl.getAttribLocation(this.gl.program, attr);
-        if (a_attr < 0) {
-            console.error('Failed to get the storage location of ' + attr);
-            return 0;
-        }
-        this.gl.vertexAttribPointer(a_attr, num, type, false, 0, 0);
-        this.gl.enableVertexAttribArray(a_attr);
     }
 }

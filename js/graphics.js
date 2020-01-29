@@ -36,7 +36,7 @@ function main(gl) {
     gl.uniformMatrix4fv(u_GlobalMatrix, false, globalMatrix.elements);
 
     // Cubes
-    let cubes = [];
+    let shapes = [];
 
     let m1 = new Matrix4();
     //m1 = m1.translate(1.5, 1.5, 0);
@@ -46,10 +46,9 @@ function main(gl) {
     m2 = m2.scale(1, 1, 1);
     m2 = m2.translate(-2, 0, 0);
 
-    cubes.push(new Cube(gl, m1));
-    cubes.push(new Cube(gl, m2));
-
-    let axis = new Axis(gl, [1,0,0], [0,1,0], [0,0,1]);
+    shapes.push(new Cube(gl, m1));
+    shapes.push(new Cube(gl, m2));
+    shapes.push(new Axis(gl, [1,0,0], [0,1,0], [0,0,1])); // Needs to be at the end for performance improvements
 
     //// LOOP ////
 
@@ -106,13 +105,10 @@ function main(gl) {
     function render(dt) {
         clear(gl)
 
-        for (let cube of cubes) {
-            cube.build();
-            cube.draw();
+        for (let shape of shapes) {
+            shape.build();
+            shape.draw();
         }
-
-        axis.build();
-        axis.draw();
     }
 
     //// MOUSE ////
