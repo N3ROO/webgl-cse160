@@ -1,3 +1,18 @@
+/**
+ * (c) 2020 Lilian Gallon, MIT License
+ * File creation: 01/23/2020
+ * UCSC, CSE160, Winter 2020
+ * https://nero.dev
+ *
+ * Required:
+ * - libs/
+ *
+ * Description:
+ *  Thanks to this class, we can use polymorphism concepts.
+ *  It will simplify a lot of code and prevent duplication.
+ */
+
+
 class Shape {
     constructor(gl, matrix) {
         this.gl = gl;

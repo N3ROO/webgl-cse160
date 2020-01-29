@@ -6,13 +6,15 @@
  *
  * Required:
  * - libs/
+ * - Shape.js
+ * - Cube.js
  *
  * Description:
  *  This class creates a beautiful cubic cat!
  */
 
 
-class Cat {
+class Cat extends Shape {
 
     constructor() {
         this.shapes = [];

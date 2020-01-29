@@ -6,6 +6,7 @@
  *
  * Required:
  * - libs/
+ * - Shape.js
  *
  * Description:
  *  This class is used to easily create a cube:
