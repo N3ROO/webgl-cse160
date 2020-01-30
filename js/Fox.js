@@ -12,156 +12,186 @@
  *  This class creates a beautiful cubic cat!
  */
 
+// Left, right, back and front are relative to the fox
+
+var K_BODY = "K_BODY";
+var K_FR_FOOT = "K_FR_FOOT";
+var K_FL_FOOT = "K_FL_FOOT";
+var K_BR_FOOT = "K_BR_FOOT";
+var K_BL_FOOT = "K_BL_FOOT";
+var K_TAIL_1 = "K_TAIL_1";
+var K_TAIL_2 = "K_TAIL_2";
+var K_R_EAR = "K_R_EAR";
+var K_L_EAR = "K_L_EAR";
+var K_NOSE = "K_NOSE";
+var R_EYE = "R_EYE";
+var R_EYE_BALL = "R_EYE_BALL";
+var L_EYE = "L_EYE";
+var L_EYE_BALL = "L_EYE_BALL";
 
 class Fox extends Animal {
 
+
     constructor(gl, matrix) {
         super(gl, matrix);
+        this.matrixUpdated = true;
 
-        let color = [0.7, 0.65, 0.72];
-        let m = null;
+        // Feet animation
+        this.sAngleFeet = -20;
+        this.eAngleFeet = 20;
+        this.cAngleFeet = this.sAngleFeet;
+        this.stepFeet = 100;
 
-        //// Body ////
-        m = (new Matrix4()).scale(1, 1, 2).translate(0, 0, 1);
-        this.shapes.push(new Cube(gl, m, [1, 0.5, 0]));
-
-        //// FEET ///
-        color = [1, 0.4, 0];
-        this.sAngle = -20;
-        this.eAngle = 20;
-        this.cAngle = this.sAngle;
-        this.step = 100;
-
-        this.shapes.push(new Cube(gl, new Matrix4(), color)); // front right (relative to fox)
-        this.FR_FOOT_IDX = 1;
-        this.FR_FOOT_MAT = m;
-
-        this.shapes.push(new Cube(gl, new Matrix4(), color)); // front left (relative to fox)
-        this.FL_FOOT_IDX = 2;
-        this.FL_FOOT_MAT = m;
-
-        this.shapes.push(new Cube(gl, new Matrix4(), color)); // back right (relative to fox)
-        this.BR_FOOT_IDX = 3;
-        this.BR_FOOT_MAT = m;
-
-        this.shapes.push(new Cube(gl, new Matrix4(), color)); // back left (relative to fox)
-        this.BL_FOOT_IDX = 4;
-        this.BL_FOOT_MAT = m;
-
-        //// TAIL ////
-        let length = 0.6;
-
-        m = new Matrix4();
-        m.translate(0, 0, 4.5);
-        m.scale(0.3, 0.3, length);
-        this.shapes.push(new Cube(gl, new Matrix4(m), color));
-
-        m.translate(0, 0, length + 1);
-        m.scale(1, 1, 0.6);
-        this.shapes.push(new Cube(gl, m, [0.1,0.1,0.1]));
-
-        //// EARS ////
-        color = [0.2, 0.2, 0.2];
-
-        m = new Matrix4();
-        m.translate(0.5, 1, 0.5);
-        m.scale(0.3, 0.5, 0.2);
-        this.shapes.push(new Cube(gl, m, color));
-
-        m = new Matrix4();
-        m.translate(-0.5, 1, 0.5);
-        m.scale(0.3, 0.5, 0.2);
-        this.shapes.push(new Cube(gl, m, color));
-
-        //// NOSE ////
-        m = new Matrix4();
-        m.translate(0, -0.3, 0);
-        m.scale(0.25, 0.25, 0.6);
-        this.shapes.push(new Cube(gl, m, color));
-
-        //// EYES ////
-        color = [1, 1, 1];
-
-        m = new Matrix4();
-        m.translate(0.4, 0.25, 0);
-        m.scale(0.2, 0.2, 0.1);
-        this.shapes.push(new Cube(gl, new Matrix4(m), color)); // right eye
-
-        m.scale(0.5, 0.5, 1);
-        m.translate(0, 0, -0.1)
-        this.shapes.push(new Cube(gl, m, [0.1,0.1,0.1]));
-
-        m = new Matrix4();
-        m.translate(-0.4, 0.25, 0);
-        m.scale(0.2, 0.2, 0.1);
-        this.shapes.push(new Cube(gl, new Matrix4(m), color)); // right eye
-
-        m.scale(0.5, 0.5, 1);
-        m.translate(0, 0, -0.1)
-        this.shapes.push(new Cube(gl, m, [0.1,0.1,0.1]));
+        // Shapes
+        this.shapes = new Map();
+        this.shapes.set(K_BODY, new Cube(gl, new Matrix4(), [1, 0.5, 0]));
+        this.shapes.set(K_FR_FOOT   , new Cube(gl, new Matrix4(), [1.0, 0.4, 0.0]));
+        this.shapes.set(K_FL_FOOT   , new Cube(gl, new Matrix4(), [1.0, 0.4, 0.0]));
+        this.shapes.set(K_BR_FOOT   , new Cube(gl, new Matrix4(), [1.0, 0.4, 0.0]));
+        this.shapes.set(K_BL_FOOT   , new Cube(gl, new Matrix4(), [1.0, 0.4, 0.0]));
+        this.shapes.set(K_TAIL_1    , new Cube(gl, new Matrix4(), [1.0, 0.4, 0.0]));
+        this.shapes.set(K_TAIL_2    , new Cube(gl, new Matrix4(), [0.1, 0.1, 0.1]));
+        this.shapes.set(K_R_EAR     , new Cube(gl, new Matrix4(), [0.2, 0.2, 0.2]));
+        this.shapes.set(K_L_EAR     , new Cube(gl, new Matrix4(), [0.2, 0.2, 0.2]));
+        this.shapes.set(K_NOSE      , new Cube(gl, new Matrix4(), [0.2, 0.2, 0.2]));
+        this.shapes.set(R_EYE       , new Cube(gl, new Matrix4(), [1.0, 1.0, 1.0]));
+        this.shapes.set(R_EYE_BALL  , new Cube(gl, new Matrix4(), [0.1, 0.1, 0.1]));
+        this.shapes.set(L_EYE       , new Cube(gl, new Matrix4(), [1.0, 1.0, 1.0]));
+        this.shapes.set(L_EYE_BALL  , new Cube(gl, new Matrix4(), [0.1, 0.1, 0.1]));
     }
 
     update(dt) {
-        if (Math.abs(this.cAngle) > Math.abs(this.eAngle)) {
-            let tmp = this.sAngle;
-            this.sAngle = this.eAngle;
-            this.eAngle = tmp;
+        this._updateFeet(dt);
+        this._updateTail(dt);
+
+        if (this.matrixUpdated) {
+            this._updateStaticParts();
         }
 
-        if (this.sAngle >= this.eAngle) {
-            this.cAngle -= this.step * dt;
+        this.matrixUpdated = false;
+    }
+
+    requestUpdate() {
+        this.matrixUpdated = true;
+    }
+
+    setMatrix(matrix) {
+        this.matrix = matrix;
+        this.matrixUpdated = true;
+    }
+
+    move() {
+        //this.
+    }
+
+    _updateStaticParts() {
+        this.shapes.get(K_BODY).setMatrix(
+            this._getMMatrixCopy()
+            .scale(1, 1, 2)
+            .translate(0, 0, 1)
+        )
+
+        this.shapes.get(K_R_EAR).setMatrix(
+            this._getMMatrixCopy()
+            .translate(0.5, 1, 0.5)
+            .scale(0.3, 0.5, 0.2)
+        )
+
+        this.shapes.get(K_L_EAR).setMatrix(
+            this._getMMatrixCopy()
+            .translate(-0.5, 1, 0.5)
+            .scale(0.3, 0.5, 0.2)
+        )
+
+        this.shapes.get(K_NOSE).setMatrix(
+            this._getMMatrixCopy()
+            .translate(0, -0.3, 0)
+            .scale(0.25, 0.25, 0.6)
+        )
+
+        this.shapes.get(R_EYE).setMatrix(
+            this._getMMatrixCopy()
+            .translate(0.4, 0.25, 0)
+            .scale(0.2, 0.2, 0.1)
+        )
+
+        this.shapes.get(R_EYE_BALL).setMatrix(
+            (new Matrix4(this.shapes.get(R_EYE).getMatrix()))
+            .scale(0.5, 0.5, 1)
+            .translate(0, 0, -0.1)
+        )
+
+        this.shapes.get(L_EYE).setMatrix(
+            this._getMMatrixCopy()
+            .translate(-0.4, 0.25, 0)
+            .scale(0.2, 0.2, 0.1)
+        )
+
+        this.shapes.get(L_EYE_BALL).setMatrix(
+            (new Matrix4(this.shapes.get(L_EYE).getMatrix()))
+            .scale(0.5, 0.5, 1)
+            .translate(0, 0, -0.1)
+        )
+    }
+
+    _updateTail(dt) {
+        this.shapes.get(K_TAIL_1).setMatrix(
+            this._getMMatrixCopy()
+            .translate(0, 0, 4.5)
+            .scale(0.3, 0.3, 0.6) // 0.6 -> length
+        )
+
+        this.shapes.get(K_TAIL_2).setMatrix(
+            (new Matrix4(this.shapes.get(K_TAIL_1).getMatrix()))
+            .scale(10/3, 10/3, 10/6)
+            .translate(0, 0, 0.8)
+            .scale(0.3, 0.3, 0.2)
+        )
+    }
+
+    _updateFeet(dt) {
+        if (Math.abs(this.cAngleFeet) > Math.abs(this.eAngleFeet)) {
+            let tmp = this.sAngleFeet;
+            this.sAngleFeet = this.eAngleFeet;
+            this.eAngleFeet = tmp;
+        }
+
+        if (this.sAngleFeet >= this.eAngleFeet) {
+            this.cAngleFeet -= this.stepFeet * dt;
         } else {
-            this.cAngle += this.step * dt;
+            this.cAngleFeet += this.stepFeet * dt;
         }
 
-        this.shapes[this.FR_FOOT_IDX].setMatrix(
-            (new Matrix4())
+        this.shapes.get(K_FR_FOOT).setMatrix(
+            this._getMMatrixCopy()
             .translate(0.5, -1.1, 0.6)
-            .rotate(this.cAngle, -1, 0, 0)
+            .rotate(this.cAngleFeet, -1, 0, 0)
             .scale(0.4, 0.5, 0.4)
         );
 
-        this.shapes[this.FL_FOOT_IDX].setMatrix(
-            (new Matrix4())
+        this.shapes.get(K_FL_FOOT).setMatrix(
+            this._getMMatrixCopy()
             .translate(-0.5, -1.1, 0.6)
-            .rotate(-this.cAngle, -1, 0, 0)
+            .rotate(-this.cAngleFeet, -1, 0, 0)
             .scale(0.4, 0.5, 0.4)
         );
 
-        this.shapes[this.BL_FOOT_IDX].setMatrix(
-            (new Matrix4())
+        this.shapes.get(K_BL_FOOT).setMatrix(
+            this._getMMatrixCopy()
             .translate(0.5, -1.1, 3.4)
-            .rotate(-this.cAngle, -1, 0, 0)
+            .rotate(-this.cAngleFeet, -1, 0, 0)
             .scale(0.4, 0.5, 0.4)
         );
 
-        this.shapes[this.BR_FOOT_IDX].setMatrix(
-            (new Matrix4())
+        this.shapes.get(K_BR_FOOT).setMatrix(
+            this._getMMatrixCopy()
             .translate(-0.5, -1.1, 3.4)
-            .rotate(this.cAngle, -1, 0, 0)
+            .rotate(this.cAngleFeet, -1, 0, 0)
             .scale(0.4, 0.5, 0.4)
         );
+    }
 
-    /*
-        this.shapes[this.BR_FOOT_IDX].getMatrix().multiply(
-            (new Matrix4()).rotate(-this.cAngle*0.1, 1, 0, 0)
-        );
-
-        this.shapes[this.FL_FOOT_IDX].getMatrix().multiply(
-            (new Matrix4()).rotate(this.cAngle*0.1, 1, 0, 0)
-        );
-
-        this.shapes[this.FR_FOOT_IDX].getMatrix().multiply(
-            (new Matrix4()).rotate(-this.cAngle*0.1, 1, 0, 0)
-        );
-
-        this.shapes[this.BL_FOOT_IDX].getMatrix().multiply(
-            (new Matrix4()).rotate(this.cAngle*0.1, 1, 0, 0)
-        );
-
-        this.shapes[this.BR_FOOT_IDX].getMatrix().multiply(
-            (new Matrix4()).rotate(-this.cAngle*0.1, 1, 0, 0)
-        );*/
-    
+    _getMMatrixCopy() {
+        return new Matrix4(this.matrix);
     }
 }

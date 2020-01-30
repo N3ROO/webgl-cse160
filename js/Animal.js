@@ -9,9 +9,9 @@ class Animal extends Shape {
     update(dt) { }
 
     draw() {
-        for (let shape of this.shapes) {
+        this.shapes.forEach((shape, k) => {
             shape.build();
             shape.draw();
-        }
+        });
     }
 }

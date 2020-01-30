@@ -71,9 +71,11 @@ function main(gl) {
     requestAnimationFrame(tick);
 
     //// UPDATE ////
+    let a = 0;
 
     function update(dt) {
-        //globalMatrix.rotate(10 * dt, -1, 0.5, 0.5);
+        //shapes[0].getMatrix().rotate(10*dt, -1, 0.5, 0.5);
+        //shapes[0].requestUpdate();
         //gl.uniformMatrix4fv(u_GlobalMatrix, false, globalMatrix.elements);
 
         let dx = 0;
