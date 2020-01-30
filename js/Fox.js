@@ -27,26 +27,26 @@ class Fox extends Animal {
 
         //// FEET ///
         color = [1, 0.4, 0];
+        this.sAngle = -20;
+        this.eAngle = 20;
+        this.cAngle = this.sAngle;
+        this.step = 100;
 
-        m = new Matrix4();
-        m.translate(0.5, -1, 0.5);
-        m.scale(0.4, 0.8, 0.4);
-        this.shapes.push(new Cube(gl, m, color)); // front right (relative to fox)
+        this.shapes.push(new Cube(gl, new Matrix4(), color)); // front right (relative to fox)
+        this.FR_FOOT_IDX = 1;
+        this.FR_FOOT_MAT = m;
 
-        m = new Matrix4();
-        m.translate(-0.5, -1, 0.5);
-        m.scale(0.4, 0.8, 0.4);
-        this.shapes.push(new Cube(gl, m, color)); // front left (relative to fox)
+        this.shapes.push(new Cube(gl, new Matrix4(), color)); // front left (relative to fox)
+        this.FL_FOOT_IDX = 2;
+        this.FL_FOOT_MAT = m;
 
-        m = new Matrix4();
-        m.translate(-0.5, -1, 3.5);
-        m.scale(0.4, 0.8, 0.4);
-        this.shapes.push(new Cube(gl, m, color)); // back right (relative to fox)
+        this.shapes.push(new Cube(gl, new Matrix4(), color)); // back right (relative to fox)
+        this.BR_FOOT_IDX = 3;
+        this.BR_FOOT_MAT = m;
 
-        m = new Matrix4();
-        m.translate(0.5, -1, 3.5);
-        m.scale(0.4, 0.8, 0.4);
-        this.shapes.push(new Cube(gl, m, color)); // back left (relative to fox)
+        this.shapes.push(new Cube(gl, new Matrix4(), color)); // back left (relative to fox)
+        this.BL_FOOT_IDX = 4;
+        this.BL_FOOT_MAT = m;
 
         //// TAIL ////
         let length = 0.6;
@@ -89,7 +89,7 @@ class Fox extends Animal {
 
         m.scale(0.5, 0.5, 1);
         m.translate(0, 0, -0.1)
-        this.shapes.push(new Cube(gl, new Matrix4(m), [0.1,0.1,0.1]));
+        this.shapes.push(new Cube(gl, m, [0.1,0.1,0.1]));
 
         m = new Matrix4();
         m.translate(-0.4, 0.25, 0);
@@ -98,6 +98,70 @@ class Fox extends Animal {
 
         m.scale(0.5, 0.5, 1);
         m.translate(0, 0, -0.1)
-        this.shapes.push(new Cube(gl, new Matrix4(m), [0.1,0.1,0.1]));
+        this.shapes.push(new Cube(gl, m, [0.1,0.1,0.1]));
+    }
+
+    update(dt) {
+        if (Math.abs(this.cAngle) > Math.abs(this.eAngle)) {
+            let tmp = this.sAngle;
+            this.sAngle = this.eAngle;
+            this.eAngle = tmp;
+        }
+
+        if (this.sAngle >= this.eAngle) {
+            this.cAngle -= this.step * dt;
+        } else {
+            this.cAngle += this.step * dt;
+        }
+
+        this.shapes[this.FR_FOOT_IDX].setMatrix(
+            (new Matrix4())
+            .translate(0.5, -1.1, 0.6)
+            .rotate(this.cAngle, -1, 0, 0)
+            .scale(0.4, 0.5, 0.4)
+        );
+
+        this.shapes[this.FL_FOOT_IDX].setMatrix(
+            (new Matrix4())
+            .translate(-0.5, -1.1, 0.6)
+            .rotate(-this.cAngle, -1, 0, 0)
+            .scale(0.4, 0.5, 0.4)
+        );
+
+        this.shapes[this.BL_FOOT_IDX].setMatrix(
+            (new Matrix4())
+            .translate(0.5, -1.1, 3.4)
+            .rotate(-this.cAngle, -1, 0, 0)
+            .scale(0.4, 0.5, 0.4)
+        );
+
+        this.shapes[this.BR_FOOT_IDX].setMatrix(
+            (new Matrix4())
+            .translate(-0.5, -1.1, 3.4)
+            .rotate(this.cAngle, -1, 0, 0)
+            .scale(0.4, 0.5, 0.4)
+        );
+
+    /*
+        this.shapes[this.BR_FOOT_IDX].getMatrix().multiply(
+            (new Matrix4()).rotate(-this.cAngle*0.1, 1, 0, 0)
+        );
+
+        this.shapes[this.FL_FOOT_IDX].getMatrix().multiply(
+            (new Matrix4()).rotate(this.cAngle*0.1, 1, 0, 0)
+        );
+
+        this.shapes[this.FR_FOOT_IDX].getMatrix().multiply(
+            (new Matrix4()).rotate(-this.cAngle*0.1, 1, 0, 0)
+        );
+
+        this.shapes[this.BL_FOOT_IDX].getMatrix().multiply(
+            (new Matrix4()).rotate(this.cAngle*0.1, 1, 0, 0)
+        );
+
+        this.shapes[this.BR_FOOT_IDX].getMatrix().multiply(
+            (new Matrix4()).rotate(-this.cAngle*0.1, 1, 0, 0)
+        );*/
+    
     }
 }

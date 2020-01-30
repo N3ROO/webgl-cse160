@@ -88,6 +88,10 @@ function main(gl) {
             globalMatrix.translate(dx, dy, 0);
             gl.uniformMatrix4fv(u_GlobalMatrix, false, globalMatrix.elements);
         }
+
+        for (let shape of shapes) {
+            shape.update(dt);
+        }
     }
 
     //// RENDER ////

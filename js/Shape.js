@@ -21,9 +21,10 @@ class Shape {
 
     //// ABSTRACT METHODS ////
 
-    draw      () {}
-    render     () {}
-    getInstance() {}
+    build      ()   {}
+    update     (dt) {}
+    draw       ()   {}
+    getInstance()   {}
 
     //// UTILITY METHODS /////
 

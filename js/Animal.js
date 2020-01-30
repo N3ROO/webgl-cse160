@@ -6,6 +6,8 @@ class Animal extends Shape {
 
     build() { }
 
+    update(dt) { }
+
     draw() {
         for (let shape of this.shapes) {
             shape.build();
