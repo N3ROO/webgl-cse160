@@ -79,10 +79,10 @@ function main(gl) {
         let dx = 0;
         let dy = 0;
 
-        if (KEYS.UP)    dy = -0.4 * dt;
-        if (KEYS.DOWN)  dy =  0.4 * dt;
-        if (KEYS.RIGHT) dx =  0.4 * dt;
-        if (KEYS.LEFT)  dx = -0.4 * dt;
+        if (KEYS.UP)    dy = -5 * dt;
+        if (KEYS.DOWN)  dy =  5 * dt;
+        if (KEYS.RIGHT) dx =  5 * dt;
+        if (KEYS.LEFT)  dx = -5 * dt;
 
         if (dx !== 0 || dy !== 0) {
             globalMatrix.translate(dx, dy, 0);
