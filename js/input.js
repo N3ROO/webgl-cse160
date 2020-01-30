@@ -12,6 +12,9 @@
  *  user's input.
  */
 
+//// CONTROLS ////
+var C_AXIS = true;
+
 //// MOUSE EVENTS ////
 var M_DOWN = false;
 var M_DX = null;
@@ -65,15 +68,16 @@ getElement(CANVAS_ID).onmouseup = e => {
 }
 
 getElement(CANVAS_ID).onkeydown = e => {
-    if (e.keyCode === 37) KEYS.LEFT = true;
-    if (e.keyCode === 38) KEYS.UP = true;
-    if (e.keyCode === 39) KEYS.RIGHT = true;
-    if (e.keyCode === 40) KEYS.DOWN = true;
+    console.log(e.keyCode);
+    if (e.keyCode === 37 || e.keyCode === 65) KEYS.LEFT = true;
+    if (e.keyCode === 38 || e.keyCode === 87) KEYS.UP = true;
+    if (e.keyCode === 39 || e.keyCode === 68) KEYS.RIGHT = true;
+    if (e.keyCode === 40 || e.keyCode === 83) KEYS.DOWN = true;
 }
 
 getElement(CANVAS_ID).onkeyup = e => {
-    if (e.keyCode === 37) KEYS.LEFT = false;
-    if (e.keyCode === 38) KEYS.UP = false;
-    if (e.keyCode === 39) KEYS.RIGHT = false;
-    if (e.keyCode === 40) KEYS.DOWN = false;
+    if (e.keyCode === 37 || e.keyCode === 65) KEYS.LEFT = false;
+    if (e.keyCode === 38 || e.keyCode === 87) KEYS.UP = false;
+    if (e.keyCode === 39 || e.keyCode === 68) KEYS.RIGHT = false;
+    if (e.keyCode === 40 || e.keyCode === 83) KEYS.DOWN = false;
 }

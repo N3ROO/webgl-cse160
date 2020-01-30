@@ -90,6 +90,7 @@ function main(gl) {
         }
 
         for (let shape of shapes) {
+            if (!C_AXIS && shape instanceof Axis) continue;
             shape.update(dt);
         }
     }
@@ -100,6 +101,7 @@ function main(gl) {
         clear(gl)
 
         for (let shape of shapes) {
+            if (!C_AXIS && shape instanceof Axis) continue;
             shape.build();
             shape.draw();
         }
