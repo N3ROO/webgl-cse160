@@ -37,10 +37,7 @@ class Fox extends Animal {
         this.matrixUpdated = true;
 
         // Feet animation
-        this.sAngleFeet = -20;
-        this.eAngleFeet = 20;
-        this.cAngleFeet = this.sAngleFeet;
-        this.stepFeet = 100;
+        this.feetAnimation = new Animation(-20, 20, 100, true);
 
         // Shapes
         this.shapes = new Map();
@@ -61,15 +58,18 @@ class Fox extends Animal {
     }
 
     update(dt) {
-        this._updateFeet(dt);
-        this._updateTail(dt);
-
         if (this.matrixUpdated) {
             this._updateStaticParts();
+            this._updateFeet(dt);
+            this._updateTail(dt);
+        } else if (!this.feetAnimation.isPaused() ) {
+            this._updateFeet(dt);
         }
 
         this.matrixUpdated = false;
     }
+
+    //// UTILITY ////
 
     requestUpdate() {
         this.matrixUpdated = true;
@@ -80,9 +80,19 @@ class Fox extends Animal {
         this.matrixUpdated = true;
     }
 
-    move() {
-        //this.
+    //// ANIMATION HANDLERS METHODS ////
+
+    move () {
+        // animate the feet
+        // move the fox according to the animation
+        // once finished, put it back in place
     }
+
+    happy () {
+
+    }
+
+    //// PRIVATE METHODS ////
 
     _updateStaticParts() {
         this.shapes.get(K_BODY).setMatrix(
@@ -150,43 +160,40 @@ class Fox extends Animal {
     }
 
     _updateFeet(dt) {
-        if (Math.abs(this.cAngleFeet) > Math.abs(this.eAngleFeet)) {
-            let tmp = this.sAngleFeet;
-            this.sAngleFeet = this.eAngleFeet;
-            this.eAngleFeet = tmp;
-        }
+        this.feetAnimation.tick(dt);
 
-        if (this.sAngleFeet >= this.eAngleFeet) {
-            this.cAngleFeet -= this.stepFeet * dt;
+        let alpha;
+        if (this.feetAnimation.isFinished()) {
+            alpha = 0;
         } else {
-            this.cAngleFeet += this.stepFeet * dt;
+            alpha = this.feetAnimation.getRotationAngle();
         }
 
         this.shapes.get(K_FR_FOOT).setMatrix(
             this._getMMatrixCopy()
             .translate(0.5, -1.1, 0.6)
-            .rotate(this.cAngleFeet, -1, 0, 0)
+            .rotate(alpha, -1, 0, 0)
             .scale(0.4, 0.5, 0.4)
         );
 
         this.shapes.get(K_FL_FOOT).setMatrix(
             this._getMMatrixCopy()
             .translate(-0.5, -1.1, 0.6)
-            .rotate(-this.cAngleFeet, -1, 0, 0)
+            .rotate(-alpha, -1, 0, 0)
             .scale(0.4, 0.5, 0.4)
         );
 
         this.shapes.get(K_BL_FOOT).setMatrix(
             this._getMMatrixCopy()
             .translate(0.5, -1.1, 3.4)
-            .rotate(-this.cAngleFeet, -1, 0, 0)
+            .rotate(-alpha, -1, 0, 0)
             .scale(0.4, 0.5, 0.4)
         );
 
         this.shapes.get(K_BR_FOOT).setMatrix(
             this._getMMatrixCopy()
             .translate(-0.5, -1.1, 3.4)
-            .rotate(this.cAngleFeet, -1, 0, 0)
+            .rotate(alpha, -1, 0, 0)
             .scale(0.4, 0.5, 0.4)
         );
     }
