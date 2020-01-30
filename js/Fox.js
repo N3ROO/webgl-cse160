@@ -31,9 +31,8 @@ var L_EYE_BALL = "L_EYE_BALL";
 
 class Fox extends Animal {
 
-
     constructor(gl, matrix) {
-        super(gl, matrix);
+        super(gl, new Matrix4().translate(0, 1.6, 0).multiply(matrix));
         this.matrixUpdated = true;
 
         // Feet animation
@@ -80,6 +79,10 @@ class Fox extends Animal {
         this.matrixUpdated = true;
     }
 
+    moveToDefaultPosition() {
+        this.setMatrix((new Matrix4()).translate(0, 1.6, 0));
+    }
+
     //// ANIMATION HANDLERS METHODS ////
 
     move () {
@@ -91,7 +94,7 @@ class Fox extends Animal {
 
     stopMoving () {
         this.feetAnimation.stop();
-        this.setMatrix(new Matrix4());
+        this.moveToDefaultPosition();
     }
 
     happy () {

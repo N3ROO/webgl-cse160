@@ -39,6 +39,7 @@ function main(gl) {
     let shapes = [];
     shapes.push(new Fox(gl, new Matrix4()));
     shapes.push(new Axis(gl, [1,0,0], [0,1,0], [0,0,1])); // Needs to be at the end for performance improvements
+    shapes.push(new Cube(gl, (new Matrix4()).translate(0,-0.01,0).scale(20, 0.01, 20), [0.8, 0.8, 0.8]));
 
     //// LOOP ////
 
@@ -96,6 +97,7 @@ function main(gl) {
 
         for (let shape of shapes) {
             if (!C_AXIS && shape instanceof Axis) continue;
+            if (!C_FLOOR && shape instanceof Cube) continue;
             shape.update(dt);
         }
     }
@@ -107,6 +109,7 @@ function main(gl) {
 
         for (let shape of shapes) {
             if (!C_AXIS && shape instanceof Axis) continue;
+            if (!C_FLOOR && shape instanceof Cube) continue;
             shape.build();
             shape.draw();
         }
