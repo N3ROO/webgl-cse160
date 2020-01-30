@@ -68,7 +68,6 @@ getElement(CANVAS_ID).onmouseup = e => {
 }
 
 getElement(CANVAS_ID).onkeydown = e => {
-    console.log(e.keyCode);
     if (e.keyCode === 37 || e.keyCode === 65) KEYS.LEFT = true;
     if (e.keyCode === 38 || e.keyCode === 87) KEYS.UP = true;
     if (e.keyCode === 39 || e.keyCode === 68) KEYS.RIGHT = true;
