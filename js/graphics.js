@@ -71,6 +71,8 @@ function main(gl) {
     requestAnimationFrame(tick);
 
     //// UPDATE ////
+
+    let KEY_MOVE = false; // TODO: remove test
     let a = 0;
 
     function update(dt) {
@@ -85,6 +87,7 @@ function main(gl) {
         if (KEYS.DOWN)  dy =  5 * dt;
         if (KEYS.RIGHT) dx =  5 * dt;
         if (KEYS.LEFT)  dx = -5 * dt;
+        if (KEY_MOVE) shapes[0].move();
 
         if (dx !== 0 || dy !== 0) {
             globalMatrix.translate(dx, dy, 0);
@@ -130,4 +133,15 @@ function main(gl) {
     };
 
     //// KEYBOARD ////
+
+    getElement(CANVAS_ID).onkeydown = e => {
+        if (e.keyCode === 76) KEY_MOVE = true;
+    }
+
+    getElement(CANVAS_ID).onkeyup = e => {
+        if (e.keyCode === 76) {
+            shapes[0].stopMoving();
+            KEY_MOVE = false;
+        }
+    }
 }

@@ -62,7 +62,7 @@ class Fox extends Animal {
             this._updateStaticParts();
             this._updateFeet(dt);
             this._updateTail(dt);
-        } else if (!this.feetAnimation.isPaused() ) {
+        } else if (!this.feetAnimation.isPaused()) {
             this._updateFeet(dt);
         }
 
@@ -83,9 +83,15 @@ class Fox extends Animal {
     //// ANIMATION HANDLERS METHODS ////
 
     move () {
-        // animate the feet
-        // move the fox according to the animation
-        // once finished, put it back in place
+        if (this.feetAnimation.isFinished()) {
+            this.feetAnimation.start();
+        }
+        this.setMatrix(this.matrix.translate(0, 0, -0.03));
+    }
+
+    stopMoving () {
+        this.feetAnimation.stop();
+        this.setMatrix(new Matrix4());
     }
 
     happy () {
