@@ -139,6 +139,10 @@ function main(gl) {
 
     getElement(CANVAS_ID).onkeydown = e => {
         if (e.keyCode === 76) KEY_MOVE = true;
+        if (e.keyCode === 37 || e.keyCode === 65) KEYS.LEFT = true;
+        if (e.keyCode === 38 || e.keyCode === 87) KEYS.UP = true;
+        if (e.keyCode === 39 || e.keyCode === 68) KEYS.RIGHT = true;
+        if (e.keyCode === 40 || e.keyCode === 83) KEYS.DOWN = true;
     }
 
     getElement(CANVAS_ID).onkeyup = e => {
@@ -146,5 +150,9 @@ function main(gl) {
             shapes[0].stopMoving();
             KEY_MOVE = false;
         }
+        if (e.keyCode === 37 || e.keyCode === 65) KEYS.LEFT = false;
+        if (e.keyCode === 38 || e.keyCode === 87) KEYS.UP = false;
+        if (e.keyCode === 39 || e.keyCode === 68) KEYS.RIGHT = false;
+        if (e.keyCode === 40 || e.keyCode === 83) KEYS.DOWN = false;
     }
 }

@@ -67,17 +67,3 @@ getElement(CANVAS_ID).onmouseup = e => {
     M_UY = e.clientY;
     M_UR = e.target.getBoundingClientRect();
 }
-
-getElement(CANVAS_ID).onkeydown = e => {
-    if (e.keyCode === 37 || e.keyCode === 65) KEYS.LEFT = true;
-    if (e.keyCode === 38 || e.keyCode === 87) KEYS.UP = true;
-    if (e.keyCode === 39 || e.keyCode === 68) KEYS.RIGHT = true;
-    if (e.keyCode === 40 || e.keyCode === 83) KEYS.DOWN = true;
-}
-
-getElement(CANVAS_ID).onkeyup = e => {
-    if (e.keyCode === 37 || e.keyCode === 65) KEYS.LEFT = false;
-    if (e.keyCode === 38 || e.keyCode === 87) KEYS.UP = false;
-    if (e.keyCode === 39 || e.keyCode === 68) KEYS.RIGHT = false;
-    if (e.keyCode === 40 || e.keyCode === 83) KEYS.DOWN = false;
-}
