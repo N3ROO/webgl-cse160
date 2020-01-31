@@ -87,43 +87,36 @@ class Cube extends Shape {
      * @return null if an error occured, the current instance otherwise.
      */
     build() {
-        let indexBuffer = this.gl.createBuffer();
-        if (!indexBuffer) {
-            console.error('Could not create a buffer');
-            return null;
-        }
-
         let updateColor = false;
-        let updatePosition = false;
         let updateMatrix = false;
 
         if (Shape.lastShape === null || !(Shape.lastShape instanceof Cube)) {
             updateColor = true;
-            updatePosition = true;
             updateMatrix = true;
+
+            // The last shape is not a cube, so we need to update the index buffer
+            let indexBuffer = this.gl.createBuffer();
+            if (!indexBuffer) {
+                console.error('Could not create a buffer');
+                return null;
+            }
+            this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+            this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, this.indices, this.gl.STATIC_DRAW);
+
+            // All the cubes have the same position
+            this._bindAttrib(this.vertices, 3, this.gl.FLOAT, 'a_Position');
         } else {
             updateColor = !float32Equals(Shape.lastShape.colors, this.colors);
-            updatePosition = !float32Equals(Shape.lastShape.vertices, this.vertices);
             updateMatrix = Shape.lastShape.matrix !== this.matrix;
         }
-
 
         if (updateColor) {
             this._bindAttrib(this.colors, 3, this.gl.FLOAT, 'a_Color');
         }
 
-        if (updatePosition) {
-            this._bindAttrib(this.vertices, 3, this.gl.FLOAT, 'a_Position');
-        }
-
         if (updateMatrix) {
             let u_ModelMatrix = this.gl.getUniformLocation(this.gl.program, 'u_ModelMatrix');
             this.gl.uniformMatrix4fv(u_ModelMatrix, false, this.matrix.elements);
-        }
-
-        if (updateColor || updatePosition || updateMatrix) {
-            this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-            this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, this.indices, this.gl.STATIC_DRAW);
         }
 
         Shape.lastShape = this;
