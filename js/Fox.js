@@ -37,6 +37,8 @@ class Fox extends Animal {
 
         // Feet animation
         this.feetAnimation = new Animation(-20, 20, 100, true);
+        this.tailAnimation1 = new Animation(-40, 40, 200, true);
+        this.tailAnimation2 = new Animation(-20, 20, 300, true);
 
         // Shapes
         this.shapes = new Map();
@@ -89,11 +91,20 @@ class Fox extends Animal {
         if (this.feetAnimation.isFinished()) {
             this.feetAnimation.start();
         }
+        if (this.tailAnimation1.isFinished()) {
+            this.tailAnimation1.start();
+        }
+
+        if (this.tailAnimation2.isFinished()) {
+            this.tailAnimation2.start();
+        }
         this.setMatrix(this.matrix.translate(0, 0, -0.03));
     }
 
     stopMoving () {
         this.feetAnimation.stop();
+        this.tailAnimation1.stop();
+        this.tailAnimation2.stop();
         this.moveToDefaultPosition();
     }
 
@@ -154,9 +165,16 @@ class Fox extends Animal {
     }
 
     _updateTail(dt) {
+        this.tailAnimation1.tick(dt);
+        this.tailAnimation2.tick(dt);
+
+        let alpha1 = this.tailAnimation1.isFinished() ? 0 : this.tailAnimation1.getRotationAngle();
+        let alpha2 = this.tailAnimation2.isFinished() ? 0 : this.tailAnimation2.getRotationAngle();
+
         this.shapes.get(K_TAIL_1).setMatrix(
             this._getMMatrixCopy()
             .translate(0, 0, 4.5)
+            .rotate(alpha1, 0, 1, 0)
             .scale(0.3, 0.3, 0.6) // 0.6 -> length
         )
 
@@ -164,6 +182,7 @@ class Fox extends Animal {
             (new Matrix4(this.shapes.get(K_TAIL_1).getMatrix()))
             .scale(10/3, 10/3, 10/6)
             .translate(0, 0, 0.8)
+            .rotate(alpha2, 0, 1, 0)
             .scale(0.3, 0.3, 0.2)
         )
     }
@@ -171,12 +190,7 @@ class Fox extends Animal {
     _updateFeet(dt) {
         this.feetAnimation.tick(dt);
 
-        let alpha;
-        if (this.feetAnimation.isFinished()) {
-            alpha = 0;
-        } else {
-            alpha = this.feetAnimation.getRotationAngle();
-        }
+        let alpha = this.feetAnimation.isFinished() ? 0 : this.feetAnimation.getRotationAngle();
 
         this.shapes.get(K_FR_FOOT).setMatrix(
             this._getMMatrixCopy()
