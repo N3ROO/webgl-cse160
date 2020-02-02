@@ -143,6 +143,7 @@ function main(gl) {
         if (e.keyCode === 38 || e.keyCode === 87) KEYS.UP = true;
         if (e.keyCode === 39 || e.keyCode === 68) KEYS.RIGHT = true;
         if (e.keyCode === 40 || e.keyCode === 83) KEYS.DOWN = true;
+        e.preventDefault();
     }
 
     getElement(CANVAS_ID).onkeyup = e => {
@@ -154,5 +155,6 @@ function main(gl) {
         if (e.keyCode === 38 || e.keyCode === 87) KEYS.UP = false;
         if (e.keyCode === 39 || e.keyCode === 68) KEYS.RIGHT = false;
         if (e.keyCode === 40 || e.keyCode === 83) KEYS.DOWN = false;
+        e.preventDefault();
     }
 }
