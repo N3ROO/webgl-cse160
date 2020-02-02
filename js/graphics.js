@@ -24,16 +24,26 @@ function main(gl) {
     //// INIT ////
 
     // Global matrix
+    let cameraX = 5;
+    let cameraY = 10;
+    let cameraZ = -20;
+    let targetX = 0;
+    let targetY = 0;
+    let targetZ = 0;
+
     let u_GlobalMatrix = gl.getUniformLocation(gl.program, 'u_GlobalMatrix');
 
-    let globalMatrix = new Matrix4();
-    // It looks good this way
-    globalMatrix.setPerspective(30, 1, 1, 100);
-    // Eye placed at (x, y, z), looking at (x, y, z) with the up vector being (x, y ,z)
-    // Here: Eye (x=0, y=0, z=-10) looking at the center with  he up vector being Y positive
-    globalMatrix.lookAt(0, 10, -20, 0, 0, 0, 0, 1, 0);
+    function updateGlobalMatrix() {
+        let globalMatrix = new Matrix4();
+        globalMatrix.setPerspective(30, 1, 1, 100);
+        globalMatrix.lookAt(
+            cameraX, cameraY, cameraZ,
+            targetX, targetY, targetZ,
+            0, 1, 0);
+        gl.uniformMatrix4fv(u_GlobalMatrix, false, globalMatrix.elements);
+    }
 
-    gl.uniformMatrix4fv(u_GlobalMatrix, false, globalMatrix.elements);
+    updateGlobalMatrix();
 
     // Cubes
     let shapes = [];
@@ -74,7 +84,6 @@ function main(gl) {
     //// UPDATE ////
 
     let KEY_MOVE = false; // TODO: remove test
-    let a = 0;
 
     function update(dt) {
         //shapes[0].getMatrix().rotate(10*dt, -1, 0.5, 0.5);
@@ -88,7 +97,16 @@ function main(gl) {
         if (KEYS.DOWN)  dy =  5 * dt;
         if (KEYS.RIGHT) dx =  5 * dt;
         if (KEYS.LEFT)  dx = -5 * dt;
-        if (KEY_MOVE) shapes[0].move();
+        if (KEY_MOVE) {
+            shapes[0].move();
+/*
+            let pos = getPosition(shapes[0].matrix);
+
+            let globalMatrix = new Matrix4();
+            globalMatrix.setPerspective(30, 1, 1, 100);
+            globalMatrix.lookAt(0, 10, -20, pos[0], pos[1], pos[2], 0, 1, 0);
+            gl.uniformMatrix4fv(u_GlobalMatrix, false, globalMatrix.elements);*/
+        }
 
         if (dx !== 0 || dy !== 0) {
             globalMatrix.translate(dx, dy, 0);

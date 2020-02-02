@@ -106,3 +106,11 @@ function float32Equals(source, target) {
     }
     return true;
 }
+
+/**
+ * Returns the (x, y, z) coordinates from a 4x4 matrix.
+ * @param {Matrix4} matrix
+ */
+function getPosition(matrix) {
+    return [matrix.elements[12], matrix.elements[13], matrix.elements[14]];
+}
