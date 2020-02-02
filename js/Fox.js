@@ -14,20 +14,24 @@
 
 // Left, right, back and front are relative to the fox
 
-var K_BODY = "K_BODY";
-var K_FR_FOOT = "K_FR_FOOT";
-var K_FL_FOOT = "K_FL_FOOT";
-var K_BR_FOOT = "K_BR_FOOT";
-var K_BL_FOOT = "K_BL_FOOT";
-var K_TAIL_1 = "K_TAIL_1";
-var K_TAIL_2 = "K_TAIL_2";
-var K_R_EAR = "K_R_EAR";
-var K_L_EAR = "K_L_EAR";
-var K_NOSE = "K_NOSE";
-var R_EYE = "R_EYE";
-var R_EYE_BALL = "R_EYE_BALL";
-var L_EYE = "L_EYE";
-var L_EYE_BALL = "L_EYE_BALL";
+var K_BODY       = "K_BODY";
+var K_FR_FOOT    = "K_FR_FOOT";
+var K_FL_FOOT    = "K_FL_FOOT";
+var K_BR_FOOT    = "K_BR_FOOT";
+var K_BL_FOOT    = "K_BL_FOOT";
+var K_TAIL_1     = "K_TAIL_1";
+var K_TAIL_2     = "K_TAIL_2";
+var K_R_EAR      = "K_R_EAR";
+var K_L_EAR      = "K_L_EAR";
+var K_NOSE       = "K_NOSE";
+var K_R_EYE      = "K_R_EYE";
+var K_R_EYE_BALL = "K_R_EYE_BALL";
+var K_L_EYE      = "K_L_EYE";
+var K_L_EYE_BALL = "K_L_EYE_BALL";
+
+var K_FEET_ANIM  = "K_FEET_ANIM";
+var K_TAIL_ANIM1 = "K_TAIL_ANIM1";
+var K_TAIL_ANIM2 = "K_TAIL_ANIM2";
 
 class Fox extends Animal {
 
@@ -36,9 +40,10 @@ class Fox extends Animal {
         this.matrixUpdated = true;
 
         // Feet animation
-        this.feetAnimation = new Animation(-20, 20, 100, true);
-        this.tailAnimation1 = new Animation(-40, 40, 200, true);
-        this.tailAnimation2 = new Animation(-20, 20, 300, true);
+        this.animations = new Map();
+        this.animations.set(K_FEET_ANIM,  new Animation(-20, 20, 100, true));
+        this.animations.set(K_TAIL_ANIM1, new Animation(-40, 40, 200, true));
+        this.animations.set(K_TAIL_ANIM2, new Animation(-20, 20, 300, true));
 
         // Shapes
         this.shapes = new Map();
@@ -52,10 +57,10 @@ class Fox extends Animal {
         this.shapes.set(K_R_EAR     , new Cube(gl, new Matrix4(), [0.2, 0.2, 0.2]));
         this.shapes.set(K_L_EAR     , new Cube(gl, new Matrix4(), [0.2, 0.2, 0.2]));
         this.shapes.set(K_NOSE      , new Cube(gl, new Matrix4(), [0.2, 0.2, 0.2]));
-        this.shapes.set(R_EYE       , new Cube(gl, new Matrix4(), [1.0, 1.0, 1.0]));
-        this.shapes.set(R_EYE_BALL  , new Cube(gl, new Matrix4(), [0.1, 0.1, 0.1]));
-        this.shapes.set(L_EYE       , new Cube(gl, new Matrix4(), [1.0, 1.0, 1.0]));
-        this.shapes.set(L_EYE_BALL  , new Cube(gl, new Matrix4(), [0.1, 0.1, 0.1]));
+        this.shapes.set(K_R_EYE     , new Cube(gl, new Matrix4(), [1.0, 1.0, 1.0]));
+        this.shapes.set(K_R_EYE_BALL, new Cube(gl, new Matrix4(), [0.1, 0.1, 0.1]));
+        this.shapes.set(K_L_EYE     , new Cube(gl, new Matrix4(), [1.0, 1.0, 1.0]));
+        this.shapes.set(K_L_EYE_BALL, new Cube(gl, new Matrix4(), [0.1, 0.1, 0.1]));
     }
 
     update(dt) {
@@ -63,8 +68,10 @@ class Fox extends Animal {
             this._updateStaticParts();
             this._updateFeet(dt);
             this._updateTail(dt);
-        } else if (!this.feetAnimation.isPaused()) {
+        } else if (!this.animations.get(K_FEET_ANIM).isPaused()) {
             this._updateFeet(dt);
+        } else if (!this.animations.get(K_TAIL_ANIM1).isPaused() || (!this.animations.get(K_TAIL_ANIM2).isPaused())) {
+            this._updateTail(dt);
         }
 
         this.matrixUpdated = false;
@@ -88,23 +95,20 @@ class Fox extends Animal {
     //// ANIMATION HANDLERS METHODS ////
 
     move () {
-        if (this.feetAnimation.isFinished()) {
-            this.feetAnimation.start();
-        }
-        if (this.tailAnimation1.isFinished()) {
-            this.tailAnimation1.start();
-        }
+        this.animations.forEach((animation, k) => {
+            if (animation.isFinished()) {
+                animation.start();
+            }
+        });
 
-        if (this.tailAnimation2.isFinished()) {
-            this.tailAnimation2.start();
-        }
         this.setMatrix(this.matrix.translate(0, 0, -0.03));
     }
 
     stopMoving () {
-        this.feetAnimation.stop();
-        this.tailAnimation1.stop();
-        this.tailAnimation2.stop();
+        this.animations.forEach((animation, k) => {
+            animation.stop();
+        });
+
         this.moveToDefaultPosition();
     }
 
@@ -139,42 +143,47 @@ class Fox extends Animal {
             .scale(0.25, 0.25, 0.6)
         )
 
-        this.shapes.get(R_EYE).setMatrix(
+        this.shapes.get(K_R_EYE).setMatrix(
             this._getMMatrixCopy()
             .translate(0.4, 0.25, 0)
             .scale(0.2, 0.2, 0.1)
         )
 
-        this.shapes.get(R_EYE_BALL).setMatrix(
-            (new Matrix4(this.shapes.get(R_EYE).getMatrix()))
+        this.shapes.get(K_R_EYE_BALL).setMatrix(
+            (new Matrix4(this.shapes.get(K_R_EYE).getMatrix()))
             .scale(0.5, 0.5, 1)
             .translate(0, 0, -0.1)
         )
 
-        this.shapes.get(L_EYE).setMatrix(
+        this.shapes.get(K_L_EYE).setMatrix(
             this._getMMatrixCopy()
             .translate(-0.4, 0.25, 0)
             .scale(0.2, 0.2, 0.1)
         )
 
-        this.shapes.get(L_EYE_BALL).setMatrix(
-            (new Matrix4(this.shapes.get(L_EYE).getMatrix()))
+        this.shapes.get(K_L_EYE_BALL).setMatrix(
+            (new Matrix4(this.shapes.get(K_L_EYE).getMatrix()))
             .scale(0.5, 0.5, 1)
             .translate(0, 0, -0.1)
         )
     }
 
     _updateTail(dt) {
-        this.tailAnimation1.tick(dt);
-        this.tailAnimation2.tick(dt);
+        let anims = [
+            this.animations.get(K_TAIL_ANIM1),
+            this.animations.get(K_TAIL_ANIM2)
+        ];
 
-        let alpha1 = this.tailAnimation1.isFinished() ? 0 : this.tailAnimation1.getRotationAngle();
-        let alpha2 = this.tailAnimation2.isFinished() ? 0 : this.tailAnimation2.getRotationAngle();
+        let rotations = [];
+        for (let anim of anims) {
+            anim.tick(dt);
+            rotations.push(anim.isFinished() ? 0 : anim.getRotationAngle());
+        }
 
         this.shapes.get(K_TAIL_1).setMatrix(
             this._getMMatrixCopy()
             .translate(0, 0, 4.5)
-            .rotate(alpha1, 0, 1, 0)
+            .rotate(rotations[0], 0, 1, 0)
             .scale(0.3, 0.3, 0.6) // 0.6 -> length
         )
 
@@ -182,15 +191,16 @@ class Fox extends Animal {
             (new Matrix4(this.shapes.get(K_TAIL_1).getMatrix()))
             .scale(10/3, 10/3, 10/6)
             .translate(0, 0, 0.8)
-            .rotate(alpha2, 0, 1, 0)
+            .rotate(rotations[1], 0, 1, 0)
             .scale(0.3, 0.3, 0.2)
         )
     }
 
     _updateFeet(dt) {
-        this.feetAnimation.tick(dt);
+        let anim = this.animations.get(K_FEET_ANIM);
 
-        let alpha = this.feetAnimation.isFinished() ? 0 : this.feetAnimation.getRotationAngle();
+        anim.tick(dt);
+        let alpha = anim.isFinished() ? 0 : anim.getRotationAngle();
 
         this.shapes.get(K_FR_FOOT).setMatrix(
             this._getMMatrixCopy()
