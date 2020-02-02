@@ -23,10 +23,19 @@ function main(gl) {
 
     //// INIT ////
 
+    const CAMERA_X = 15;
+    const CAMERA_Y = 10;
+    const CAMERA_Z = -15;
+
     // Global matrix
-    let cameraX = 5;
-    let cameraY = 10;
-    let cameraZ = -20;
+    let cameraX = CAMERA_X;
+    let cameraY = CAMERA_Y;
+    let cameraZ = CAMERA_Z;
+
+    let cameraPitch = 0;
+    let cameraYaw = 0;
+    let cameraRoll = 0;
+
     let targetX = 0;
     let targetY = 0;
     let targetZ = 0;
@@ -40,6 +49,10 @@ function main(gl) {
             cameraX, cameraY, cameraZ,
             targetX, targetY, targetZ,
             0, 1, 0);
+        globalMatrix.rotate(cameraPitch, 1, 0, 0);
+        globalMatrix.rotate(cameraYaw, 0, 1, 0);
+        globalMatrix.rotate(cameraRoll, 0, 0, 1);
+
         gl.uniformMatrix4fv(u_GlobalMatrix, false, globalMatrix.elements);
     }
 
@@ -86,10 +99,6 @@ function main(gl) {
     let KEY_MOVE = false; // TODO: remove test
 
     function update(dt) {
-        //shapes[0].getMatrix().rotate(10*dt, -1, 0.5, 0.5);
-        //shapes[0].requestUpdate();
-        //gl.uniformMatrix4fv(u_GlobalMatrix, false, globalMatrix.elements);
-
         let dx = 0;
         let dy = 0;
 
@@ -99,13 +108,10 @@ function main(gl) {
         if (KEYS.LEFT)  dx = -5 * dt;
         if (KEY_MOVE) {
             shapes[0].move();
-/*
-            let pos = getPosition(shapes[0].matrix);
 
-            let globalMatrix = new Matrix4();
-            globalMatrix.setPerspective(30, 1, 1, 100);
-            globalMatrix.lookAt(0, 10, -20, pos[0], pos[1], pos[2], 0, 1, 0);
-            gl.uniformMatrix4fv(u_GlobalMatrix, false, globalMatrix.elements);*/
+            if (C_FOLLOW) {
+                followShape(shapes[0], 0, 0, 2);
+            }
         }
 
         if (dx !== 0 || dy !== 0) {
@@ -118,6 +124,20 @@ function main(gl) {
             if (!C_FLOOR && shape instanceof Cube) continue;
             shape.update(dt);
         }
+    }
+
+    function followShape(shape, dx, dy, dz) {
+        // reset to def pos
+        cameraPitch = cameraYaw = 0;
+        cameraX = CAMERA_X;
+        cameraY = CAMERA_Y;
+        cameraZ = CAMERA_Z;
+
+        let pos = getPosition(shape.matrix);
+        targetX = pos[0] + dx;
+        targetY = pos[1] + dy;
+        targetZ = pos[2] + dz;
+        updateGlobalMatrix();
     }
 
     //// RENDER ////
@@ -144,9 +164,9 @@ function main(gl) {
             let dx = factor * (currCoords[0] - lastCoords[0]);
             let dy = factor * (currCoords[1] - lastCoords[1]);
 
-            globalMatrix = globalMatrix.rotate(dy, 1, 0, 0);
-            globalMatrix = globalMatrix.rotate(dx, 0, 1, 0);
-            gl.uniformMatrix4fv(u_GlobalMatrix, false, globalMatrix.elements);
+            cameraPitch += dy;
+            cameraYaw += dx;
+            updateGlobalMatrix();
 
             M_DX = e.clientX;
             M_DY = e.clientY;
@@ -167,6 +187,7 @@ function main(gl) {
     getElement(CANVAS_ID).onkeyup = e => {
         if (e.keyCode === 76) {
             shapes[0].stopMoving();
+            if (C_FOLLOW) followShape(shapes[0], 0, 0, 2);
             KEY_MOVE = false;
         }
         if (e.keyCode === 37 || e.keyCode === 65) KEYS.LEFT = false;
