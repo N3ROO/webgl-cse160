@@ -8,29 +8,29 @@
  *  Nothing.
  *
  * Description:
- *  It simplifies an animation by computing its rotation angle.
+ *  It simplifies an animation by computing its value according to the time elapsed.
  */
 
 class Animation {
     /**
-     * @param {Float} startAngle starting angle,
-     * @param {Float} endAngle ending angle,
-     * @param {Float} anglePerSec speed in angle per seconds
+     * @param {Float} startValue starting value,
+     * @param {Float} endValue ending value,
+     * @param {Float} valuePerSec speed in value per seconds
      * @param {Boolean} loop true means that the animation will do a "come and go" once finished. It will
      *      go from end to start, then start to end, and so on.
      */
-    constructor(startAngle, endAngle, anglePerSec, loop) {
-        this.actualStartAngle = startAngle;
-        this.actualEndAngle = endAngle;
-        this.anglePerSec = anglePerSec;
+    constructor(startValue, endValue, valuePerSec, loop) {
+        this.actualStartValue = startValue;
+        this.actualEndValue = endValue;
+        this.valuePerSec = valuePerSec;
 
         this.loop = loop;
         this.paused = true;
         this.finished = true;
 
-        this.startAngle = this.actualStartAngle;
-        this.endAngle = this.actualEndAngle;
-        this.currentAngle = this.startAngle;
+        this.startValue = this.actualStartValue;
+        this.endValue = this.actualEndValue;
+        this.currentValue = this.startValue;
     }
 
     /**
@@ -61,9 +61,9 @@ class Animation {
     stop() {
         this.finished = true;
         this.paused = true;
-        this.startAngle = this.actualStartAngle;
-        this.endAngle = this.actualEndAngle;
-        this.currentAngle = this.actualEndAngle;
+        this.startValue = this.actualStartValue;
+        this.endValue = this.actualEndValue;
+        this.currentValue = this.actualEndValue;
     }
 
     /**
@@ -74,21 +74,21 @@ class Animation {
         if (this.paused) return;
 
         // Change direction once one of the limit has been reached
-        if (Math.abs(this.currentAngle) > Math.abs(this.endAngle)) {
+        if (Math.abs(this.currentValue) > Math.abs(this.endValue)) {
             if (this.loop) {
-                let tmp = this.startAngle;
-                this.startAngle = this.endAngle;
-                this.endAngle = tmp;
+                let tmp = this.startValue;
+                this.startValue = this.endValue;
+                this.endValue = tmp;
             } else {
                 this.stop();
             }
         }
 
         // Update rotation according to the direction
-        if (this.startAngle >= this.endAngle) {
-            this.currentAngle -= this.anglePerSec * dt;
+        if (this.startValue >= this.endValue) {
+            this.currentValue -= this.valuePerSec * dt;
         } else {
-            this.currentAngle += this.anglePerSec * dt;
+            this.currentValue += this.valuePerSec * dt;
         }
     }
 
@@ -109,9 +109,9 @@ class Animation {
     }
 
     /**
-     * Returns the latest rotation.
+     * Returns the current value of the Animation (the progress).
      */
-    getRotationAngle() {
-        return this.currentAngle;
+    getProgress() {
+        return this.currentValue;
     }
 }

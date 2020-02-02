@@ -177,7 +177,7 @@ class Fox extends Animal {
         let rotations = [];
         for (let anim of anims) {
             anim.tick(dt);
-            rotations.push(anim.isFinished() ? 0 : anim.getRotationAngle());
+            rotations.push(anim.isFinished() ? 0 : anim.getProgress());
         }
 
         this.shapes.get(K_TAIL_1).setMatrix(
@@ -200,7 +200,7 @@ class Fox extends Animal {
         let anim = this.animations.get(K_FEET_ANIM);
 
         anim.tick(dt);
-        let alpha = anim.isFinished() ? 0 : anim.getRotationAngle();
+        let alpha = anim.isFinished() ? 0 : anim.getProgress();
 
         this.shapes.get(K_FR_FOOT).setMatrix(
             this._getMMatrixCopy()
