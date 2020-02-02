@@ -26,7 +26,7 @@ Made for the CSE160 class at UCSC (Winter 2020). Written by Lilian Gallon.
   - vshader.glsl: Vertex shader (GLSL code)
 - js/
   - init.js: called when the HTML is loaded
-  - graphics.js: called when WebGL is ready
+  - main.js: called when WebGL is ready
   - *.js: see each files' header for details
 - index.html: contains the HTML code
 - LICENSE: MIT license
