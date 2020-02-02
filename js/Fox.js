@@ -45,6 +45,20 @@ class Fox extends Animal {
         this.animations.set(K_TAIL_ANIM1, new Animation(-40, 40, 200, true));
         this.animations.set(K_TAIL_ANIM2, new Animation(-20, 20, 300, true));
 
+        // Moving
+        this.moving = false;
+
+        // Directions are relative to the fox, not to the world
+        this.E = 0;
+        this.NE = 1;
+        this.N  = 2;
+        this.NW = 3;
+        this.W  = 4;
+        this.SW = 5;
+        this.S  = 6;
+        this.SE = 7;
+        this.direction = this.N;
+
         // Shapes
         this.shapes = new Map();
         this.shapes.set(K_BODY, new Cube(gl, new Matrix4(), [1, 0.5, 0]));
@@ -94,26 +108,68 @@ class Fox extends Animal {
 
     //// ANIMATION HANDLERS METHODS ////
 
-    move () {
+    move (up, down, right, left) {
+        if (!up && !down && !right && !left) return;
+
+        const STEP = 0.03;
+
+        // Find the direction
+        let direction;
+        if (up) {
+            if (right) {
+                direction = this.NE;
+            } else if (left) {
+                direction = this.NW;
+            } else {
+                direction = this.N;
+            }
+        } else if (down) {
+            if (right) {
+                direction = this.SE;
+            } else if (left) {
+                direction = this.SW;
+            } else {
+                direction = this.S;
+            }
+        } else if (right) {
+            direction = this.E;
+        } else if (left) {
+            direction = this.W;
+        }
+
+        // Translate
+        let alpha = (direction * 45) * Math.PI / 180;
+        let dx = Math.cos(alpha) * STEP;
+        let dz = - Math.sin(alpha) * STEP;
+        this.setMatrix(this.matrix.translate(dx, 0, dz));
+
+        // Start the animations
         this.animations.forEach((animation, k) => {
             if (animation.isFinished()) {
                 animation.start();
             }
         });
 
-        this.setMatrix(this.matrix.translate(0, 0, -0.03));
+        // Tell that it's moving
+        this.moving = true;
     }
 
     stopMoving () {
+        // Stop animations
         this.animations.forEach((animation, k) => {
             animation.stop();
         });
 
-        this.moveToDefaultPosition();
+        // Reset dynamic parts to their defaut position
+        this._updateFeet();
+        this._updateTail();
+
+        // Tell that the fox is not moving
+        this.moving = false;
     }
 
-    happy () {
-
+    isMoving () {
+        return this.moving;
     }
 
     //// PRIVATE METHODS ////

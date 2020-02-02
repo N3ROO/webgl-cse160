@@ -28,10 +28,14 @@ var M_UR = null;
 
 //// KEYBOARD EVENTS ////
 var KEYS = {
-    UP: false,
-    DOWN: false,
-    RIGHT: false,
-    LEFT: false
+    CAMERA_UP: false,
+    CAMERA_DOWN: false,
+    CAMERA_RIGHT: false,
+    CAMERA_LEFT: false,
+    ANIMAL_UP: false,
+    ANIMAL_DOWN: false,
+    ANIMAL_RIGHT: false,
+    ANIMAL_LEFT: false
 };
 
 

@@ -58,11 +58,15 @@ function main(gl) {
 
     updateGlobalMatrix();
 
-    // Cubes
+    // Shapes
     let shapes = [];
     shapes.push(new Fox(gl, new Matrix4()));
-    shapes.push(new Axis(gl, [1,0,0], [0,1,0], [0,0,1])); // Needs to be at the end for performance improvements
+    shapes.push(new Axis(gl, [1,0,0], [0,1,0], [0,0,1]));
     shapes.push(new Cube(gl, (new Matrix4()).translate(0,-0.01,0).scale(20, 0.01, 20), [0.8, 0.8, 0.8]));
+
+    function getFox() {
+        return shapes[0];
+    }
 
     //// LOOP ////
 
@@ -99,26 +103,28 @@ function main(gl) {
     let KEY_MOVE = false; // TODO: remove test
 
     function update(dt) {
+        // Camera translation
         let dx = 0;
         let dy = 0;
 
-        if (KEYS.UP)    dy = -5 * dt;
-        if (KEYS.DOWN)  dy =  5 * dt;
-        if (KEYS.RIGHT) dx =  5 * dt;
-        if (KEYS.LEFT)  dx = -5 * dt;
-        if (KEY_MOVE) {
-            shapes[0].move();
-
-            if (C_FOLLOW) {
-                followShape(shapes[0], 0, 0, 2);
-            }
-        }
+        if (KEYS.CAMERA_UP)    dy =  5 * dt;
+        if (KEYS.CAMERA_DOWN)  dy = -5 * dt;
+        if (KEYS.CAMERA_RIGHT) dx = -5 * dt;
+        if (KEYS.CAMERA_LEFT)  dx =  5 * dt;
 
         if (dx !== 0 || dy !== 0) {
-            globalMatrix.translate(dx, dy, 0);
-            gl.uniformMatrix4fv(u_GlobalMatrix, false, globalMatrix.elements);
+            cameraX += dx;
+            cameraY += dy;
+            updateGlobalMatrix();
         }
 
+        // Fox movements
+        getFox().move(KEYS.ANIMAL_UP, KEYS.ANIMAL_DOWN, KEYS.ANIMAL_RIGHT, KEYS.ANIMAL_LEFT)
+        if (getFox().isMoving() && C_FOLLOW) {
+            followShape(shapes[0], 0, 0, 2);
+        }
+
+        // Update shapes
         for (let shape of shapes) {
             if (!C_AXIS && shape instanceof Axis) continue;
             if (!C_FLOOR && shape instanceof Cube) continue;
@@ -176,24 +182,36 @@ function main(gl) {
     //// KEYBOARD ////
 
     getElement(CANVAS_ID).onkeydown = e => {
-        if (e.keyCode === 76) KEY_MOVE = true;
-        if (e.keyCode === 37 || e.keyCode === 65) KEYS.LEFT = true;
-        if (e.keyCode === 38 || e.keyCode === 87) KEYS.UP = true;
-        if (e.keyCode === 39 || e.keyCode === 68) KEYS.RIGHT = true;
-        if (e.keyCode === 40 || e.keyCode === 83) KEYS.DOWN = true;
+        if (e.keyCode === 37) KEYS.CAMERA_LEFT = true;
+        if (e.keyCode === 38) KEYS.CAMERA_UP = true;
+        if (e.keyCode === 39) KEYS.CAMERA_RIGHT = true;
+        if (e.keyCode === 40) KEYS.CAMERA_DOWN = true;
+
+        if (e.keyCode === 65) KEYS.ANIMAL_LEFT = true;
+        if (e.keyCode === 87) KEYS.ANIMAL_UP = true;
+        if (e.keyCode === 68) KEYS.ANIMAL_RIGHT = true;
+        if (e.keyCode === 83) KEYS.ANIMAL_DOWN = true;
+
         e.preventDefault();
     }
 
     getElement(CANVAS_ID).onkeyup = e => {
-        if (e.keyCode === 76) {
-            shapes[0].stopMoving();
-            if (C_FOLLOW) followShape(shapes[0], 0, 0, 2);
-            KEY_MOVE = false;
+        if (e.keyCode === 37) KEYS.CAMERA_LEFT = false;
+        if (e.keyCode === 38) KEYS.CAMERA_UP = false;
+        if (e.keyCode === 39) KEYS.CAMERA_RIGHT = false;
+        if (e.keyCode === 40) KEYS.CAMERA_DOWN = false;
+
+        if (e.keyCode === 65) KEYS.ANIMAL_LEFT = false;
+        if (e.keyCode === 87) KEYS.ANIMAL_UP = false;
+        if (e.keyCode === 68) KEYS.ANIMAL_RIGHT = false;
+        if (e.keyCode === 83) KEYS.ANIMAL_DOWN = false;
+
+        if (!KEYS.ANIMAL_LEFT && !KEYS.ANIMAL_UP && !KEYS.ANIMAL_RIGHT && !KEYS.ANIMAL_DOWN) {
+            if (shapes[0].isMoving()) {
+                shapes[0].stopMoving();
+            }
         }
-        if (e.keyCode === 37 || e.keyCode === 65) KEYS.LEFT = false;
-        if (e.keyCode === 38 || e.keyCode === 87) KEYS.UP = false;
-        if (e.keyCode === 39 || e.keyCode === 68) KEYS.RIGHT = false;
-        if (e.keyCode === 40 || e.keyCode === 83) KEYS.DOWN = false;
+
         e.preventDefault();
     }
 }
