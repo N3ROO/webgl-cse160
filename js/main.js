@@ -121,7 +121,7 @@ function main(gl) {
         // Fox movements
         getFox().move(KEYS.ANIMAL_UP, KEYS.ANIMAL_DOWN, KEYS.ANIMAL_RIGHT, KEYS.ANIMAL_LEFT)
         if (getFox().isMoving() && C_FOLLOW) {
-            followShape(shapes[0], 0, 0, 2);
+            followShape(getFox(), 0, 0, 2);
         }
 
         // Update shapes
@@ -192,6 +192,10 @@ function main(gl) {
         if (e.keyCode === 68) KEYS.ANIMAL_RIGHT = true;
         if (e.keyCode === 83) KEYS.ANIMAL_DOWN = true;
 
+        if (e.keyCode === 32) {
+            getFox().jump();
+        }
+
         e.preventDefault();
     }
 
@@ -207,8 +211,8 @@ function main(gl) {
         if (e.keyCode === 83) KEYS.ANIMAL_DOWN = false;
 
         if (!KEYS.ANIMAL_LEFT && !KEYS.ANIMAL_UP && !KEYS.ANIMAL_RIGHT && !KEYS.ANIMAL_DOWN) {
-            if (shapes[0].isMoving()) {
-                shapes[0].stopMoving();
+            if (getFox().isMoving()) {
+                getFox().stopMoving();
             }
         }
 

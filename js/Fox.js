@@ -45,8 +45,26 @@ class Fox extends Animal {
         this.animations.set(K_TAIL_ANIM1, new Animation(-40, 40, 200, true));
         this.animations.set(K_TAIL_ANIM2, new Animation(-20, 20, 300, true));
 
-        // Moving
+        // Movement
         this.moving = false;
+
+        // Jumping
+        this.jumping = false;
+        this.jump_height = 1;
+        this.jump_time = 500;
+        this.jump_time_elapsed = 0;
+
+        // We use a function to compute the position at a given time
+        // For that, we need to say which part of the functin interests us:
+        // This way: [jump_s_fct, jump_e_fct]
+        // Then, to adjust the jump hein, we need to know what is the max
+        // value of this function in the given interval (jump_m_fct)
+        this.jump_s_fct = - Math.PI;
+        this.jump_e_fct = 2*Math.PI;
+        this.jump_m_fct = 1;
+        this.jump_fct = (x) => {
+            return Math.cos(x) + 1; // 0 -> pi
+        }
 
         // Directions are relative to the fox, not to the world
         this.E = 0;
@@ -78,6 +96,24 @@ class Fox extends Animal {
     }
 
     update(dt) {
+        if (this.jumping) {
+            let dy = getPosition(this.getDefaultMatrix())[1];
+            // Cancel current jump
+            this.matrix.translate(0, -getPosition(this.matrix)[1] + dy, 0);
+
+            // Calculate new y
+            let val = this.jump_fct(this.jump_time_elapsed * this.jump_e_fct / this.jump_time - this.jump_s_fct);
+            let y = val * this.jump_height / this.jump_m_fct;
+
+            // Update mat
+            this.matrix.translate(0, y, 0);
+            this.requestUpdate();
+
+            // Update time elapsed
+            this.jump_time_elapsed += dt * 1000;
+            this.jumping = this.jump_time_elapsed < this.jump_time;
+        }
+
         if (this.matrixUpdated) {
             this._updateStaticParts();
             this._updateFeet(dt);
@@ -102,8 +138,8 @@ class Fox extends Animal {
         this.matrixUpdated = true;
     }
 
-    moveToDefaultPosition() {
-        this.setMatrix((new Matrix4()).translate(0, 1.6, 0));
+    getDefaultMatrix() {
+        return (new Matrix4()).translate(0, 1.6, 0);
     }
 
     //// ANIMATION HANDLERS METHODS ////
@@ -170,6 +206,13 @@ class Fox extends Animal {
 
     isMoving () {
         return this.moving;
+    }
+
+    jump () {
+        if (!this.jumping) {
+            this.jump_time_elapsed = 0;
+            this.jumping = true;
+        }
     }
 
     //// PRIVATE METHODS ////
