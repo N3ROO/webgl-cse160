@@ -41,7 +41,7 @@
 
         <b>✨ Optimizations:</b>
         <ul>
-            <li> <b>Gain: 50fps</b> - The buffers are updated <b>only</b> if needed. Example: If the last shape drawn at the screen has the same color as the last one, then the color won't be updated.</li>
+            <li> <b>Gain: 20-30fps</b> - The buffers are updated <b>only</b> if needed. Example: If the last shape drawn at the screen has the same color as the last one, then the color won't be updated.</li>
         </ul>
 
         <b>💡 Ideas:</b>
@@ -51,12 +51,15 @@
 
         <b>🔻 Known issues</b>
         <ul>
-            <li>Mouse rotation & keyboard translation are not right when the axis are inverted.
+            <li>Mouse rotation & keyboard translation are not working properly.
                 I need to rotate / translate according to the current view, and not by supposing that
                 the camera is perfectly facing the axis.
-                It may take some time, and it was not a priority so I did not do it yet.
             </li>
         </ul>
+
+        <b>📝 Diagram</b>
+        <br>
+        <img src=".github/diagrams/assignment2.png" alt="">
 
         <!-- Libs -->
         <script src="libs/webgl-utils.js"></script>
