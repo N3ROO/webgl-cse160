@@ -118,8 +118,15 @@ function main(gl) {
 
         // Fox movements
         getFox().move(KEYS.ANIMAL_UP, KEYS.ANIMAL_DOWN, KEYS.ANIMAL_RIGHT, KEYS.ANIMAL_LEFT);
-        if (getFox().isMoving() && C_FOLLOW) {
-            followShape(getFox(), 0, 0, 2);
+        if (getFox().isMoving()) {
+            getElement("feet-anim").disabled = true;
+            getElement("tail-anim-n").disabled = true;
+            getElement("tail-anim-1").disabled = true;
+            getElement("tail-anim-2").disabled = true;
+
+            if (C_FOLLOW) {
+                followShape(getFox(), 0, 0, 2);
+            }
         }
 
         // Update shapes
@@ -211,9 +218,102 @@ function main(gl) {
         if (!KEYS.ANIMAL_LEFT && !KEYS.ANIMAL_UP && !KEYS.ANIMAL_RIGHT && !KEYS.ANIMAL_DOWN) {
             if (getFox().isMoving()) {
                 getFox().stopMoving();
+
+                getElement("feet-anim").innerHTML = FEET_ANIM_S;
+                getElement("tail-anim-1").innerHTML = TAIL_ANIM_1_S;
+                getElement("tail-anim-2").innerHTML = TAIL_ANIM_2_S;
+                getElement("tail-anim-n").innerHTML = TAIL_ANIM_N_S;
+                getElement("feet-anim").disabled = false;
+                getElement("tail-anim-1").disabled = false;
+                getElement("tail-anim-2").disabled = false;
+                getElement("tail-anim-n").disabled = false;
             }
         }
 
         e.preventDefault();
+    }
+
+    //// BUTTONS ////
+    const FEET_ANIM_S = "Animate the feet";
+    const FEET_ANIM_E = "Stop feet animation";
+    const TAIL_ANIM_1_S = "Animate the tail (1st part)";
+    const TAIL_ANIM_1_E = "Stop tail animation (1st part)";
+    const TAIL_ANIM_2_S = "Animate the tail (2nd part)";
+    const TAIL_ANIM_2_E = "Stop tail animation (2nd part)";
+    const TAIL_ANIM_N_S = "Animate the tail (both parts)";
+    const TAIL_ANIM_N_E = "Stop tail animation (both parts)";
+
+    getElement("feet-anim").onclick = e => {
+        toggleAnimation(
+            getFox().animations.get(K_FEET_ANIM),
+            FEET_ANIM_S,
+            FEET_ANIM_E,
+            e.target
+        );
+    }
+
+    getElement("tail-anim-1").onclick = e => {
+        toggleAnimation(
+            getFox().animations.get(K_TAIL_ANIM1),
+            TAIL_ANIM_1_S,
+            TAIL_ANIM_1_E,
+            e.target,
+            [getElement("tail-anim-2"), getElement("tail-anim-n")]
+        );
+    }
+
+    getElement("tail-anim-2").onclick = e => {
+        toggleAnimation(
+            getFox().animations.get(K_TAIL_ANIM2),
+            TAIL_ANIM_2_S,
+            TAIL_ANIM_2_E,
+            e.target,
+            [getElement("tail-anim-1"), getElement("tail-anim-n")]
+        );
+    }
+
+    getElement("tail-anim-n").onclick = e => {
+        toggleAnimation(
+            getFox().animations.get(K_TAIL_ANIM1),
+            TAIL_ANIM_N_S,
+            TAIL_ANIM_N_E,
+            [getElement("tail-anim-1"), getElement("tail-anim-2")]
+        );
+
+        toggleAnimation(
+            getFox().animations.get(K_TAIL_ANIM2),
+            TAIL_ANIM_N_S,
+            TAIL_ANIM_N_E,
+            e.target,
+            [getElement("tail-anim-1"), getElement("tail-anim-2")]
+        );
+    }
+
+    function toggleAnimation(animation, startMsg, endMsg, target, concurrents = []) {
+        if (animation.isFinished()) {
+            target.innerHTML = endMsg;
+            animation.start();
+            for (let concurrent of concurrents) concurrent.disabled = true;
+        } else {
+            target.innerHTML = startMsg;
+            animation.stop();
+            for (let concurrent of concurrents) concurrent.disabled = false;
+        }
+    }
+
+    getElement("reset-cam").onclick = e => {
+        cameraX = CAMERA_X;
+        cameraY = CAMERA_Y;
+        cameraZ = CAMERA_Z;
+
+        cameraPitch = 0;
+        cameraYaw = 0;
+        cameraRoll = 0;
+
+        targetX = 0;
+        targetY = 0;
+        targetZ = 0;
+
+        updateGlobalMatrix();
     }
 }
