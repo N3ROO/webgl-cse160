@@ -100,8 +100,6 @@ function main(gl) {
 
     //// UPDATE ////
 
-    let KEY_MOVE = false; // TODO: remove test
-
     function update(dt) {
         // Camera translation
         let dx = 0;
@@ -119,7 +117,7 @@ function main(gl) {
         }
 
         // Fox movements
-        getFox().move(KEYS.ANIMAL_UP, KEYS.ANIMAL_DOWN, KEYS.ANIMAL_RIGHT, KEYS.ANIMAL_LEFT)
+        getFox().move(KEYS.ANIMAL_UP, KEYS.ANIMAL_DOWN, KEYS.ANIMAL_RIGHT, KEYS.ANIMAL_LEFT);
         if (getFox().isMoving() && C_FOLLOW) {
             followShape(getFox(), 0, 0, 2);
         }
