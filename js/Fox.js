@@ -282,7 +282,9 @@ class Fox extends Animal {
         this.shapes.get(K_TAIL_1).setMatrix(
             this._getMMatrixCopy()
             .translate(0, 0, 4.5)
+            .translate(0, 0, -0.6)
             .rotate(rotations[0], 0, 1, 0)
+            .translate(0, 0, 0.6)
             .scale(0.3, 0.3, 0.6) // 0.6 -> length
         )
 
