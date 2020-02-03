@@ -79,7 +79,7 @@ class Fox extends Animal {
 
         // Shapes
         this.shapes = new Map();
-        this.shapes.set(K_BODY, new Cube(gl, new Matrix4(), [1, 0.5, 0]));
+        this.shapes.set(K_BODY, new Cube(gl, new Matrix4(), [1,0.5,0, 1,0.5,0, 1,0.5,0, 1,0.5,0, 1,0.45,0, 1,0.5,0]));
         this.shapes.set(K_FR_FOOT   , new Cube(gl, new Matrix4(), [1.0, 0.4, 0.0]));
         this.shapes.set(K_FL_FOOT   , new Cube(gl, new Matrix4(), [1.0, 0.4, 0.0]));
         this.shapes.set(K_BR_FOOT   , new Cube(gl, new Matrix4(), [1.0, 0.4, 0.0]));
