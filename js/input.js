@@ -12,42 +12,32 @@
  *  user's input.
  */
 
-// Controls
-var C_CLEAR_BUTTON = 'clear';
-var C_DRAWING_MODE = 0;
-var C_RED = 0.5;
-var C_GREEN = 0.0;
-var C_BLUE = 1.0;
-var C_SIZE = 40.0;
-var C_SEGS = 10;
-var C_DELAY = 100;
+//// CONTROLS ////
+var C_AXIS = true;
+var C_FLOOR = true;
+var C_FOLLOW = false;
 
-// Translation
-var C_TX = 0.0;
-var C_TY = 0.0;
-var C_STEP = 0.01;
+//// MOUSE EVENTS ////
+var M_DOWN = false;
+var M_DX = null;
+var M_DY = null;
+var M_DR = null;
+var M_UX = null;
+var M_UY = null;
+var M_UR = null;
 
-// Magic numbers (used by C_DRAWING_MODE)
-var M_SQUARE = 0;
-var M_TRIANGLE = 1;
-var M_CIRCLE = 2;
+//// KEYBOARD EVENTS ////
+var KEYS = {
+    CAMERA_UP: false,
+    CAMERA_DOWN: false,
+    CAMERA_RIGHT: false,
+    CAMERA_LEFT: false,
+    ANIMAL_UP: false,
+    ANIMAL_DOWN: false,
+    ANIMAL_RIGHT: false,
+    ANIMAL_LEFT: false
+};
 
-/**
- * It updates the values of the global variables, and it also
- * updates the preview color.
- */
-function updateColors() {
-    let r = getElement('red');
-    let g = getElement('green');
-    let b = getElement('blue');
-    let p = getElement('color-preview');
-
-    C_RED = r.value;
-    C_GREEN = g.value;
-    C_BLUE = b.value;
-
-    p.style.background = "rgb(" + C_RED*255 + "," + C_GREEN*255 + "," + C_BLUE*255 + ")"
-}
 
 /**
  * It updates the statistics tag.
@@ -67,4 +57,18 @@ function updateStatistics(shapesDrawn, timeElapsed) {
     }
 
     getElement('stats').style.color = color;
+}
+
+getElement(CANVAS_ID).onmousedown = e => {
+    M_DOWN = true;
+    M_DX = e.clientX;
+    M_DY = e.clientY;
+    M_DR = e.target.getBoundingClientRect();
+}
+
+getElement(CANVAS_ID).onmouseup = e => {
+    M_DOWN = false;
+    M_UX = e.clientX;
+    M_UY = e.clientY;
+    M_UR = e.target.getBoundingClientRect();
 }

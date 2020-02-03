@@ -39,11 +39,11 @@ function canvasToWebglCoords(x, y, r, worldX=0.0, worldY=0.0) {
  */
 function clear(gl) {
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
-    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 }
 
 /**
- * It returns the element if the specified id. It writes an
+ * It returns the element with the specified id. It writes an
  * error if the id could not be found.
  *
  * ERROR:
@@ -84,4 +84,33 @@ function outsideOfScreen(x, y, width, height, worldX, worldY) {
         (y + height/2 + worldY < - 1.0) || // out bottom
         (y - height/2 + worldY > + 1.0)    // out top
     )
+}
+
+/**
+ * Returns the timestamp in ms.
+ */
+function timestamp() {
+    return window.performance && window.performance.now ? window.performance.now() : new Date().getTime();
+}
+
+/**
+ * Returns true if the arrays are the same.
+ * @param {Float32Array} source
+ * @param {Float32Array} target
+ */
+function float32Equals(source, target) {
+    if (source === null || target === null) return false;
+    if (source.length !== target.length) return false;
+    for (let i = 0; i < source.length; i++) {
+        if (source[i] !== target[i]) return false;
+    }
+    return true;
+}
+
+/**
+ * Returns the (x, y, z) coordinates from a 4x4 matrix.
+ * @param {Matrix4} matrix
+ */
+function getPosition(matrix) {
+    return [matrix.elements[12], matrix.elements[13], matrix.elements[14]];
 }
