@@ -11,6 +11,7 @@ Made for the CSE160 class at UCSC (Winter 2020). Written by Lilian Gallon.
 - Assignment 2: Animated Animal - Grade ?/10
 
 ![Assignment2 Screenshot](.github/screenshots/assignment2.png)
+
 ![Assignment2 Diagram](.github/diagrams/assignment2.png)
 
 ### Branches
