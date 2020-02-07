@@ -27,11 +27,6 @@ function main(gl) {
     const CAMERA_Y = 10;
     const CAMERA_Z = -15;
 
-    // Global matrix
-    let cameraX = CAMERA_X;
-    let cameraY = CAMERA_Y;
-    let cameraZ = CAMERA_Z;
-
     let cameraPitch = 0;
     let cameraYaw = 0;
     let cameraRoll = 0;
@@ -46,12 +41,13 @@ function main(gl) {
         let globalMatrix = new Matrix4();
         globalMatrix.setPerspective(30, 1, 1, 100);
         globalMatrix.lookAt(
-            cameraX, cameraY, cameraZ,
-            targetX, targetY, targetZ,
+            CAMERA_X, CAMERA_Y, CAMERA_Z,
+            0, 0, 0,
             0, 1, 0);
-        globalMatrix.rotate(cameraPitch, 1, 0, 0);
-        globalMatrix.rotate(cameraYaw, 0, 1, 0);
-        globalMatrix.rotate(cameraRoll, 0, 0, 1);
+            globalMatrix.rotate(cameraPitch, 1, 0, 0);
+            globalMatrix.rotate(cameraYaw, 0, 1, 0);
+            globalMatrix.rotate(cameraRoll, 0, 0, 1);
+            globalMatrix.translate(-targetX, -targetY, -targetZ);
 
         gl.uniformMatrix4fv(u_GlobalMatrix, false, globalMatrix.elements);
     }
@@ -101,20 +97,6 @@ function main(gl) {
     //// UPDATE ////
 
     function update(dt) {
-        // Camera translation
-        let dx = 0;
-        let dy = 0;
-
-        if (KEYS.CAMERA_UP)    dy =  5 * dt;
-        if (KEYS.CAMERA_DOWN)  dy = -5 * dt;
-        if (KEYS.CAMERA_RIGHT) dx = -5 * dt;
-        if (KEYS.CAMERA_LEFT)  dx =  5 * dt;
-
-        if (dx !== 0 || dy !== 0) {
-            cameraX += dx;
-            cameraY += dy;
-            updateGlobalMatrix();
-        }
 
         // Fox movements
         getFox().move(KEYS.ANIMAL_UP, KEYS.ANIMAL_DOWN, KEYS.ANIMAL_RIGHT, KEYS.ANIMAL_LEFT);
@@ -138,12 +120,6 @@ function main(gl) {
     }
 
     function followShape(shape, dx, dy, dz) {
-        // reset to def pos
-        cameraPitch = cameraYaw = 0;
-        cameraX = CAMERA_X;
-        cameraY = CAMERA_Y;
-        cameraZ = CAMERA_Z;
-
         let pos = getPosition(shape.matrix);
         targetX = pos[0] + dx;
         targetY = pos[1] + dy;
@@ -187,33 +163,34 @@ function main(gl) {
     //// KEYBOARD ////
 
     getElement(CANVAS_ID).onkeydown = e => {
-        if (e.keyCode === 37) KEYS.CAMERA_LEFT = true;
-        if (e.keyCode === 38) KEYS.CAMERA_UP = true;
-        if (e.keyCode === 39) KEYS.CAMERA_RIGHT = true;
-        if (e.keyCode === 40) KEYS.CAMERA_DOWN = true;
+        // if (e.keyCode === 37) KEYS.todo = true;
+        // if (e.keyCode === 38) KEYS.todo = true;
+        // if (e.keyCode === 39) KEYS.todo = true;
+        // if (e.keyCode === 40) KEYS.todo = true;
 
         if (e.keyCode === 65) KEYS.ANIMAL_LEFT = true;
         if (e.keyCode === 87) KEYS.ANIMAL_UP = true;
         if (e.keyCode === 68) KEYS.ANIMAL_RIGHT = true;
         if (e.keyCode === 83) KEYS.ANIMAL_DOWN = true;
 
-        if (e.keyCode === 32) {
-            getFox().jump();
-        }
+        if (e.keyCode === 32) getFox().jump();
+        //if (e.keyCode === 16) getFox().sprint(true);
 
         e.preventDefault();
     }
 
     getElement(CANVAS_ID).onkeyup = e => {
-        if (e.keyCode === 37) KEYS.CAMERA_LEFT = false;
-        if (e.keyCode === 38) KEYS.CAMERA_UP = false;
-        if (e.keyCode === 39) KEYS.CAMERA_RIGHT = false;
-        if (e.keyCode === 40) KEYS.CAMERA_DOWN = false;
+        // if (e.keyCode === 37) KEYS.todo = false;
+        // if (e.keyCode === 38) KEYS.todo = false;
+        // if (e.keyCode === 39) KEYS.todo = false;
+        // if (e.keyCode === 40) KEYS.todo = false;
 
         if (e.keyCode === 65) KEYS.ANIMAL_LEFT = false;
         if (e.keyCode === 87) KEYS.ANIMAL_UP = false;
         if (e.keyCode === 68) KEYS.ANIMAL_RIGHT = false;
         if (e.keyCode === 83) KEYS.ANIMAL_DOWN = false;
+
+        //if (e.keyCode === 16) getFox().sprint(false);
 
         if (!KEYS.ANIMAL_LEFT && !KEYS.ANIMAL_UP && !KEYS.ANIMAL_RIGHT && !KEYS.ANIMAL_DOWN) {
             if (getFox().isMoving()) {

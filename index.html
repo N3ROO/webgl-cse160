@@ -46,7 +46,6 @@
                 Camera movements:
                 <ul>
                     <li>Rotation: mouse</li>
-                    <li>Translation: arrows (up, down, right, left)</li>
                 </ul>
             </li>
             <li>
@@ -86,19 +85,6 @@
         <b>✨ Optimizations:</b>
         <ul>
             <li> <b>Gain: 20-30fps</b> - The buffers are updated <b>only</b> if needed. Example: If the last shape drawn at the screen has the same color as the last one, then the color won't be updated.</li>
-        </ul>
-
-        <b>💡 Ideas:</b>
-        <ul>
-            <li>If nothing happened since last frame, don't update anything. It will save some energy.</li>
-        </ul>
-
-        <b>🔻 Known issues</b>
-        <ul>
-            <li>Mouse rotation & keyboard translation are not working properly.
-                I need to rotate / translate according to the current view, and not by supposing that
-                the camera is perfectly facing the axis.
-            </li>
         </ul>
 
         <b>📝 Diagram</b>
