@@ -174,7 +174,7 @@ function main(gl) {
         if (e.keyCode === 83) KEYS.ANIMAL_DOWN = true;
 
         if (e.keyCode === 32) getFox().jump();
-        //if (e.keyCode === 16) getFox().sprint(true);
+        if (e.keyCode === 16) getFox().run(true);
 
         e.preventDefault();
     }
@@ -190,7 +190,7 @@ function main(gl) {
         if (e.keyCode === 68) KEYS.ANIMAL_RIGHT = false;
         if (e.keyCode === 83) KEYS.ANIMAL_DOWN = false;
 
-        //if (e.keyCode === 16) getFox().sprint(false);
+        if (e.keyCode === 16) getFox().run(false);
 
         if (!KEYS.ANIMAL_LEFT && !KEYS.ANIMAL_UP && !KEYS.ANIMAL_RIGHT && !KEYS.ANIMAL_DOWN) {
             if (getFox().isMoving()) {

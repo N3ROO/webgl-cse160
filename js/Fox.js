@@ -47,6 +47,8 @@ class Fox extends Animal {
 
         // Movement
         this.moving = false;
+        this.running = false;
+        this.RUN_COEF = 4;
 
         // Jumping
         this.jumping = false;
@@ -147,7 +149,7 @@ class Fox extends Animal {
     move (up, down, right, left) {
         if (!up && !down && !right && !left) return;
 
-        const STEP = 0.03;
+        const STEP = 0.03 * (this.running ? this.RUN_COEF : 1);
 
         // Find the direction
         let direction;
@@ -212,6 +214,17 @@ class Fox extends Animal {
         if (!this.jumping) {
             this.jump_time_elapsed = 0;
             this.jumping = true;
+        }
+    }
+
+    run (shouldRun) {
+        let animSpeed = this.animations.get(K_FEET_ANIM).getSpeed();
+        if (this.running && !shouldRun) { // Needs to stop running
+            this.running = false;
+            this.animations.get(K_FEET_ANIM).setSpeed(animSpeed / this.RUN_COEF);
+        } else if (!this.running && shouldRun) { // Needs to start running
+            this.running = true;
+            this.animations.get(K_FEET_ANIM).setSpeed(animSpeed * this.RUN_COEF);
         }
     }
 

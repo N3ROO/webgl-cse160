@@ -93,6 +93,21 @@ class Animation {
     }
 
     /**
+     * Returns the speed of the animation (value per seconds)
+     */
+    getSpeed() {
+        return this.valuePerSec;
+    }
+
+    /**
+     * It updates the speed of the animation (value per seconds)
+     * @param {float} speed
+     */
+    setSpeed(speed) {
+        this.valuePerSec = speed;
+    }
+
+    /**
      * Returns true if the animation is finished. If loop is true,
      * it won't be false unless you manually call stop().
      */
