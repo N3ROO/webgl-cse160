@@ -175,7 +175,7 @@ function main(gl) {
             let dx = factor * (currCoords[0] - lastCoords[0]);
             let dy = factor * (currCoords[1] - lastCoords[1]);
 
-            cameraPitch += dy;
+            cameraPitch = Math.max(Math.min(cameraPitch + dy, 90), -90);
             cameraYaw += dx;
             updateGlobalMatrix();
 
