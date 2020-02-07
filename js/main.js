@@ -107,7 +107,7 @@ function main(gl) {
             getElement("tail-anim-2").disabled = true;
 
             if (C_FOLLOW) {
-                followShape(getFox(), 0, 0, 2);
+                followShape(getFox(), 0, -getPosition(getFox().matrix)[1], 0);
             }
         }
 

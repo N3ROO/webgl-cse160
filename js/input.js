@@ -15,7 +15,7 @@
 //// CONTROLS ////
 var C_AXIS = true;
 var C_FLOOR = true;
-var C_FOLLOW = false;
+var C_FOLLOW = true;
 
 //// MOUSE EVENTS ////
 var M_DOWN = false;
