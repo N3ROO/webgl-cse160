@@ -106,6 +106,7 @@ function main(gl) {
             getElement("tail-anim-n").disabled = true;
             getElement("tail-anim-1").disabled = true;
             getElement("tail-anim-2").disabled = true;
+            getElement("breakdance").disabled = true;
 
             if (C_FOLLOW) {
                 followShape(getFox(), 0, -getPosition(getFox().getDefaultMatrix())[1], 0);
@@ -115,6 +116,7 @@ function main(gl) {
             getElement("tail-anim-n").disabled = false;
             getElement("tail-anim-1").disabled = false;
             getElement("tail-anim-2").disabled = false;
+            getElement("breakdance").disabled = false;
         }
 
         // Update shapes
