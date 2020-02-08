@@ -3,10 +3,25 @@
     <head>
         <meta charset="utf-8" />
         <title>Lilian Gallon Assignment 2</title>
+
+        <style>
+            #breakdance {
+                border: 2px solid transparent;
+                border-image: linear-gradient(to bottom right, #b827fc 0%, #2c90fc 25%, #b8fd33 50%, #fec837 75%, #fd1892 100%);;
+                border-image-slice: 1;
+            }
+
+            #breakdance:hover {
+                border: 2px solid transparent;
+                border-image: linear-gradient(to bottom right, #2c90fc 0%, #b827fc 25%, #fec837 50%, #b8fd33 75%, #fd1892 100%);;
+                border-image-slice: 1;
+                color: red;
+            }
+        </style>
     </head>
 
     <body onload="init()">
-        <div>
+        <div class="container">
             <canvas id="webgl" width="700" height="700" tabindex="1">
                 Please use the browser supporting "canvas"
             </canvas>
@@ -33,14 +48,16 @@
                 <button id="tail-anim-2">Animate the tail (2nd part)</button>
             </div>
             <div>
+                <b>Super animations:</b>
+                <button id="breakdance">BREAKDANCE</button>
+            </div>
+            <div>
                 <b>Miscellaneous:</b>
                 <button id="reset-cam">Reset camera</button>
             </div>
             <small style="color:red">If some buttons are not working, make sure that you don't have any script blocker on your web browser (adblock or stuff like that)</small>
 
-            <br>
-            <br>
-
+            <hr>
             <b>🔺 Additions:</b>
             <ul>
                 <li>
@@ -84,11 +101,13 @@
                 </li>
             </ul>
 
+            <hr>
             <b>✨ Optimizations:</b>
             <ul>
                 <li> <b>Gain: 20-30fps</b> - The buffers are updated <b>only</b> if needed. Example: If the last shape drawn at the screen has the same color as the last one, then the color won't be updated.</li>
             </ul>
 
+            <hr>
             <b>📝 Diagram</b>
             <br>
             <img src=".github/diagrams/assignment2.png" alt="">

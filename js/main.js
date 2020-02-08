@@ -278,6 +278,10 @@ function main(gl) {
         }
     }
 
+    getElement("breakdance").onclick = e => {
+        console.log("TODO");
+    }
+
     getElement("reset-cam").onclick = e => {
         cameraX = CAMERA_X;
         cameraY = CAMERA_Y;
