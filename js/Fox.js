@@ -47,6 +47,7 @@ class Fox extends Animal {
 
         // Movement
         this.moving = false;
+        this.movingDirection = this.N;
         this.running = false;
         this.RUN_COEF = 4;
 
@@ -189,6 +190,7 @@ class Fox extends Animal {
         });
 
         // Tell that it's moving
+        this.movingDirection = direction;
         this.moving = true;
     }
 
@@ -316,32 +318,47 @@ class Fox extends Animal {
         anim.tick(dt);
         let alpha = anim.isFinished() ? 0 : anim.getProgress();
 
+        let rotateX = 0;
+        let rotateZ = 0;
+
+        if (this.movingDirection === this.E || this.movingDirection === this.W) {
+            rotateZ = -1;
+        } else if (this.movingDirection === this.NE ||this.movingDirection === this.SE ) {
+            rotateX = -1;
+            rotateZ = -1;
+        } else if (this.movingDirection === this.NW || this.movingDirection === this.SW) {
+            rotateX = 1;
+            rotateZ = -1;
+        } else {
+            rotateX = -1;
+        }
+
         this.shapes.get(K_FR_FOOT).setMatrix(
             this._getMMatrixCopy()
-            .translate(0.5, -1.1, 0.6)
-            .rotate(alpha, -1, 0, 0)
-            .scale(0.4, 0.5, 0.4)
+            .translate(0.5, -1.2, 0.6)
+            .rotate(alpha, rotateX, 0, rotateZ)
+            .scale(0.4, 0.4, 0.4)
         );
 
         this.shapes.get(K_FL_FOOT).setMatrix(
             this._getMMatrixCopy()
-            .translate(-0.5, -1.1, 0.6)
-            .rotate(-alpha, -1, 0, 0)
-            .scale(0.4, 0.5, 0.4)
+            .translate(-0.5, -1.2, 0.6)
+            .rotate(-alpha, rotateX, 0, rotateZ)
+            .scale(0.4, 0.4, 0.4)
         );
 
         this.shapes.get(K_BL_FOOT).setMatrix(
             this._getMMatrixCopy()
-            .translate(0.5, -1.1, 3.4)
-            .rotate(-alpha, -1, 0, 0)
-            .scale(0.4, 0.5, 0.4)
+            .translate(0.5, -1.2, 3.4)
+            .rotate(-alpha, rotateX, 0, rotateZ)
+            .scale(0.4, 0.4, 0.4)
         );
 
         this.shapes.get(K_BR_FOOT).setMatrix(
             this._getMMatrixCopy()
-            .translate(-0.5, -1.1, 3.4)
-            .rotate(alpha, -1, 0, 0)
-            .scale(0.4, 0.5, 0.4)
+            .translate(-0.5, -1.2, 3.4)
+            .rotate(alpha, rotateX, 0, rotateZ)
+            .scale(0.4, 0.4, 0.4)
         );
     }
 

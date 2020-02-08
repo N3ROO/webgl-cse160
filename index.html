@@ -6,91 +6,94 @@
     </head>
 
     <body onload="init()">
-        <canvas id="webgl" width="700" height="700" tabindex="1">
-            Please use the browser supporting "canvas"
-        </canvas>
-
-        <br>
-
         <div>
-            <b>Options:</b>
-            <input id="axis" type="checkbox" onclick="C_AXIS=!C_AXIS" checked> Show axis:
-            <span style="color:red;">X</span>,
-            <span style="color:green;">Y</span>,
-            <span style="color:blue;">Z</span>
-            |
-            <input id="axis" type="checkbox" onclick="C_FLOOR=!C_FLOOR" checked> Show floor
-            |
-            <input id="axis" type="checkbox" onclick="C_FOLLOW=!C_FOLLOW" checked> Camera follows animal
+            <canvas id="webgl" width="700" height="700" tabindex="1">
+                Please use the browser supporting "canvas"
+            </canvas>
+
+            <br>
+
+            <div>
+                <b>Options:</b>
+                <input id="axis" type="checkbox" onclick="C_AXIS=!C_AXIS" checked> Show axis:
+                <span style="color:red;">X</span>,
+                <span style="color:green;">Y</span>,
+                <span style="color:blue;">Z</span>
+                |
+                <input id="axis" type="checkbox" onclick="C_FLOOR=!C_FLOOR" checked> Show floor
+                |
+                <input id="axis" type="checkbox" onclick="C_FOLLOW=!C_FOLLOW" checked> Camera follows animal
+            </div>
+
+            <div>
+                <b>Animation:</b>
+                <button id="feet-anim">Animate the feet</button> |
+                <button id="tail-anim-n">Animate the tail (both parts)</button> |
+                <button id="tail-anim-1">Animate the tail (1st part)</button> |
+                <button id="tail-anim-2">Animate the tail (2nd part)</button>
+            </div>
+            <div>
+                <b>Miscellaneous:</b>
+                <button id="reset-cam">Reset camera</button>
+            </div>
+            <small style="color:red">If some buttons are not working, make sure that you don't have any script blocker on your web browser (adblock or stuff like that)</small>
+
+            <br>
+            <br>
+
+            <b>🔺 Additions:</b>
+            <ul>
+                <li>
+                    Camera movements:
+                    <ul>
+                        <li>Rotation: mouse</li>
+                    </ul>
+                </li>
+                <li>
+                    Fox movements:
+                    <ul>
+                        <li>Move: WASD keys (the feet are animated according to the direction taken)</li>
+                        <li>Jump: spacebar</li>
+                        <li>Run: shift</li>
+                    </ul>
+                </li>
+                <li>
+                    Toggleable options:
+                    <ul>
+                        <li>Camera that follows the animal</li>
+                        <li>Axis (X, Y, Z)</li>
+                        <li>Floor</li>
+                    </ul>
+                </li>
+                <li>
+                    Buttons:
+                    <ul>
+                        <li>Animate the feet</li>
+                        <li>Animate the tail (both parts, 1st part and 2nd part)</li>
+                        <li>Reset the camera</li>
+                    </ul>
+                </li>
+                <li>
+                    Miscellaneous:
+                    <ul>
+                        <li>
+                            FPSMeter: All the credits go to <a href="https://github.com/darsain/fpsmeter">https://github.com/darsain/fpsmeter</a>.
+                            I added it during the development to see what had an impact on performances. Since it looks nice I did not remove it.
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+
+            <b>✨ Optimizations:</b>
+            <ul>
+                <li> <b>Gain: 20-30fps</b> - The buffers are updated <b>only</b> if needed. Example: If the last shape drawn at the screen has the same color as the last one, then the color won't be updated.</li>
+            </ul>
+
+            <b>📝 Diagram</b>
+            <br>
+            <img src=".github/diagrams/assignment2.png" alt="">
+
         </div>
-
-        <div>
-            <b>Animation:</b>
-            <button id="feet-anim">Animate the feet</button> |
-            <button id="tail-anim-n">Animate the tail (both parts)</button> |
-            <button id="tail-anim-1">Animate the tail (1st part)</button> |
-            <button id="tail-anim-2">Animate the tail (2nd part)</button>
-        </div>
-        <div>
-            <b>Miscellaneous:</b>
-            <button id="reset-cam">Reset camera</button>
-        </div>
-        <small style="color:red">If some buttons are not working, make sure that you don't have any script blocker on your web browser (adblock or stuff like that)</small>
-
-        <br>
-        <br>
-
-        <b>🔺 Additions:</b>
-        <ul>
-            <li>
-                Camera movements:
-                <ul>
-                    <li>Rotation: mouse</li>
-                </ul>
-            </li>
-            <li>
-                Fox movements:
-                <ul>
-                    <li>Move: WASD keys</li>
-                    <li>Jump: spacebar</li>
-                    <li>Run: shift</li>
-                </ul>
-            </li>
-            <li>
-                Toggleable options:
-                <ul>
-                    <li>Camera that follows the animal</li>
-                    <li>Axis (X, Y, Z)</li>
-                    <li>Floor</li>
-                </ul>
-            </li>
-            <li>
-                Buttons:
-                <ul>
-                    <li>Animate the feet</li>
-                    <li>Animate the tail (both parts, 1st part and 2nd part)</li>
-                    <li>Reset the camera</li>
-                </ul>
-            </li>
-            <li>
-                Miscellaneous:
-                <ul>
-                    <li>
-                        FPSMeter: All the credits go to <a href="https://github.com/darsain/fpsmeter">https://github.com/darsain/fpsmeter</a>.
-                        I added it during the development to see what had an impact on performances. Since it looks nice I did not remove it.
-                    </li>
-                </ul>
-            </li>
-        </ul>
-
-        <b>✨ Optimizations:</b>
-        <ul>
-            <li> <b>Gain: 20-30fps</b> - The buffers are updated <b>only</b> if needed. Example: If the last shape drawn at the screen has the same color as the last one, then the color won't be updated.</li>
-        </ul>
-
-        <b>📝 Diagram</b>
-        <br>
-        <img src=".github/diagrams/assignment2.png" alt="">
 
         <!-- Libs -->
         <script src="libs/webgl-utils.js"></script>
