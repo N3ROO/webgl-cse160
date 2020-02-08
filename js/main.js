@@ -101,14 +101,20 @@ function main(gl) {
         // Fox movements
         getFox().move(KEYS.ANIMAL_UP, KEYS.ANIMAL_DOWN, KEYS.ANIMAL_RIGHT, KEYS.ANIMAL_LEFT);
         if (getFox().isMoving()) {
+
             getElement("feet-anim").disabled = true;
             getElement("tail-anim-n").disabled = true;
             getElement("tail-anim-1").disabled = true;
             getElement("tail-anim-2").disabled = true;
 
             if (C_FOLLOW) {
-                followShape(getFox(), 0, -getPosition(getFox().matrix)[1], 0);
+                followShape(getFox(), 0, -getPosition(getFox().getDefaultMatrix())[1], 0);
             }
+        } else {
+            getElement("feet-anim").disabled = false;
+            getElement("tail-anim-n").disabled = false;
+            getElement("tail-anim-1").disabled = false;
+            getElement("tail-anim-2").disabled = false;
         }
 
         // Update shapes
@@ -279,7 +285,7 @@ function main(gl) {
     }
 
     getElement("breakdance").onclick = e => {
-        console.log("TODO");
+        getFox().breakdance();
     }
 
     getElement("reset-cam").onclick = e => {

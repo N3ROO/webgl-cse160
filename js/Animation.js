@@ -31,6 +31,7 @@ class Animation {
         this.startValue = this.actualStartValue;
         this.endValue = this.actualEndValue;
         this.currentValue = this.startValue;
+        this.lastValue = this.currentValue;
     }
 
     /**
@@ -63,7 +64,7 @@ class Animation {
         this.paused = true;
         this.startValue = this.actualStartValue;
         this.endValue = this.actualEndValue;
-        this.currentValue = this.actualEndValue;
+        this.currentValue = this.actualStartValue;
     }
 
     /**
@@ -71,16 +72,19 @@ class Animation {
      * @param {Float} dt miliseconds since last update.
      */
     tick(dt) {
-        if (this.paused) return;
+        if (this.paused || this.finished) return;
+
+        this.lastValue = this.currentValue;
 
         // Change direction once one of the limit has been reached
-        if (Math.abs(this.currentValue) > Math.abs(this.endValue)) {
+        if (Math.abs(this.currentValue) >= Math.abs(this.endValue)) {
             if (this.loop) {
                 let tmp = this.startValue;
                 this.startValue = this.endValue;
                 this.endValue = tmp;
             } else {
                 this.stop();
+                return;
             }
         }
 
@@ -90,6 +94,9 @@ class Animation {
         } else {
             this.currentValue += this.valuePerSec * dt;
         }
+
+        if (this.endValue < 0) this.currentValue = Math.max(this.currentValue, this.endValue);
+        else  this.currentValue = Math.min(this.currentValue, this.endValue);
     }
 
     /**
@@ -128,5 +135,13 @@ class Animation {
      */
     getProgress() {
         return this.currentValue;
+    }
+
+    getLastProgress() {
+        return this.lastValue;
+    }
+
+    getProgressDiff() {
+        return this.lastValue - this.currentValue;
     }
 }

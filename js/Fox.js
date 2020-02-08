@@ -33,17 +33,26 @@ var K_FEET_ANIM  = "K_FEET_ANIM";
 var K_TAIL_ANIM1 = "K_TAIL_ANIM1";
 var K_TAIL_ANIM2 = "K_TAIL_ANIM2";
 
+var K_BD_ROTATE = "K_BD_ROTATE";
+var K_BD_SPIN = "K_BD_SPIN";
+
 class Fox extends Animal {
 
     constructor(gl, matrix) {
         super(gl, new Matrix4().translate(0, 1.6, 0).multiply(matrix));
         this.matrixUpdated = true;
 
-        // Feet animation
+        // Animations
         this.animations = new Map();
-        this.animations.set(K_FEET_ANIM,  new Animation(-20, 20, 100, true));
-        this.animations.set(K_TAIL_ANIM1, new Animation(-40, 40, 200, true));
-        this.animations.set(K_TAIL_ANIM2, new Animation(-20, 20, 300, true));
+        this.animations.set(K_FEET_ANIM,  new Animation(-20, 20,   100, true));
+        this.animations.set(K_TAIL_ANIM1, new Animation(-40, 40,   200, true));
+        this.animations.set(K_TAIL_ANIM2, new Animation(-20, 20,   300, true));
+
+        this.bdStep = 0;
+        this.bdChangingStep = false;
+        this.breakdancing = false;
+        this.animations.set(K_BD_ROTATE, new Animation(0,  180, 500, false)); // Breakdance rotate
+        this.animations.set(K_BD_SPIN,   new Animation(0, 1800, 500, false)); // Breakdance spin
 
         // Movement
         this.moving = false;
@@ -56,6 +65,7 @@ class Fox extends Animal {
         this.jump_height = 1;
         this.jump_time = 500;
         this.jump_time_elapsed = 0;
+        this.jump_last_val = 0;
 
         // We use a function to compute the position at a given time
         // For that, we need to say which part of the functin interests us:
@@ -99,32 +109,28 @@ class Fox extends Animal {
     }
 
     update(dt) {
+        this._updateSpecialAnimations();
+
         if (this.jumping) {
-            let dy = getPosition(this.getDefaultMatrix())[1];
-            // Cancel current jump
-            this.matrix.translate(0, -getPosition(this.matrix)[1] + dy, 0);
-
-            // Calculate new y
-            let val = this.jump_fct(this.jump_time_elapsed * this.jump_e_fct / this.jump_time - this.jump_s_fct);
-            let y = val * this.jump_height / this.jump_m_fct;
-
-            // Update mat
-            this.matrix.translate(0, y, 0);
-            this.requestUpdate();
-
-            // Update time elapsed
-            this.jump_time_elapsed += dt * 1000;
-            this.jumping = this.jump_time_elapsed < this.jump_time;
+            this._updateJump(dt);
         }
 
+        if (this.breakdancing) {
+            this._updateBreakdance(dt);
+        }
+
+        // Update the fox's components
         if (this.matrixUpdated) {
             this._updateStaticParts();
             this._updateFeet(dt);
             this._updateTail(dt);
-        } else if (!this.animations.get(K_FEET_ANIM).isPaused()) {
-            this._updateFeet(dt);
-        } else if (!this.animations.get(K_TAIL_ANIM1).isPaused() || (!this.animations.get(K_TAIL_ANIM2).isPaused())) {
-            this._updateTail(dt);
+        } else {
+            if (!this.animations.get(K_FEET_ANIM).isPaused()) {
+                this._updateFeet(dt);
+            }
+            if (!this.animations.get(K_TAIL_ANIM1).isPaused() || (!this.animations.get(K_TAIL_ANIM2).isPaused())) {
+                this._updateTail(dt);
+            }
         }
 
         this.matrixUpdated = false;
@@ -183,11 +189,17 @@ class Fox extends Animal {
         this.setMatrix(this.matrix.translate(dx, 0, dz));
 
         // Start the animations
-        this.animations.forEach((animation, k) => {
-            if (animation.isFinished()) {
-                animation.start();
+        let movingAnimations = [
+            this.animations.get(K_FEET_ANIM),
+            this.animations.get(K_TAIL_ANIM1),
+            this.animations.get(K_TAIL_ANIM2)
+        ]
+
+        for (let anim of movingAnimations) {
+            if (anim.isFinished()) {
+                anim.start();
             }
-        });
+        }
 
         // Tell that it's moving
         this.movingDirection = direction;
@@ -214,6 +226,7 @@ class Fox extends Animal {
 
     jump () {
         if (!this.jumping) {
+            this.jump_last_val = 0;
             this.jump_time_elapsed = 0;
             this.jumping = true;
         }
@@ -230,9 +243,100 @@ class Fox extends Animal {
         }
     }
 
+    breakdance () {
+        if (!this.breakdancing) {
+            this.bdStep = 0;
+            this.breakdancing = true;
+            this.bdChangingStep = true;
+            this.moving = true;
+            this.jump();
+        }
+    }
+
     //// PRIVATE METHODS ////
 
-    _updateStaticParts() {
+    _updateSpecialAnimations () {
+        if (this.breakdancing) {
+            // Animations contained by the breakdance, in the right order
+            let anims = [
+                this.animations.get(K_BD_ROTATE),
+                this.animations.get(K_BD_SPIN),
+                this.animations.get(K_BD_ROTATE)
+            ];
+
+            if (this.bdStep < anims.length) { // If we did not finish the whole animation yet
+                let anim = anims[this.bdStep];
+                if (anim.isFinished()) { // If the animation is not active, then
+                    if (this.bdChangingStep) { // Start it if we just increased the step
+                        anim.start();
+                        this.bdChangingStep = false;
+                    } else { // Increase the step if the animation is finished
+                        this.bdStep ++;
+                        this.bdChangingStep = true;
+                    }
+                }
+            } else {
+                // We finished the animation
+                this.bdStep = 0;
+                this.bdChangingStep = true;
+                this.breakdancing = false;
+                this.moving = false;
+            }
+        }
+    }
+
+    _updateBreakdance (dt) {
+        let anims = [
+            this.animations.get(K_BD_ROTATE),
+            this.animations.get(K_BD_SPIN),
+            this.animations.get(K_BD_ROTATE)
+        ];
+
+        for(let i = 0; i < anims.length; i++) {
+            let anim = anims[i];
+            anim.tick(dt);
+            if(!anim.isFinished()) {
+                switch (i) {
+                    case 0:
+                        this.matrix.rotate(anim.getProgressDiff(), 0, 0, 1);
+                        break;
+                    case 1:
+                        this.matrix.rotate(anim.getProgressDiff(), 0, 1, 0);
+                        break;
+                    case 2:
+                        this.matrix.rotate(anim.getProgressDiff(), 0, 0, 1);
+                        break;
+                }
+
+                this.requestUpdate();
+            }
+        }
+    }
+
+    _updateJump (dt) {
+        let m = new Matrix4();
+
+        // Cancel current jump
+        m.translate(0, - this.jump_last_val, 0);
+
+        // Calculate new y
+        let val = this.jump_fct(this.jump_time_elapsed * this.jump_e_fct / this.jump_time - this.jump_s_fct);
+        let y = val * this.jump_height / this.jump_m_fct;
+
+        this.jump_last_val = y;
+
+        // Update mat
+        m.translate(0, y, 0);
+
+        this.matrix = m.multiply(this.matrix); // do that to prevent rotations from interfering with the jump
+        this.requestUpdate();
+
+        // Update time elapsed
+        this.jump_time_elapsed += dt * 1000;
+        this.jumping = this.jump_time_elapsed < this.jump_time;
+    }
+
+    _updateStaticParts () {
         this.shapes.get(K_BODY).setMatrix(
             this._getMMatrixCopy()
             .scale(1, 1, 2)
