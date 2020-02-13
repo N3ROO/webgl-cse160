@@ -38,7 +38,7 @@ function canvasToWebglCoords(x, y, r, worldX=0.0, worldY=0.0) {
  * @param {WebGL2RenderingContext} gl WebGL context
  */
 function clear(gl) {
-    gl.clearColor(0.0, 0.0, 0.0, 1.0);
+    gl.clearColor(0.0, 0.4, 1.0, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 }
 

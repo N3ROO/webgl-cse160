@@ -58,7 +58,7 @@ function main(gl) {
     let shapes = [];
     shapes.push(new Fox(gl, new Matrix4()));
     shapes.push(new Axis(gl, [1,0,0], [0,1,0], [0,0,1]));
-    shapes.push(new Cube(gl, (new Matrix4()).translate(0,-0.01,0).scale(20, 0.01, 20), [0.8, 0.8, 0.8]));
+    shapes.push(new Cube(gl, (new Matrix4()).translate(0,-0.01,0).scale(20, 0.01, 20), [0.0, 0.6, 0.3]));
 
     function getFox() {
         return shapes[0];
