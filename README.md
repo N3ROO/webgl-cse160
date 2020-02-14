@@ -14,24 +14,8 @@ Made for the CSE160 class at UCSC (Winter 2020). Written by Lilian Gallon.
 
 ![Assignment2 Diagram](.github/diagrams/assignment2.png)
 
-### Branches
+- Assignment 3: Low budget Minecraft - Grade ?/10
 
-- assignmentX: Assignment #X
-- master: Contains the latest finished assignment
-
-### Files
-
-- .github/: github-related files
-- libs/: contains all the libraries
-- shaders/
-  - fshader.glsl: Fragment shader (GLSL code)
-  - vshader.glsl: Vertex shader (GLSL code)
-- js/
-  - init.js: called when the HTML is loaded
-  - main.js: called when WebGL is ready
-  - *.js: see each files' header for details
-- index.html: contains the HTML code
-- LICENSE: MIT license
 
 ### Libs
 
@@ -46,4 +30,4 @@ The following libraries won't be taken into account for the grade, but help for 
 
 ### License:
 
-js/* & index.html files under the [MIT License](LICENSE).
+js/\*, shaders/\* & index.html files under the [MIT License](LICENSE).
