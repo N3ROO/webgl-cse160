@@ -14,6 +14,11 @@
 
 
 class Shape {
+
+    /**
+     * @param {WebGL2RenderingContext} gl
+     * @param {Matrix4} matrix model matrix
+     */
     constructor(gl, matrix) {
         this.gl = gl;
         this.matrix = matrix;

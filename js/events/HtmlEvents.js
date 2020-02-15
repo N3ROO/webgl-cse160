@@ -1,6 +1,6 @@
 /**
  * (c) 2020 Lilian Gallon, MIT License
- * File creation: 01/23/2020
+ * File creation: 01/23/2020 - 02/14/2020
  * UCSC, CSE160, Winter 2020
  * https://nero.dev
  *
@@ -8,23 +8,30 @@
  *  - Nothing
  *
  * Description:
- *  TODO:
+ *  It handles all the interactions with the HTML. This
+ * class has the access to the World instance.
  */
 
-//// CONTROLS (used by the buttons) ////
+// Controls (used by the HTML buttons)
 
 var C_AXIS = true;
 var C_FLOOR = true;
 var C_FOLLOW = true;
 
-//// OUI ////
-
 class HtmlEvents {
 
+    /**
+     * You should call registerEvents() to finish the initialization.
+     *
+     * @param {World} world world instance (not started yet)
+     */
     constructor (world) {
         this.world = world;
     }
 
+    /**
+     * It registers all the events.
+     */
     registerEvents () {
         getElement("feet-anim").onclick = e => {
             this._toggleAnimation(
@@ -81,6 +88,13 @@ class HtmlEvents {
         }
     }
 
+    /**
+     * @param {Animation} animation the targetted animation
+     * @param {string} startMsg the starting message of the animation
+     * @param {string} endMsg the ending message of the animation
+     * @param {HTML Button} target the button that triggers the animation
+     * @param {[HTML Button]} concurrents the buttons that should be disabled
+     */
     _toggleAnimation(animation, startMsg, endMsg, target, concurrents = []) {
         if (animation.isFinished()) {
             target.innerHTML = endMsg;

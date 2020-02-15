@@ -9,7 +9,7 @@
  * - Animal.js
  *
  * Description:
- *  This class creates a beautiful cubic cat!
+ *  This class creates a beautiful? cubic fox
  */
 
 // Left, right, back and front are relative to the fox

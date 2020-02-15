@@ -1,33 +1,48 @@
 /**
  * (c) 2020 Lilian Gallon, MIT License
- * File creation: 01/13/2020
+ * File creation: 01/13/2020 - 02/14/2020
  * UCSC, CSE160, Winter 2020
  * https://nero.dev
  *
  * Required:
- * - libs/*
- * - utils.js
+ * - libs/*.js
  *
  * Description:
  *  It initializes everything needed to run WebGL on the given
- *  canvas (CANVAS_ID). Once that everything is ready, the gameloop
- *  is started.
+ *  canvas (CANVAS_ID). Once that everything is ready, the world
+ *  is created and the gameloop is started.
  */
 
 
 class Engine {
 
+    /**
+     * It sets up all the attributes needed. Run init() to
+     * init and start the engine.
+     *
+     * @param {string} canvasId the canvas' id
+     */
     constructor (canvasId) {
         this.VSHADER_SOURCE = null;
         this.FSHADER_SOURCE = null;
         this.CANVAS_ID = canvasId;
         this.gl = null;
+        this.started = false;
     }
 
     /**
-     * Called when the HTML document is ready.
+     * Returns true if the engine is started.
+     */
+    started () {
+        return this.started;
+    }
+
+    /**
+     * It starts the engine that will initialize everything.
+     * It is asynchronous, so you need to make sure that the
+     * engine is started before doing anything - check started().
      *
-     * It will call postInit once done.
+     * dev: It will call _postInit once done.
      */
     init () {
         this.gl = getWebGLContext(getElement(this.CANVAS_ID));
@@ -39,7 +54,7 @@ class Engine {
         this._loadShaderFile(this.gl, 'shaders/fshader.glsl', this.gl.FRAGMENT_SHADER);
         this._loadShaderFile(this.gl, 'shaders/vshader.glsl', this.gl.VERTEX_SHADER);
 
-        // It will automatically call init once that the shaders' files are loaded
+        // It will automatically call _postInit once that the shaders' files are loaded
         // -> Because file loading is asynchronous
     }
 
@@ -61,22 +76,24 @@ class Engine {
 
         gl.enable(gl.DEPTH_TEST);
 
-        // Events
+        // Events - Keyboard
         let kb = new Keyboard();
         kb.registerEvents(this.CANVAS_ID);
-
+        // Events - Mouse
         let m = new Mouse();
         m.registerEvents(this.CANVAS_ID);
 
         // Gameloop
         let world = new World(gl, m, kb);
 
-        // User inout (HTML)
-        let htmlEvents = new HtmlEvents (world);
+        // Events - User ipout (HTML)
+        let htmlEvents = new HtmlEvents(world);
         htmlEvents.registerEvents()
 
         // THERE WE GOOOO
         world.create();
+
+        this.started = true;
     }
 
     // Loading functions //

@@ -1,6 +1,26 @@
-class Axis extends Shape{
+/**
+ * (c) 2020 Lilian Gallon, MIT License
+ * File creation: 01/28/2020
+ * UCSC, CSE160, Winter 2020
+ * https://nero.dev
+ *
+ * Required:
+ * - libs/
+ * - Shape.js
+ *
+ * Description:
+ *  This class represents a 3D axis.
+ */
 
-    constructor(gl, xColor, yColor, zColor) {
+class Axis extends Shape {
+
+    /**
+     * @param {WebGL2RenderingContext} gl
+     * @param {[float, float, float]} xColor color of the X axis
+     * @param {[float, float, float]} yColor color of the Y axis
+     * @param {[float, float, float]} zColor color of the Z axis
+     */
+    constructor (gl, xColor, yColor, zColor) {
         super(gl, new Matrix4());
 
         this.xColor = xColor;
@@ -26,7 +46,7 @@ class Axis extends Shape{
         ]);
     }
 
-    build() {
+    build () {
         let buffer = this.gl.createBuffer();
         if(!buffer) {
             console.error('Could not create a buffer');
@@ -44,7 +64,7 @@ class Axis extends Shape{
         Shape.lastShape = this;
     }
 
-    draw() {
+    draw () {
         this.gl.drawElements(this.gl.LINES, this.indices.length, this.gl.UNSIGNED_BYTE, 0);
     }
 }

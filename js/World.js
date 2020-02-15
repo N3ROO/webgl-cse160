@@ -5,14 +5,23 @@
  * https://nero.dev
  *
  * Required:
- *  - Nothing
+ *  - libs/cuon*.js
+ *  - libs/webgl*.js
  *
  * Description:
- *  Utility class for mouse events
+ *  The main class that handle everything.
  */
 
 class World {
 
+    /**
+     * It initializes all the needed attributes. You need
+     * to call create() to create the world.
+     *
+     * @param {WebGL2RenderingContext} gl
+     * @param {Mouse} mouse
+     * @param {Keyboard} keyboard
+     */
     constructor (gl, mouse, keyboard) {
         this.gl = gl;
         this.mouse = mouse;
@@ -40,6 +49,9 @@ class World {
         this.gameLoop = null;
     }
 
+    /**
+     * It creates the world
+     */
     create () {
         this.updateGlobalMatrix();
 
@@ -47,12 +59,15 @@ class World {
         this.shapes.push(new Axis(this.gl, [1,0,0], [0,1,0], [0,0,1]));
         this.shapes.push(new Cube(this.gl, (new Matrix4()).translate(0,-0.01,0).scale(20, 0.01, 20), [0.0, 0.6, 0.3]));
 
-        this.gameLoop = new GameLoop(dt => this.update(dt), dt => this.render(dt));
+        this.gameLoop = new GameLoop(dt => this._update(dt), dt => this._render(dt));
         this.gameLoop.start();
     }
 
-    update (dt) {
-        // Keyboard
+    /**
+     * @param {float} dt time difference since last update
+     */
+    _update (dt) {
+        // Keyboard events //
         this.getFox().move(
             this.keyboard.isDown(Keyboard.K_UP),
             this.keyboard.isDown(Keyboard.K_DOWN),
@@ -81,13 +96,7 @@ class World {
             }
         }
 
-        if (this.getFox().isMoving()) {
-            if (C_FOLLOW) {
-                this.followShape(this.getFox(), 0, - getPosition(this.getFox().getDefaultMatrix())[1], 0);
-            }
-        }
-
-        // Mouse
+        // Mouse events //
         if (this.mouse.isDown()) {
             let factor = 0.1;
 
@@ -102,7 +111,14 @@ class World {
             this.updateGlobalMatrix();
         }
 
-        // Update shapes
+        // Update camera //
+        if (this.getFox().isMoving()) {
+            if (C_FOLLOW) {
+                this.followShape(this.getFox(), 0, - getPosition(this.getFox().getDefaultMatrix())[1], 0);
+            }
+        }
+
+        // Update shapes //
         for (let shape of this.shapes) {
             if (!C_AXIS && shape instanceof Axis) continue;
             if (!C_FLOOR && shape instanceof Cube) continue;
@@ -110,8 +126,11 @@ class World {
         }
     }
 
-    render (dt) {
-        clear(this.gl)
+    /**
+     * @param {float} dt time difference since last update
+     */
+    _render (dt) {
+        this.clear();
 
         for (let shape of this.shapes) {
             if (!C_AXIS && shape instanceof Axis) continue;
@@ -121,8 +140,11 @@ class World {
         }
     }
 
-    // To remove
+    // To remove? //
 
+    /**
+     * It resets the buttons to their default state.
+     */
     resetButtons () {
         getElement("feet-anim").innerHTML = FEET_ANIM_S;
         getElement("tail-anim-1").innerHTML = TAIL_ANIM_1_S;
@@ -134,12 +156,26 @@ class World {
         getElement("tail-anim-n").disabled = false;
     }
 
+    /**
+     * Returns the fox
+     */
     getFox () {
         return this.shapes[0];
     }
 
     // Utility
 
+    /**
+     * It clears the screen.
+     */
+    clear() {
+        this.gl.clearColor(0.0, 0.4, 1.0, 1.0);
+        this.gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    }
+
+    /**
+     * It resets the camera to its default position.
+     */
     resetCamera () {
         this.cameraX = 15;
         this.cameraY = 10;
@@ -156,6 +192,14 @@ class World {
         this.updateGlobalMatrix();
     }
 
+    /**
+     * It updates the camera to follow the specified shape.
+     *
+     * @param {Shape} shape
+     * @param {float} dx delta x from the shape's x position
+     * @param {float} dy delta y from the shape's x position
+     * @param {float} dz delta z from the shape's x position
+     */
     followShape (shape, dx, dy, dz) {
         let pos = getPosition(shape.matrix);
         this.targetX = pos[0] + dx;
@@ -164,6 +208,9 @@ class World {
         this.updateGlobalMatrix();
     }
 
+    /**
+     * It updates the global matrix (the camera).
+     */
     updateGlobalMatrix () {
         let globalMatrix = new Matrix4();
         globalMatrix.setPerspective(30, 1, 1, 100);
@@ -180,7 +227,7 @@ class World {
 
 }
 
-// To remove
+// To remove?
 const FEET_ANIM_S = "Animate the feet";
 const FEET_ANIM_E = "Stop feet animation";
 const TAIL_ANIM_1_S = "Animate the tail (1st part)";
