@@ -316,6 +316,9 @@ class Fox extends Animal {
     }
 
     _updateJump (dt) {
+        // Update time elapsed
+        this.jump_time_elapsed += dt * 1000;
+
         let m = new Matrix4();
 
         // Cancel current jump
@@ -333,8 +336,6 @@ class Fox extends Animal {
         this.matrix = m.multiply(this.matrix); // do that to prevent rotations from interfering with the jump
         this.requestUpdate();
 
-        // Update time elapsed
-        this.jump_time_elapsed += dt * 1000;
         this.jumping = this.jump_time_elapsed < this.jump_time;
     }
 
