@@ -17,6 +17,26 @@ Made for the CSE160 class at UCSC (Winter 2020). Written by Lilian Gallon.
 - Assignment 3: Low budget Minecraft - Grade ?/10
 
 
+### Conventions
+
+**Folders:**
+- Only one word
+- Plural if the world countable (ex. animals, shaders), Singular otherwise (ex. core)
+
+**Files:**
+- MyClass.js
+- notAClass.js
+
+**Variables:**
+- myVariable
+- CONST_VARIABLE
+- C_CONTROL (a variable that is directly modified my the HTML code)
+
+**Methods:**
+- publicFunction () { ... }
+- _privateFunction () { ... }
+
+
 ### Libs
 
 These libraries are provided by Khronos (the GL standardization body) & Kanda and Matsuda (2012):
