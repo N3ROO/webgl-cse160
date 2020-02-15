@@ -207,6 +207,8 @@ class Fox extends Animal {
     }
 
     stopMoving () {
+        if (!this.moving) return;
+
         // Stop animations
         this.animations.forEach((animation, k) => {
             animation.stop();

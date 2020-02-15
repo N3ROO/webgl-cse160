@@ -20,7 +20,7 @@
         </style>
     </head>
 
-    <body onload="init()">
+    <body onload="(new Engine('webgl')).init()">
         <div class="container">
             <canvas id="webgl" width="700" height="700" tabindex="1">
                 Please use the browser supporting "canvas"
@@ -94,7 +94,7 @@
             <hr>
             <b>📝 Diagram</b>
             <br>
-            <img src="images/assignment2.png" alt="code diagram">
+            todo
 
         </div>
 
@@ -106,19 +106,23 @@
         <script src="libs/fpsmeter.min.js"></script>
 
         <!-- Personal scripts -->
-            <!-- Utility -->
+        <!-- Utility -->
         <script src="js/utils/utils.js"></script>
         <script src="js/utils/Animation.js"></script>
-            <!-- Shapes -->
+        <!-- Shapes -->
         <script src="js/shapes/Shape.js"></script>
         <script src="js/shapes/animals/Animal.js"></script>
         <script src="js/shapes/animals/Fox.js"></script>
         <script src="js/shapes/basic/Cube.js"></script>
         <script src="js/shapes/basic/Axis.js"></script>
-            <!-- Core -->
-        <script src="js/core/init.js"></script>
-        <script src="js/core/input.js"></script>
-            <!-- Main -->
-        <script src="js/main.js"></script>
+        <!-- Events -->
+        <script src="js/events/Keyboard.js"></script>
+        <script src="js/events/Mouse.js"></script>
+        <script src="js/events/HtmlEvents.js"></script>
+        <!-- Core -->
+        <script src="js/core/GameLoop.js"></script>
+        <script src="js/core/Engine.js"></script>
+        <!-- Main -->
+        <script src="js/World.js"></script>
     </body>
 </html>
