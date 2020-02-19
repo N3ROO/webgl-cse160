@@ -83,9 +83,9 @@ class World {
             this.cameraPitch = Math.max(Math.min(this.cameraPitch + dy, 90), -90);
             this.cameraYaw += dx;
             this.updateGlobalMatrix();
-
-            this.mouse.recordLastPos(this.mouse.getMovingPos());
         }
+
+        this.mouse.recordLastPos(this.mouse.getMovingPos());
 
         // Update shapes //
         for (let shape of this.shapes) {
