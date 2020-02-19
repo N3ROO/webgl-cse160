@@ -21,8 +21,9 @@ class World {
      * @param {WebGL2RenderingContext} gl
      * @param {Mouse} mouse
      * @param {Keyboard} keyboard
+     * @param {TextureManager} textures
      */
-    constructor (gl, mouse, keyboard) {
+    constructor (gl, mouse, keyboard, textures) {
         this.gl = gl;
         this.mouse = mouse;
         this.keyboard = keyboard;
@@ -47,6 +48,8 @@ class World {
 
         // Misc
         this.gameLoop = null;
+
+        this.textures = textures;
     }
 
     /**
@@ -56,8 +59,8 @@ class World {
         this.updateGlobalMatrix();
 
         // this.shapes.push(new Fox(this.gl, new Matrix4()));
-        this.shapes.push(new Axis(this.gl, [1,0,0], [0,1,0], [0,0,1]));
-        this.shapes.push(new Cube(this.gl, (new Matrix4()).translate(0,-0.01,0).scale(20, 0.01, 20), [0.0, 0.6, 0.3]));
+        // this.shapes.push(new Axis(this.gl, [1,0,0], [0,1,0], [0,0,1]));
+        this.shapes.push(new Cube(this.gl, new Matrix4(), this.textures.getTexture('stone')));
 
         this.gameLoop = new GameLoop(dt => this._update(dt), dt => this._render(dt));
         this.gameLoop.start();

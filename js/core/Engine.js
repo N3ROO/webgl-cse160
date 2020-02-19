@@ -66,7 +66,7 @@ class Engine {
      *
      * @param {WebGL2RenderingContext} gl WebGL Context
      */
-    _postInit(gl) {
+    async _postInit(gl) {
         if (!initShaders(gl, this.VSHADER_SOURCE, this.FSHADER_SOURCE)) {
             console.error('Failed to initialize shaders:');
             console.error("Vertex shader code:", this.VSHADER_SOURCE);
@@ -74,7 +74,9 @@ class Engine {
             return;
         }
 
+        // WebGL preparation
         gl.enable(gl.DEPTH_TEST);
+        gl.activeTexture(this.gl.TEXTURE0);
 
         // Events - Keyboard
         let kb = new Keyboard();
@@ -83,12 +85,16 @@ class Engine {
         let m = new Mouse();
         m.registerEvents(this.CANVAS_ID);
 
+        // Textures
+        let tm = new TextureManager(['stone', 'stonebrick']);
+        await tm.loadTextures(gl);
+
         // Gameloop
-        let world = new World(gl, m, kb);
+        let world = new World(gl, m, kb, tm);
 
         // Events - User ipout (HTML)
         let htmlEvents = new HtmlEvents(world);
-        htmlEvents.registerEvents()
+        htmlEvents.registerEvents();
 
         // THERE WE GOOOO
         world.create();
