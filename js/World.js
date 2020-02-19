@@ -47,8 +47,15 @@ class World {
 
         // this.shapes.push(new Fox(this.gl, new Matrix4()));
         this.shapes.push(new Axis(this.gl, [1,0,0], [0,1,0], [0,0,1]));
-        this.shapes.push(new Cube(this.gl, new Matrix4(), null, this.textures.getTexture('stone'), 'stone'));
         this.shapes.push(new Cube(this.gl, (new Matrix4()).scale(100,100,100), null, this.textures.getTexture('clouds'), 'clouds'));
+
+        for (let shape of WORLD1) {
+            this.shapes.push(
+                new Cube(
+                    this.gl, (new Matrix4()).translate(shape.x+0.5, shape.y+0.5, shape.z+0.5).scale(0.5,0.5,0.5), null, this.textures.getTexture(shape.texture), shape.texture
+                )
+            );
+        }
 
         this.gameLoop = new GameLoop(dt => this._update(dt), dt => this._render(dt));
         this.gameLoop.start();
