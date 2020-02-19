@@ -36,7 +36,7 @@ class Camera {
 
         this.fov = fov;
         this.aspect = screenWidth / screenHeight;
-        this.far = 100;
+        this.far = 200;
         this.near = 1;
 
         this.u_ProjectionMatrix = this.gl.getUniformLocation(this.gl.program, 'u_ProjectionMatrix');

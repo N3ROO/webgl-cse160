@@ -86,7 +86,7 @@ class Engine {
         m.registerEvents(this.CANVAS_ID);
 
         // Textures
-        let tm = new TextureManager(['stone', 'stonebrick']);
+        let tm = new TextureManager(['stone', 'stonebrick', 'clouds']);
         await tm.loadTextures(gl);
 
         // World

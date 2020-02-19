@@ -24,24 +24,55 @@ class Cube extends Shape {
     /**
      * It initializes all the arrays needed.
      *
+     * Colors parameter: null by default: front (aqua), right (green), up (red),
+     * left (yellow), down (white), back (purple).
+     * Accepted parameters:
+     * - [r, g, b, a]: all the faces will have the same color
+     * - [r,g,b,a, r,g,b,a ...]: front, right, up, left, down, and back color.
+     *
      * @param {WebGL2RenderingContext} gl WebGL Context,
      * @param {Matrix4} matrix model matrix,
-     * @param {Array} colors color of the cube (see above for details)
-     * @param {Texture} texture texture
+     * @param {Array} colors color of the cube (see above for details) -> null = ignore
+     * @param {Texture} texture texture -> null = ignore
+     * @param {Texture} textureName textureName (for optimization)
      */
-    constructor(gl, matrix, texture=null) {
+    constructor(gl, matrix, colors, texture, textureName) {
         super(gl, matrix);
 
-        this.texture = texture;
+        this.colors = null;
+        this.textureName = null;
+        this.texture = null;
 
-        this.textureCoords = new Float32Array([
-            0.0, 0.0,  1.0, 0.0,  1.0, 1.0,  0.0, 1.0, // Front
-            0.0, 0.0,  1.0, 0.0,  1.0, 1.0,  0.0, 1.0, // Right
-            0.0, 0.0,  1.0, 0.0,  1.0, 1.0,  0.0, 1.0, // Top
-            0.0, 0.0,  1.0, 0.0,  1.0, 1.0,  0.0, 1.0, // Left
-            0.0, 0.0,  1.0, 0.0,  1.0, 1.0,  0.0, 1.0, // Bottom
-            0.0, 0.0,  1.0, 0.0,  1.0, 1.0,  0.0, 1.0, // Back
-        ]);
+        if (colors !== null) {
+            let vcolors = [];
+            for (let i = 0; i < 6; i++) {
+                for (let j = 0; j < 4; j++) {
+                    for (let k = 0; k < 4; k++) {
+                        vcolors.push(
+                            colors.length === 4 ? colors[k] : colors[k+4*i]
+                        );
+                    }
+                }
+            }
+
+            this.colors = new Float32Array(vcolors);
+        }
+
+        if (texture != null) {
+            this.textureName = textureName;
+            this.texture = texture;
+
+            this.textureCoords = new Float32Array([
+                0.0, 0.0,  1.0, 0.0,  1.0, 1.0,  0.0, 1.0, // Front
+                0.0, 0.0,  1.0, 0.0,  1.0, 1.0,  0.0, 1.0, // Right
+                0.0, 0.0,  1.0, 0.0,  1.0, 1.0,  0.0, 1.0, // Top
+                0.0, 0.0,  1.0, 0.0,  1.0, 1.0,  0.0, 1.0, // Left
+                0.0, 0.0,  1.0, 0.0,  1.0, 1.0,  0.0, 1.0, // Bottom
+                0.0, 0.0,  1.0, 0.0,  1.0, 1.0,  0.0, 1.0, // Back
+            ]);
+        }
+
+        if (texture === null && colors === null) console.error('Please specify either the colors or the teture of the cube');
 
         this.vertices = new Float32Array([
             1.0, 1.0, 1.0,  -1.0, 1.0, 1.0,  -1.0,-1.0, 1.0,   1.0,-1.0, 1.0,  // v0-v1-v2-v3 front
@@ -69,11 +100,13 @@ class Cube extends Shape {
      * @return null if an error occured, the current instance otherwise.
      */
     build() {
+        let updateColor = false;
         let updateTexture = false;
         let updateMatrix = false;
 
         if (Shape.lastShape === null || !(Shape.lastShape instanceof Cube)) {
-            updateTexture = true;
+            updateColor = this.colors === null ? false : true;
+            updateTexture = this.texture === null ? false : true;
             updateMatrix = true;
 
             // The last shape is not a cube, so we need to update the index buffer
@@ -88,7 +121,8 @@ class Cube extends Shape {
             // All the cubes have the same position
             this._bindAttrib(this.vertices, 3, this.gl.FLOAT, 'a_Position');
         } else {
-            updateTexture = !float32Equals(Shape.lastShape.textureCoords, this.textureCoords);
+            updateColor = this.colors === null ? false : !float32Equals(Shape.lastShape.colors, this.colors);
+            updateTexture = this.texture === null ? false : !float32Equals(Shape.lastShape.textureCoords, this.textureCoords) || Shape.lastShape.textureName != this.textureName;
             updateMatrix = Shape.lastShape.matrix !== this.matrix;
         }
 
@@ -101,6 +135,10 @@ class Cube extends Shape {
             this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture);
             // Tell the shader we bound the texture to texture unit 0
             this.gl.uniform1i(this.gl.getUniformLocation(this.gl.program,'u_Sampler'), 0);
+        }
+
+        if (updateColor) {
+            this._bindAttrib(this.colors, 4, this.gl.FLOAT, 'a_Color');
         }
 
         if (updateMatrix) {
