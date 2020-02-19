@@ -59,7 +59,7 @@ class World {
         this.updateGlobalMatrix();
 
         // this.shapes.push(new Fox(this.gl, new Matrix4()));
-        // this.shapes.push(new Axis(this.gl, [1,0,0], [0,1,0], [0,0,1]));
+        this.shapes.push(new Axis(this.gl, [1,0,0], [0,1,0], [0,0,1]));
         this.shapes.push(new Cube(this.gl, new Matrix4(), this.textures.getTexture('stone')));
 
         this.gameLoop = new GameLoop(dt => this._update(dt), dt => this._render(dt));

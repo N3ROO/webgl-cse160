@@ -93,6 +93,9 @@ class Cube extends Shape {
         }
 
         if (updateTexture) {
+            // Remove the color
+            this._bindAttrib([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 3, this.gl.FLOAT, 'a_Color');
+            // Bind the texture coords
             this._bindAttrib(this.textureCoords, 2, this.gl.FLOAT, 'a_TexCoord');
             // Bind the texture to texture unit 0
             this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture);
