@@ -89,8 +89,9 @@ class Engine {
         let tm = new TextureManager(['stone', 'stonebrick']);
         await tm.loadTextures(gl);
 
-        // Gameloop
-        let world = new World(gl, m, kb, tm);
+        // World
+        let canvas = getElement(this.CANVAS_ID);
+        let world = new World(gl, m, kb, tm, canvas.width, canvas.height);
 
         // Events - User ipout (HTML)
         let htmlEvents = new HtmlEvents(world);

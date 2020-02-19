@@ -22,8 +22,10 @@ class World {
      * @param {Mouse} mouse
      * @param {Keyboard} keyboard
      * @param {TextureManager} textures
+     * @param {Integer} width canvas width
+     * @param {Integer} height canvas height
      */
-    constructor (gl, mouse, keyboard, textures) {
+    constructor (gl, mouse, keyboard, textures, width, height) {
         this.gl = gl;
         this.mouse = mouse;
         this.keyboard = keyboard;
@@ -33,7 +35,7 @@ class World {
         this.camera = new Camera(gl,
             0, 0, 5,
             0, 0, 0,
-            0, 0, -1,
+            90.0, width, height,
             Camera.FIRST_PERSON);
         this.camera.rotateY(-90);
     }
@@ -67,7 +69,6 @@ class World {
 
             this.camera.rotateX(Math.max(Math.min(dy, 90), -90));
             this.camera.rotateY(dx);
-            this.camera.apply();
         }
 
         let step = 10 * dt;
@@ -75,7 +76,6 @@ class World {
         if (this.keyboard.isDown(Keyboard.K_DOWN)) this.camera.moveBackward(step);
         if (this.keyboard.isDown(Keyboard.K_RIGHT)) this.camera.moveRight(step);
         if (this.keyboard.isDown(Keyboard.K_LEFT)) this.camera.moveLeft(step);
-        this.camera.apply();
 
         this.mouse.recordLastPos(this.mouse.getMovingPos());
 

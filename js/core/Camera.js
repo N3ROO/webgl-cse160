@@ -13,7 +13,20 @@
 
 class Camera {
 
-    constructor (gl, x, y, z, dirX, dirY, dirZ, mode) {
+    /**
+     * @param {WebGL2RenderingContext} gl
+     * @param {Float} x position of the camera
+     * @param {Float} y position of the camera
+     * @param {Float} z position of the camera
+     * @param {Float} dirX direction of the camera (what it looks)
+     * @param {Float} dirY direction of the camera (what it looks)
+     * @param {Float} dirZ direction of the camera (what it looks)
+     * @param {Float} fov field of view
+     * @param {Integer} screenWidth screen's width
+     * @param {Integer} screenHeight screen's height
+     * @param {Camera.FIRST_PERSON or Camera.THIRD_PERSON} mode
+     */
+    constructor (gl, x, y, z, dirX, dirY, dirZ, fov, screenWidth, screenHeight, mode) {
         this.gl = gl;
         this.mode = mode;
 
@@ -21,10 +34,13 @@ class Camera {
 
         // Projection matrix
 
-        let projectionMatrix = new Matrix4();
-        projectionMatrix.setPerspective(30, 1, 1, 100);
-        let u_ProjectionMatrix = this.gl.getUniformLocation(this.gl.program, 'u_ProjectionMatrix');
-        this.gl.uniformMatrix4fv(u_ProjectionMatrix, false, projectionMatrix.elements);
+        this.fov = fov;
+        this.aspect = screenWidth / screenHeight;
+        this.far = 100;
+        this.near = 1;
+
+        this.u_ProjectionMatrix = this.gl.getUniformLocation(this.gl.program, 'u_ProjectionMatrix');
+        this.updateProjectionMatrix();
 
         // View matrix
 
@@ -45,8 +61,24 @@ class Camera {
         this.upZ = 0;
 
         this.u_ViewMatrix = this.gl.getUniformLocation(this.gl.program, 'u_ViewMatrix');
-        this.apply();
+        this.updateViewMatrix();
     }
+
+    // PROJECTION MATRIX //
+
+    changeFov (fov) {
+        this.fov = fov;
+        this.updateProjectionMatrix();
+    }
+
+    updateProjectionMatrix () {
+        let projectionMatrix = new Matrix4();
+        //projectionMatrix.setPerspective(this.fov, this.aspect, this.near, this.far);
+        projectionMatrix.setPerspective(this.fov, this.aspect, this.near, this.far);
+        this.gl.uniformMatrix4fv(this.u_ProjectionMatrix, false, projectionMatrix.elements);
+    }
+
+    // VIEW MATRIX //
 
     /**
      * Moves the camera forward (relative to what's it's currrently looking at)
@@ -107,6 +139,7 @@ class Camera {
             this.cameraY += normY * step;
             this.cameraZ += normZ * step;
         }
+        this.updateViewMatrix();
     }
 
 
@@ -116,6 +149,7 @@ class Camera {
      */
     rotateX (alpha) {
         this.pitch += alpha;
+        this.updateViewMatrix();
     }
 
     /**
@@ -124,6 +158,7 @@ class Camera {
      */
     rotateY (alpha) {
         this.yaw += alpha;
+        this.updateViewMatrix();
     }
 
     /**
@@ -132,6 +167,7 @@ class Camera {
      */
     rotateZ (alpha) {
         this.roll += alpha;
+        this.updateViewMatrix();
     }
 
     /**
@@ -146,6 +182,7 @@ class Camera {
             this.directionX = x;
             this.directionY = y;
             this.directionZ = z;
+            this.updateViewMatrix();
         } else {
             console.warn('Do not use target(x, y, z) when using Camera.FIRST_PERSON');
         }
@@ -178,6 +215,8 @@ class Camera {
 
         // Change the mode
         this.mode = Camera.FIRST_PERSON;
+
+        this.updateViewMatrix();
     }
 
     /**
@@ -209,30 +248,32 @@ class Camera {
 
         // Change the mode
         this.mode = Camera.THIRD_PERSON;
+
+        this.updateViewMatrix();
     }
 
     /**
      * It applies the last changes to the camera.
      */
-    apply () {
-        this.viewMatrix = new Matrix4();
+    updateViewMatrix () {
+        let viewMatrix = new Matrix4();
         if (this.mode === Camera.THIRD_PERSON) {
             // Not working properly, need to think about it if I want to implement 3rd person view
-            this.viewMatrix.lookAt(this.cameraX, this.cameraY, this.cameraZ, this.directionX, this.directionY, this.directionZ, this.upX, this.upY, this.upZ);
-            this.viewMatrix.rotate(this.pitch, 1, 0, 0);
-            this.viewMatrix.rotate(this.yaw, 0, 1, 0);
-            this.viewMatrix.rotate(this.roll, 0, 0, 1);
+            viewMatrix.lookAt(this.cameraX, this.cameraY, this.cameraZ, this.directionX, this.directionY, this.directionZ, this.upX, this.upY, this.upZ);
+            viewMatrix.rotate(this.pitch, 1, 0, 0);
+            viewMatrix.rotate(this.yaw, 0, 1, 0);
+            viewMatrix.rotate(this.roll, 0, 0, 1);
         } else {
             this.directionX = Math.cos(this.yaw * Math.PI/180) * Math.cos(this.pitch * Math.PI/180);
             this.directionY = Math.sin(this.pitch * Math.PI/180);
             this.directionZ = Math.sin(this.yaw * Math.PI/180) * Math.cos(this.pitch * Math.PI/180);
 
-            this.viewMatrix.lookAt(
+            viewMatrix.lookAt(
                 this.cameraX, this.cameraY, this.cameraZ,
                 this.directionX + this.cameraX, this.directionY + this.cameraY, this.directionZ + this.cameraZ,
                 this.upX, this.upY, this.upZ);
         }
-        this.gl.uniformMatrix4fv(this.u_ViewMatrix, false, this.viewMatrix.elements);
+        this.gl.uniformMatrix4fv(this.u_ViewMatrix, false, viewMatrix.elements);
     }
 }
 
