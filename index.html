@@ -34,67 +34,7 @@
                 <span style="color:red;">X</span>,
                 <span style="color:green;">Y</span>,
                 <span style="color:blue;">Z</span>
-                |
-                <input id="axis" type="checkbox" onclick="C_FLOOR=!C_FLOOR" checked> Show floor
-                |
-                <input id="axis" type="checkbox" onclick="C_FOLLOW=!C_FOLLOW" checked> Camera follows animal
             </div>
-
-            <div>
-                <b>Animation:</b>
-                <button id="feet-anim">Animate the feet</button> |
-                <button id="tail-anim-n">Animate the tail (both parts)</button> |
-                <button id="tail-anim-1">Animate the tail (1st part)</button> |
-                <button id="tail-anim-2">Animate the tail (2nd part)</button>
-            </div>
-            <div>
-                <b>Super animations:</b>
-                <button id="breakdance">BREAKDANCE</button>
-            </div>
-            <div>
-                <b>Miscellaneous:</b>
-                <button id="reset-cam">Reset camera</button>
-            </div>
-            <small style="color:red">If some buttons are not working, make sure that you don't have any script blocker on your web browser (adblock or stuff like that)</small>
-
-            <hr>
-            <b>🔺 Features:</b>
-            <ul>
-                <li>
-                    Camera movements:
-                    <ul>
-                        <li> <u>Rotation</u>: mouse</li>
-                    </ul>
-                </li>
-                <li>
-                    Fox movements:
-                    <ul>
-                        <li><u>Move</u>: WASD keys (the feet are animated according to the direction taken)</li>
-                        <li><u>Jump</u>: spacebar</li>
-                        <li><u>Run</u>: shift</li>
-                    </ul>
-                </li>
-                <li>
-                    Miscellaneous:
-                    <ul>
-                        <li>
-                            FPSMeter: All the credits go to <a href="https://github.com/darsain/fpsmeter">https://github.com/darsain/fpsmeter</a>.
-                            I added it during the development to see what had an impact on performances. Since it looks nice I did not remove it.
-                        </li>
-                    </ul>
-                </li>
-            </ul>
-
-            <hr>
-            <b>✨ Optimizations:</b>
-            <ul>
-                <li> <b>Gain: 20-30fps</b> - The buffers are updated <b>only</b> if needed. Example: If the last shape drawn at the screen has the same color as the last one, then the color won't be updated.</li>
-            </ul>
-
-            <hr>
-            <b>📝 Diagram</b>
-            <br>
-            todo
 
         </div>
 
