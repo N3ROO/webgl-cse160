@@ -118,17 +118,19 @@ class Camera {
      * @param {0, 1, 2, or 3} direction 0: forward, 1: backward, 2: left, 3: right
      */
     move (step, direction) {
-        if (direction === 1 || direction === 3) step *= -1;
+        if (direction === 1 || direction === 2) step *= -1;
 
         if (direction === 0 || direction === 1) {
             this.cameraX += step * this.directionX;
             this.cameraY += step * this.directionY;
             this.cameraZ += step * this.directionZ;
         } else {
-            let crossX = this.cameraY * this.upZ - this.cameraZ * this.upY;
-            let crossY = this.cameraX * this.upZ - this.cameraZ * this.upX;
-            let crossZ = this.cameraX * this.upY - this.cameraY * this.upX;
+            // We do the cross product to get the right vector (according to the camera)
+            let crossX = this.directionY * this.upZ - this.directionZ * this.upY;
+            let crossY = this.directionX * this.upZ - this.directionZ * this.upX;
+            let crossZ = this.directionX * this.upY - this.directionY * this.upX;
 
+            // Then we normalize it otherwise it may return different vectors based on the direction vector
             let length = Math.sqrt(crossX**2 + crossY**2 + crossZ**2);
 
             let normX = crossX / length;
@@ -149,6 +151,8 @@ class Camera {
      */
     rotateX (alpha) {
         this.pitch += alpha;
+        if(this.pitch > 89) this.pitch =  89;
+        if(this.pitch < -89) this.pitch = -89;
         this.updateViewMatrix();
     }
 
@@ -267,6 +271,12 @@ class Camera {
             this.directionX = Math.cos(this.yaw * Math.PI/180) * Math.cos(this.pitch * Math.PI/180);
             this.directionY = Math.sin(this.pitch * Math.PI/180);
             this.directionZ = Math.sin(this.yaw * Math.PI/180) * Math.cos(this.pitch * Math.PI/180);
+
+            /*
+            let length = Math.sqrt(directionX**2 + directionY**2 + directionZ**2);
+            this.directionX = directionX / length;
+            this.directionY = directionY / length;
+            this.directionZ = directionZ / length;*/
 
             viewMatrix.lookAt(
                 this.cameraX, this.cameraY, this.cameraZ,
