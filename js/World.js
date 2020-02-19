@@ -72,7 +72,7 @@ class World {
     _update (dt) {
         // Mouse events //
         if (this.mouse.isDown()) {
-            let factor = 0.1;
+            let factor = 0.3;
 
             let dx = this.mouse.getDeltaPos()[0];
             let dy = - this.mouse.getDeltaPos()[1];
@@ -83,6 +83,8 @@ class World {
             this.cameraPitch = Math.max(Math.min(this.cameraPitch + dy, 90), -90);
             this.cameraYaw += dx;
             this.updateGlobalMatrix();
+
+            this.mouse.recordLastPos(this.mouse.getMovingPos());
         }
 
         // Update shapes //
