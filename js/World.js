@@ -33,7 +33,7 @@ class World {
         this.gameLoop = null;
         this.textures = textures;
         this.camera = new Camera(gl,
-            0, 0, 5,
+            -2, 5, 20,
             0, 0, 0,
             90.0, width, height,
             Camera.FIRST_PERSON);
@@ -47,14 +47,22 @@ class World {
 
         // this.shapes.push(new Fox(this.gl, new Matrix4()));
         this.shapes.push(new Axis(this.gl, [1,0,0], [0,1,0], [0,0,1]));
-        this.shapes.push(new Cube(this.gl, (new Matrix4()).scale(100,100,100), null, this.textures.getTexture('clouds'), 'clouds'));
+        //this.shapes.push(new Cube(this.gl, (new Matrix4()).scale(100,100,100), [0, 0, 0.9, 1], this.textures.getTexture('clouds'), 'clouds'));
+        this.shapes.push(new Cube(this.gl, (new Matrix4()).scale(100,100,100), [0, 0.5, 1], null, 'clouds'));
 
         for (let shape of WORLD1) {
-            this.shapes.push(
-                new Cube(
-                    this.gl, (new Matrix4()).translate(shape.x+0.5, shape.y+0.5, shape.z+0.5).scale(0.5,0.5,0.5), null, this.textures.getTexture(shape.texture), shape.texture
-                )
-            );
+            let cube;
+            let pos = (new Matrix4()).translate(shape.x+0.5, shape.y+0.5, shape.z+0.5).scale(0.5, 0.5, 0.5);
+            let texture = this.textures.getTexture(shape.block);
+
+            if (shape.block.startsWith('door')) {
+                // TODO: zizi
+                cube = new Cube(this.gl, pos, null, texture, shape.block);
+            } else {
+                cube = new Cube(this.gl, pos, null,  texture, shape.block);
+            }
+
+            this.shapes.push(cube);
         }
 
         this.gameLoop = new GameLoop(dt => this._update(dt), dt => this._render(dt));
