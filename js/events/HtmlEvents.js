@@ -15,8 +15,7 @@
 // Controls (used by the HTML buttons)
 
 var C_AXIS = true;
-var C_FLOOR = true;
-var C_FOLLOW = true;
+var C_FOLLOW_FOX = true;
 
 class HtmlEvents {
 
@@ -33,59 +32,20 @@ class HtmlEvents {
      * It registers all the events.
      */
     registerEvents () {
-        getElement("feet-anim").onclick = e => {
-            this._toggleAnimation(
-                this.world.getFox().animations.get(K_FEET_ANIM),
-                FEET_ANIM_S,
-                FEET_ANIM_E,
-                e.target
-            );
-        }
+        this.world.getCamera().setOnCamMoving(cam => {
+            let c = cam.getInfo();
+            getElement('camera').innerHTML = (
+                'x: ' + c.x.toFixed(2) + '<br>y: ' + c.y.toFixed(2) + '<br>z: ' + c.z.toFixed(2) + '<br>' +
+                'pitch: ' + c.pitch.toFixed(2) + '<br>yaw: ' + c.yaw.toFixed(2) + '<br>roll: ' + c.roll.toFixed(2));
+        });
 
-        getElement("tail-anim-1").onclick = e => {
-            this._toggleAnimation(
-                this.world.getFox().animations.get(K_TAIL_ANIM1),
-                TAIL_ANIM_1_S,
-                TAIL_ANIM_1_E,
-                e.target,
-                [getElement("tail-anim-2"), getElement("tail-anim-n")]
-            );
-        }
-
-        getElement("tail-anim-2").onclick = e => {
-            this._toggleAnimation(
-                this.world.getFox().animations.get(K_TAIL_ANIM2),
-                TAIL_ANIM_2_S,
-                TAIL_ANIM_2_E,
-                e.target,
-                [getElement("tail-anim-1"), getElement("tail-anim-n")]
-            );
-        }
-
-        getElement("tail-anim-n").onclick = e => {
-            this._toggleAnimation(
-                this.world.getFox().animations.get(K_TAIL_ANIM1),
-                TAIL_ANIM_N_S,
-                TAIL_ANIM_N_E,
-                [getElement("tail-anim-1"), getElement("tail-anim-2")]
-            );
-
-            this._toggleAnimation(
-                this.world.getFox().animations.get(K_TAIL_ANIM2),
-                TAIL_ANIM_N_S,
-                TAIL_ANIM_N_E,
-                e.target,
-                [getElement("tail-anim-1"), getElement("tail-anim-2")]
-            );
-        }
-
-        getElement("breakdance").onclick = e => {
-            this.world.getFox().breakdance();
-        }
-
-        getElement("reset-cam").onclick = e => {
-            this.world.resetCamera();
-        }
+        getElement('night').onclick = e => {
+            if (e.target.checked) {
+                this.world.changeTime(false);
+            } else {
+                this.world.changeTime(true);
+            }
+        };
     }
 
     /**

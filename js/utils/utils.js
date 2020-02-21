@@ -58,6 +58,7 @@ function getElement(id) {
  * @param {Float32Array} target
  */
 function float32Equals(source, target) {
+    if (source === undefined) return false;
     if (source === null || target === null) return false;
     if (source.length !== target.length) return false;
     for (let i = 0; i < source.length; i++) {

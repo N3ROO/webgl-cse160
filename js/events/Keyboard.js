@@ -97,5 +97,9 @@ Keyboard.K_A = 65;
 Keyboard.K_S = 83;
 Keyboard.K_D = 68;
 
+Keyboard.K_Q = 81;
+Keyboard.K_E = 69;
+
 Keyboard.K_SHIFT = 16;
 Keyboard.K_SPACE = 32;
+Keyboard.K_CTRL = 17;

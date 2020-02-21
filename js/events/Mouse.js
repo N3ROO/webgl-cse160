@@ -32,6 +32,8 @@ class Mouse {
         this.lx = null;
         this.ly = null;
 
+        this.last = null;
+
         this.bb = null;
         this.down = false;
     }
@@ -61,14 +63,19 @@ class Mouse {
         }
 
         getElement(canvasId).onmousemove = e => {
-            this.lx = this.mx;
-            this.ly = this.my;
-
             this.mx = e.clientX;
             this.my = e.clientY;
 
             this.bb = e.target.getBoundingClientRect();
         }
+    }
+
+    /**
+     * It records the last position with the given one (used by getDeltaPos)
+     * @param {[int, int]} pos [x, y]
+     */
+    recordLastPos (pos) {
+        this.last = pos;
     }
 
     /**
@@ -97,7 +104,8 @@ class Mouse {
      * position, and the last one or null if unset.
      */
     getDeltaPos () {
-        return [this.mx - this.lx, this.my - this.ly];
+        if (this.last == null) return [0, 0];
+        return [this.mx - this.last[0], this.my - this.last[1]];
     }
 
     /**

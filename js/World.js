@@ -21,107 +21,121 @@ class World {
      * @param {WebGL2RenderingContext} gl
      * @param {Mouse} mouse
      * @param {Keyboard} keyboard
+     * @param {TextureManager} textures
+     * @param {Integer} width canvas width
+     * @param {Integer} height canvas height
      */
-    constructor (gl, mouse, keyboard) {
+    constructor (gl, mouse, keyboard, textures, width, height) {
         this.gl = gl;
         this.mouse = mouse;
         this.keyboard = keyboard;
-
-        // Camera info
-        this.cameraX = 15;
-        this.cameraY = 10;
-        this.cameraZ = -15;
-
-        this.cameraPitch = 0;
-        this.cameraYaw = 0;
-        this.cameraRoll = 0;
-
-        this.targetX = 0;
-        this.targetY = 0;
-        this.targetZ = 0;
-
-        this.u_GlobalMatrix = this.gl.getUniformLocation(this.gl.program, 'u_GlobalMatrix');
-
-        // Shapes
         this.shapes = [];
-
-        // Misc
         this.gameLoop = null;
+        this.textures = textures;
+        this.camera = new Camera(gl,
+            -2, 5, 20,
+            0, 0, 0,
+            90.0, width, height,
+            Camera.FIRST_PERSON);
+        this.camera.rotateY(-90);
+
+        // Sensibilities
+        this.MOUSE_ROTATION_SENS = 5;
+        this.KEYBOARD_ROTATION_SENS = 40;
+        this.KEYBOARD_MOVING_SEN = 10;
     }
 
     /**
      * It creates the world
      */
     create () {
-        this.updateGlobalMatrix();
-
-        this.shapes.push(new Fox(this.gl, new Matrix4()));
+        this.shapes.push(new Fox(this.gl, (new Matrix4()).translate(-3, 0, 7).rotate(180, 0, 1, 0).scale(0.3,0.3,0.3)));
         this.shapes.push(new Axis(this.gl, [1,0,0], [0,1,0], [0,0,1]));
-        this.shapes.push(new Cube(this.gl, (new Matrix4()).translate(0,-0.01,0).scale(20, 0.01, 20), [0.0, 0.6, 0.3]));
+        this.shapes.push(new Sky(this.gl, (new Matrix4()).translate(0, 70, 0).scale(80,80,80), this.textures.getTexture('SkySmackdown_night'), 'SkySmackdown_night'));
+        this.shapes.push(new Floor(this.gl, (new Matrix4()).translate(0,0.9,0).scale(80, 0.1, 80), this.textures.getTexture('grass'), 'grass', 80));
+
+        for (let shape of WORLD1) {
+            let cube;
+            let pos = (new Matrix4()).translate(shape.x+0.5, shape.y+0.5, shape.z+0.5).scale(0.5, 0.5, 0.5);
+            let texture = this.textures.getTexture(shape.block);
+            cube = new Cube(this.gl, pos, null,  texture, shape.block);
+            this.shapes.push(cube);
+        }
+
+        this.getFox().toggleTailAnimation();
 
         this.gameLoop = new GameLoop(dt => this._update(dt), dt => this._render(dt));
         this.gameLoop.start();
+
+        // Send the event to all the listeners to init them with the initial cam
+        this.camera.fireEvents();
     }
 
     /**
      * @param {float} dt time difference since last update
      */
     _update (dt) {
+        // Mouse events //
+        if (this.mouse.isDown() || this.keyboard.isDown(Keyboard.K_Q) || this.keyboard.isDown(Keyboard.K_E)) {
+            let pitch = 0; // rx
+            let yaw = 0; // ry
+            // let roll = 0; // rz
+
+            if (this.mouse.isDown()) {
+                yaw = this.mouse.getDeltaPos()[0];
+                pitch = - this.mouse.getDeltaPos()[1];
+
+                yaw *= this.MOUSE_ROTATION_SENS;
+                pitch *= this.MOUSE_ROTATION_SENS;
+            } else if (this.keyboard.isDown(Keyboard.K_Q)) {
+                //roll = - this.KEYBOARD_ROTATION_SENS;
+                yaw = - this.KEYBOARD_ROTATION_SENS;
+            } else {
+                //roll = this.KEYBOARD_ROTATION_SENS;
+                yaw = this.KEYBOARD_ROTATION_SENS;
+            }
+
+            yaw *= dt;
+            pitch *= dt;
+
+            this.camera.rotateX(Math.max(Math.min(pitch, 90), -90));
+            this.camera.rotateY(yaw);
+            //this.camera.rotateZ(Math.max(Math.min(roll, 180), -180));
+        }
+
+        this.mouse.recordLastPos(this.mouse.getMovingPos());
+
         // Keyboard events //
+
+        // Fox
         this.getFox().move(
             this.keyboard.isDown(Keyboard.K_UP),
             this.keyboard.isDown(Keyboard.K_DOWN),
             this.keyboard.isDown(Keyboard.K_RIGHT),
-            this.keyboard.isDown(Keyboard.K_LEFT)
-        );
+            this.keyboard.isDown(Keyboard.K_LEFT));
 
-        this.getFox().run(
-            this.keyboard.isDown(Keyboard.K_SHIFT)
-        );
+        this.getFox().run(this.keyboard.isDown(Keyboard.K_SHIFT));
+        this.getFox().jump(this.keyboard.isDown(Keyboard.K_SPACE));
+        this.getFox().breakdance(this.keyboard.isDown(Keyboard.K_CTRL));
 
-        if (this.keyboard.isDown(Keyboard.K_SPACE)) {
-            this.getFox().jump();
-        }
+        // Camera
+        if (this.keyboard.isDown(Keyboard.K_W)) this.camera.moveForward(this.KEYBOARD_MOVING_SEN * dt);
+        if (this.keyboard.isDown(Keyboard.K_S)) this.camera.moveBackward(this.KEYBOARD_MOVING_SEN * dt);
+        if (this.keyboard.isDown(Keyboard.K_D)) this.camera.moveRight(this.KEYBOARD_MOVING_SEN * dt);
+        if (this.keyboard.isDown(Keyboard.K_A)) this.camera.moveLeft(this.KEYBOARD_MOVING_SEN * dt);
 
-        if (this.keyboard.justUp()) {
-            if(!this.keyboard.isDown(Keyboard.K_UP) &&
-                !this.keyboard.isDown(Keyboard.K_DOWN) &&
-                !this.keyboard.isDown(Keyboard.K_RIGHT) &&
-                !this.keyboard.isDown(Keyboard.K_LEFT)) {
-
-                    if (this.getFox().isMoving()) {
-                    this.getFox().stopMoving();
-                    this.resetButtons();
-                }
-            }
-        }
-
-        // Mouse events //
-        if (this.mouse.isDown()) {
-            let factor = 0.1;
-
-            let dx = this.mouse.getDeltaPos()[0];
-            let dy = - this.mouse.getDeltaPos()[1];
-
-            dx *= factor;
-            dy *= factor;
-
-            this.cameraPitch = Math.max(Math.min(this.cameraPitch + dy, 90), -90);
-            this.cameraYaw += dx;
-            this.updateGlobalMatrix();
-        }
-
-        // Update camera //
-        if (this.getFox().isMoving()) {
-            if (C_FOLLOW) {
-                this.followShape(this.getFox(), 0, - getPosition(this.getFox().getDefaultMatrix())[1], 0);
-            }
+        if (this.getFox().isMoving() || this.getFox().jumping) {
+            let pos = getPosition(this.getFox().matrix);
+            this.camera.moveToSmooth(pos[0], pos[1] + 1, pos[2] - 3, dt);
+            this.camera.headToSmooth(0, 90, 0, dt);
+        } else {
+            this.camera.resetMovingAnimation();
+            this.camera.resetHeadingAnimation();
         }
 
         // Update shapes //
         for (let shape of this.shapes) {
             if (!C_AXIS && shape instanceof Axis) continue;
-            if (!C_FLOOR && shape instanceof Cube) continue;
             shape.update(dt);
         }
     }
@@ -134,36 +148,34 @@ class World {
 
         for (let shape of this.shapes) {
             if (!C_AXIS && shape instanceof Axis) continue;
-            if (!C_FLOOR && shape instanceof Cube) continue;
             shape.build();
             shape.draw();
         }
     }
 
-    // To remove? //
+    // Utility
 
-    /**
-     * It resets the buttons to their default state.
-     */
-    resetButtons () {
-        getElement("feet-anim").innerHTML = FEET_ANIM_S;
-        getElement("tail-anim-1").innerHTML = TAIL_ANIM_1_S;
-        getElement("tail-anim-2").innerHTML = TAIL_ANIM_2_S;
-        getElement("tail-anim-n").innerHTML = TAIL_ANIM_N_S;
-        getElement("feet-anim").disabled = false;
-        getElement("tail-anim-1").disabled = false;
-        getElement("tail-anim-2").disabled = false;
-        getElement("tail-anim-n").disabled = false;
+    getCamera () {
+        return this.camera;
     }
 
-    /**
-     * Returns the fox
-     */
     getFox () {
         return this.shapes[0];
     }
 
-    // Utility
+    /**
+     * It changes the world ambiance (day / night)
+     * @param {Boolean} day true -> sets the time to day, night otherwise
+     */
+    changeTime (day) {
+        let textureName;
+        if (day) {
+            textureName = 'SkySmackdown';
+        } else {
+            textureName = 'SkySmackdown_night';
+        }
+        this.shapes[2].changeTexture(this.textures.getTexture(textureName));
+    }
 
     /**
      * It clears the screen.
@@ -172,67 +184,4 @@ class World {
         this.gl.clearColor(0.0, 0.4, 1.0, 1.0);
         this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
     }
-
-    /**
-     * It resets the camera to its default position.
-     */
-    resetCamera () {
-        this.cameraX = 15;
-        this.cameraY = 10;
-        this.cameraZ = -15;
-
-        this.cameraPitch = 0;
-        this.cameraYaw = 0;
-        this.cameraRoll = 0;
-
-        this.targetX = 0;
-        this.targetY = 0;
-        this.targetZ = 0;
-
-        this.updateGlobalMatrix();
-    }
-
-    /**
-     * It updates the camera to follow the specified shape.
-     *
-     * @param {Shape} shape
-     * @param {float} dx delta x from the shape's x position
-     * @param {float} dy delta y from the shape's x position
-     * @param {float} dz delta z from the shape's x position
-     */
-    followShape (shape, dx, dy, dz) {
-        let pos = getPosition(shape.matrix);
-        this.targetX = pos[0] + dx;
-        this.targetY = pos[1] + dy;
-        this.targetZ = pos[2] + dz;
-        this.updateGlobalMatrix();
-    }
-
-    /**
-     * It updates the global matrix (the camera).
-     */
-    updateGlobalMatrix () {
-        let globalMatrix = new Matrix4();
-        globalMatrix.setPerspective(30, 1, 1, 100);
-        globalMatrix.lookAt(
-            this.cameraX, this.cameraY, this.cameraZ,
-            0, 0, 0,
-            0, 1, 0);
-        globalMatrix.rotate(this.cameraPitch, 1, 0, 0);
-        globalMatrix.rotate(this.cameraYaw, 0, 1, 0);
-        globalMatrix.rotate(this.cameraRoll, 0, 0, 1);
-        globalMatrix.translate(- this.targetX, - this.targetY, - this.targetZ);
-        this.gl.uniformMatrix4fv(this.u_GlobalMatrix, false, globalMatrix.elements);
-    }
-
 }
-
-// To remove?
-const FEET_ANIM_S = "Animate the feet";
-const FEET_ANIM_E = "Stop feet animation";
-const TAIL_ANIM_1_S = "Animate the tail (1st part)";
-const TAIL_ANIM_1_E = "Stop tail animation (1st part)";
-const TAIL_ANIM_2_S = "Animate the tail (2nd part)";
-const TAIL_ANIM_2_E = "Stop tail animation (2nd part)";
-const TAIL_ANIM_N_S = "Animate the tail (both parts)";
-const TAIL_ANIM_N_E = "Stop tail animation (both parts)";

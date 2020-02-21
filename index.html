@@ -4,99 +4,107 @@
         <meta charset="utf-8" />
         <title>Lilian Gallon - Low budget Minecraft - Assignment 3</title>
 
-        <style>
-            #breakdance {
-                border: 2px solid transparent;
-                border-image: linear-gradient(to bottom right, #b827fc 0%, #2c90fc 25%, #b8fd33 50%, #fec837 75%, #fd1892 100%);;
-                border-image-slice: 1;
+        <style>/*
+            @font-face {
+                font-family: myFirstFont;
+                src: url(sansation_light.woff);
+            }*/
+            body {
+                font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
             }
 
-            #breakdance:hover {
-                border: 2px solid transparent;
-                border-image: linear-gradient(to bottom right, #2c90fc 0%, #b827fc 25%, #fec837 50%, #b8fd33 75%, #fd1892 100%);;
-                border-image-slice: 1;
+            #container {
+                position: relative;
+            }
+
+            #container canvas, #overlay {
+                position: absolute;
+            }
+
+            #overlay div {
+                margin-top: 50px;
+                margin-left: 5px;
+            }
+
+            canvas {
+                border: 1px solid black;
+            }
+
+            #settings {
+                top: 720px;
+                position: absolute;
+            }
+
+            #settings .column {
+                display: inline-block;
+                vertical-align: top;
+                margin-right: 20px;
+            }
+
+            #camera {
+                color: gray;
+            }
+
+            .new {
                 color: red;
+                vertical-align: top;
             }
         </style>
+
+        <script src="https://kit.fontawesome.com/6eb9895a2e.js" crossorigin="anonymous"></script>
     </head>
 
     <body onload="(new Engine('webgl')).init()">
-        <div class="container">
-            <canvas id="webgl" width="700" height="700" tabindex="1">
+
+        <div id="container">
+            <canvas id="webgl" width="1000" height="700" tabindex="1">
                 Please use the browser supporting "canvas"
             </canvas>
-
-            <br>
-
-            <div>
-                <b>Options:</b>
-                <input id="axis" type="checkbox" onclick="C_AXIS=!C_AXIS" checked> Show axis:
-                <span style="color:red;">X</span>,
-                <span style="color:green;">Y</span>,
-                <span style="color:blue;">Z</span>
-                |
-                <input id="axis" type="checkbox" onclick="C_FLOOR=!C_FLOOR" checked> Show floor
-                |
-                <input id="axis" type="checkbox" onclick="C_FOLLOW=!C_FOLLOW" checked> Camera follows animal
+            <div id="overlay">
+                <div id="camera"></div>
             </div>
-
-            <div>
-                <b>Animation:</b>
-                <button id="feet-anim">Animate the feet</button> |
-                <button id="tail-anim-n">Animate the tail (both parts)</button> |
-                <button id="tail-anim-1">Animate the tail (1st part)</button> |
-                <button id="tail-anim-2">Animate the tail (2nd part)</button>
-            </div>
-            <div>
-                <b>Super animations:</b>
-                <button id="breakdance">BREAKDANCE</button>
-            </div>
-            <div>
-                <b>Miscellaneous:</b>
-                <button id="reset-cam">Reset camera</button>
-            </div>
-            <small style="color:red">If some buttons are not working, make sure that you don't have any script blocker on your web browser (adblock or stuff like that)</small>
-
-            <hr>
-            <b>🔺 Features:</b>
-            <ul>
-                <li>
-                    Camera movements:
-                    <ul>
-                        <li> <u>Rotation</u>: mouse</li>
-                    </ul>
-                </li>
-                <li>
-                    Fox movements:
-                    <ul>
-                        <li><u>Move</u>: WASD keys (the feet are animated according to the direction taken)</li>
-                        <li><u>Jump</u>: spacebar</li>
-                        <li><u>Run</u>: shift</li>
-                    </ul>
-                </li>
-                <li>
-                    Miscellaneous:
-                    <ul>
-                        <li>
-                            FPSMeter: All the credits go to <a href="https://github.com/darsain/fpsmeter">https://github.com/darsain/fpsmeter</a>.
-                            I added it during the development to see what had an impact on performances. Since it looks nice I did not remove it.
-                        </li>
-                    </ul>
-                </li>
-            </ul>
-
-            <hr>
-            <b>✨ Optimizations:</b>
-            <ul>
-                <li> <b>Gain: 20-30fps</b> - The buffers are updated <b>only</b> if needed. Example: If the last shape drawn at the screen has the same color as the last one, then the color won't be updated.</li>
-            </ul>
-
-            <hr>
-            <b>📝 Diagram</b>
-            <br>
-            todo
-
         </div>
+
+        <div id="settings">
+            <b>Options:</b>
+            <input id="axis" type="checkbox" onclick="C_AXIS=!C_AXIS" checked> Show axis:
+            <span style="color:red;">X</span>,
+            <span style="color:green;">Y</span>,
+            <span style="color:blue;">Z</span>
+            <input id="night" type="checkbox" checked> Night mode
+            <br><br>
+
+            <div>
+                <div class="column">
+                    <b>Camera controls:</b>
+                    <ul>
+                        <li>Translation: WASD</li>
+                        <li>Rotation: AE and <i class="fas fa-mouse"></i></li>
+                    </ul>
+                </div>
+
+                <div class="column">
+                    <b>Fox controls:</b>
+                    <ul>
+                        <li>Translation: <i class="fas fa-arrow-up"></i> <i class="fas fa-arrow-down"></i> <i class="fas fa-arrow-right"></i> <i class="fas fa-arrow-left"></i></li>
+                        <li>Jump: SPACE</li>
+                        <li>Run: SHIFT</li>
+                        <li>Breakdance: CTRL</li>
+                    </ul>
+                </div>
+
+                <div class="column">
+                    <b>Cool features:</b>
+                    <ul>
+                        <li><i class="fa-fw fas fa-video fab"></i> The camera is smooth (try that by moving the fox)</li>
+                        <li><i class="fa-fw fas fa-palette"></i> It is possible to render textures and colors at the same time</li>
+                        <li><i class="fa-fw fas fa-images"></i> It is possible to use any texture as long as it is a png file</li>
+                        <li><i class="fas fa-cloud-moon"></i> The skybox is mapped to look "real"</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
 
         <!-- Libs -->
         <script src="libs/webgl-utils.js"></script>
@@ -106,6 +114,9 @@
         <script src="libs/fpsmeter.min.js"></script>
 
         <!-- Personal scripts -->
+        <!-- Data -->
+        <script src="data/world1.js"></script>
+
         <!-- Utility -->
         <script src="js/utils/utils.js"></script>
         <script src="js/utils/Animation.js"></script>
@@ -114,13 +125,17 @@
         <script src="js/shapes/animals/Animal.js"></script>
         <script src="js/shapes/animals/Fox.js"></script>
         <script src="js/shapes/basic/Cube.js"></script>
+        <script src="js/shapes/basic/Sky.js"></script>
+        <script src="js/shapes/basic/Floor.js"></script>
         <script src="js/shapes/basic/Axis.js"></script>
         <!-- Events -->
         <script src="js/events/Keyboard.js"></script>
         <script src="js/events/Mouse.js"></script>
         <script src="js/events/HtmlEvents.js"></script>
         <!-- Core -->
+        <script src="js/core/Camera.js"></script>
         <script src="js/core/GameLoop.js"></script>
+        <script src="js/core/TextureManager.js"></script>
         <script src="js/core/Engine.js"></script>
         <!-- Main -->
         <script src="js/World.js"></script>
