@@ -4,40 +4,69 @@
         <meta charset="utf-8" />
         <title>Lilian Gallon - Low budget Minecraft - Assignment 3</title>
 
-        <style>
-            #breakdance {
-                border: 2px solid transparent;
-                border-image: linear-gradient(to bottom right, #b827fc 0%, #2c90fc 25%, #b8fd33 50%, #fec837 75%, #fd1892 100%);;
-                border-image-slice: 1;
+        <style>/*
+            @font-face {
+                font-family: myFirstFont;
+                src: url(sansation_light.woff);
+            }*/
+            body {
+                font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
             }
 
-            #breakdance:hover {
-                border: 2px solid transparent;
-                border-image: linear-gradient(to bottom right, #2c90fc 0%, #b827fc 25%, #fec837 50%, #b8fd33 75%, #fd1892 100%);;
-                border-image-slice: 1;
-                color: red;
+            #container {
+                position: relative;
+            }
+
+            #container canvas, #overlay {
+                position: absolute;
+            }
+
+            #overlay div {
+                margin-top: 50px;
+                margin-left: 5px;
+            }
+
+            canvas {
+                border: 1px solid black;
+            }
+
+            #settings {
+                top: 720px;
+                position: absolute;
+            }
+
+            #settings div {
+                display: inline-block;
+                vertical-align: top;
+                margin-right: 20px;
+            }
+
+            #camera {
+                color: gray;
             }
         </style>
 
-    <script src="https://kit.fontawesome.com/6eb9895a2e.js" crossorigin="anonymous"></script>
+        <script src="https://kit.fontawesome.com/6eb9895a2e.js" crossorigin="anonymous"></script>
     </head>
 
     <body onload="(new Engine('webgl')).init()">
-        <div class="container">
+
+        <div id="container">
             <canvas id="webgl" width="1000" height="700" tabindex="1">
                 Please use the browser supporting "canvas"
             </canvas>
-
-            <br>
-
-            <div>
-                <b>Options:</b>
-                <input id="axis" type="checkbox" onclick="C_AXIS=!C_AXIS" checked> Show axis:
-                <span style="color:red;">X</span>,
-                <span style="color:green;">Y</span>,
-                <span style="color:blue;">Z</span>
+            <div id="overlay">
+                <div id="camera"></div>
             </div>
-            <br>
+        </div>
+
+        <div id="settings">
+            <b>Options:</b>
+            <input id="axis" type="checkbox" onclick="C_AXIS=!C_AXIS" checked> Show axis:
+            <span style="color:red;">X</span>,
+            <span style="color:green;">Y</span>,
+            <span style="color:blue;">Z</span>
+            <br><br>
             <div>
                 <b>Camera controls:</b>
                 <ul>
@@ -55,8 +84,8 @@
                     <li>Breakdance: CTRL</li>
                 </ul>
             </div>
-
         </div>
+
 
         <!-- Libs -->
         <script src="libs/webgl-utils.js"></script>

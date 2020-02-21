@@ -62,6 +62,9 @@ class Camera {
 
         this.u_ViewMatrix = this.gl.getUniformLocation(this.gl.program, 'u_ViewMatrix');
         this.updateViewMatrix();
+
+        // Event listeners
+        this.cameraMovingFunc = null;
     }
 
     // PROJECTION MATRIX //
@@ -211,6 +214,7 @@ class Camera {
         this.pitch = 0;
         this.yaw = 0;
         this.roll = 0;
+        this.lastRoll = 0;
 
         // Change what the camera is looking at
         this.directionX = lx;
@@ -268,15 +272,19 @@ class Camera {
             viewMatrix.rotate(this.yaw, 0, 1, 0);
             viewMatrix.rotate(this.roll, 0, 0, 1);
         } else {
-            this.directionX = Math.cos(this.yaw * Math.PI/180) * Math.cos(this.pitch * Math.PI/180);
-            this.directionY = Math.sin(this.pitch * Math.PI/180);
-            this.directionZ = Math.sin(this.yaw * Math.PI/180) * Math.cos(this.pitch * Math.PI/180);
+            let toRad = Math.PI/180;
 
-            /*
-            let length = Math.sqrt(directionX**2 + directionY**2 + directionZ**2);
-            this.directionX = directionX / length;
-            this.directionY = directionY / length;
-            this.directionZ = directionZ / length;*/
+            // Calculate direction according to pitch and yaw
+            this.directionX = Math.cos(this.yaw * toRad) * Math.cos(this.pitch * toRad);
+            this.directionY = Math.sin(this.pitch * toRad);
+            this.directionZ = Math.sin(this.yaw * toRad) * Math.cos(this.pitch * toRad);
+
+            // Calculate up vector according to roll
+            if (this.roll !== this.lastRoll) {
+                this.upX = this.upX * Math.cos(this.roll * toRad) - this.upY * Math.sin(this.roll * toRad);
+                this.upY = this.upX * Math.sin(this.roll * toRad) + this.upY * Math.cos(this.roll * toRad);
+                this.lastRoll = this.roll;
+            }
 
             viewMatrix.lookAt(
                 this.cameraX, this.cameraY, this.cameraZ,
@@ -284,6 +292,53 @@ class Camera {
                 this.upX, this.upY, this.upZ);
         }
         this.gl.uniformMatrix4fv(this.u_ViewMatrix, false, viewMatrix.elements);
+
+        // Events
+        if (this.cameraMovingFunc !== undefined && this.cameraMovingFunc !== null) {
+            this.cameraMovingFunc(this);
+        }
+    }
+
+    /**
+     * The given function will be called everytime the camera moves.
+     * @param {function with Camera as argument} func
+     */
+    setOnCamMoving (func) {
+        this.cameraMovingFunc = func;
+    }
+
+    fireEvents () {
+        if (this.cameraMovingFunc !== undefined && this.cameraMovingFunc !== null) {
+            this.cameraMovingFunc(this);
+        }
+    }
+
+    /**
+     * Returns all the information about the camera.
+     */
+    getInfo () {
+        return {
+            // projection
+            fov: this.fov,
+            aspect: this.aspect,
+            far: this.far,
+            near: this.near,
+
+            // view
+            x : this.cameraX,
+            y : this.cameraY,
+            z : this.cameraZ,
+            roll: this.roll,
+            pitch: this.pitch,
+            yaw: this.yaw,
+            directionX : this.directionX,
+            directionY : this.directionY,
+            directionZ : this.directionZ,
+            upX : this.upX,
+            upY : this.upY,
+            upZ : this.upZ,
+            mode : this.mode
+        }
     }
 }
 

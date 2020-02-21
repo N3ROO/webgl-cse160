@@ -65,6 +65,9 @@ class World {
 
         this.gameLoop = new GameLoop(dt => this._update(dt), dt => this._render(dt));
         this.gameLoop.start();
+
+        // Send the event to all the listeners to init them with the initial cam
+        this.camera.fireEvents();
     }
 
     /**
@@ -73,26 +76,30 @@ class World {
     _update (dt) {
         // Mouse events //
         if (this.mouse.isDown() || this.keyboard.isDown(Keyboard.K_Q) || this.keyboard.isDown(Keyboard.K_E)) {
-            let dx = 0;
-            let dy = 0;
+            let pitch = 0; // rx
+            let yaw = 0; // ry
+            // let roll = 0; // rz
 
             if (this.mouse.isDown()) {
-                dx = this.mouse.getDeltaPos()[0];
-                dy = - this.mouse.getDeltaPos()[1];
+                yaw = this.mouse.getDeltaPos()[0];
+                pitch = - this.mouse.getDeltaPos()[1];
 
-                dx *= this.MOUSE_ROTATION_SENS;
-                dy *= this.MOUSE_ROTATION_SENS;
+                yaw *= this.MOUSE_ROTATION_SENS;
+                pitch *= this.MOUSE_ROTATION_SENS;
             } else if (this.keyboard.isDown(Keyboard.K_Q)) {
-                dx = - this.KEYBOARD_ROTATION_SENS;
+                //roll = - this.KEYBOARD_ROTATION_SENS;
+                yaw = - this.KEYBOARD_ROTATION_SENS;
             } else {
-                dx = this.KEYBOARD_ROTATION_SENS;
+                //roll = this.KEYBOARD_ROTATION_SENS;
+                yaw = this.KEYBOARD_ROTATION_SENS;
             }
 
-            dx *= dt;
-            dy *= dt;
+            yaw *= dt;
+            pitch *= dt;
 
-            this.camera.rotateX(Math.max(Math.min(dy, 90), -90));
-            this.camera.rotateY(dx);
+            this.camera.rotateX(Math.max(Math.min(pitch, 90), -90));
+            this.camera.rotateY(yaw);
+            //this.camera.rotateZ(Math.max(Math.min(roll, 180), -180));
         }
 
         this.mouse.recordLastPos(this.mouse.getMovingPos());
@@ -137,6 +144,10 @@ class World {
     }
 
     // Utility
+
+    getCamera () {
+        return this.camera;
+    }
 
     getFox() {
         return this.shapes[0];
