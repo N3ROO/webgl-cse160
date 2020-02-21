@@ -313,7 +313,7 @@ class Fox extends Animal {
                         this.matrix.rotate(anim.getProgressDiff(), 0, 0, 1);
                         break;
                     case 1:
-                        this.matrix.rotate(anim.getProgressDiff(), 0, 1, 0);
+                        this.matrix.translate(0, 0, 2).rotate(anim.getProgressDiff(), 0, 1, 0).translate(0, 0, -2);
                         break;
                     case 2:
                         this.matrix.rotate(anim.getProgressDiff(), 0, 0, 1);
