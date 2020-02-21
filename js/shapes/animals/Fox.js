@@ -54,6 +54,10 @@ class Fox extends Animal {
         this.animations.set(K_BD_ROTATE, new Animation(0,  180, 500, false)); // Breakdance rotate
         this.animations.set(K_BD_SPIN,   new Animation(0, 1800, 500, false)); // Breakdance spin
 
+        this.movingAnimations = [
+            this.animations.get(K_FEET_ANIM)
+        ];
+
         // Movement
         this.moving = false;
         this.movingDirection = this.N;
@@ -62,7 +66,7 @@ class Fox extends Animal {
 
         // Jumping
         this.jumping = false;
-        this.jump_height = 1;
+        this.jump_height = 0.5;
         this.jump_time = 500;
         this.jump_time_elapsed = 0;
         this.jump_last_val = 0;
@@ -154,9 +158,12 @@ class Fox extends Animal {
     //// ANIMATION HANDLERS METHODS ////
 
     move (up, down, right, left) {
-        if (!up && !down && !right && !left) return;
+        if (!up && !down && !right && !left) {
+            this.stopMoving();
+            return;
+        }
 
-        const STEP = 0.03 * (this.running ? this.RUN_COEF : 1);
+        const STEP = 0.1 * (this.running ? this.RUN_COEF : 1);
 
         // Find the direction
         let direction;
@@ -189,13 +196,8 @@ class Fox extends Animal {
         this.setMatrix(this.matrix.translate(dx, 0, dz));
 
         // Start the animations
-        let movingAnimations = [
-            this.animations.get(K_FEET_ANIM),
-            this.animations.get(K_TAIL_ANIM1),
-            this.animations.get(K_TAIL_ANIM2)
-        ]
 
-        for (let anim of movingAnimations) {
+        for (let anim of this.movingAnimations) {
             if (anim.isFinished()) {
                 anim.start();
             }
@@ -206,17 +208,25 @@ class Fox extends Animal {
         this.moving = true;
     }
 
+    toggleTailAnimation () {
+        let tail_anim = this.animations.get(K_TAIL_ANIM1);
+        if (tail_anim.isFinished()) {
+            tail_anim.start();
+        } else {
+            tail_anim.stop();
+        }
+    }
+
     stopMoving () {
         if (!this.moving) return;
 
         // Stop animations
-        this.animations.forEach((animation, k) => {
+        for (let animation of this.movingAnimations){
             animation.stop();
-        });
+        };
 
         // Reset dynamic parts to their defaut position
         this._updateFeet();
-        this._updateTail();
 
         // Tell that the fox is not moving
         this.moving = false;
@@ -226,8 +236,8 @@ class Fox extends Animal {
         return this.moving;
     }
 
-    jump () {
-        if (!this.jumping) {
+    jump (bool) {
+        if (!this.jumping && bool) {
             this.jump_last_val = 0;
             this.jump_time_elapsed = 0;
             this.jumping = true;
@@ -245,8 +255,8 @@ class Fox extends Animal {
         }
     }
 
-    breakdance () {
-        if (!this.breakdancing) {
+    breakdance (bool) {
+        if (!this.breakdancing && bool) {
             this.bdStep = 0;
             this.breakdancing = true;
             this.bdChangingStep = true;

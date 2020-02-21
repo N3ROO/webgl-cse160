@@ -102,3 +102,4 @@ Keyboard.K_E = 69;
 
 Keyboard.K_SHIFT = 16;
 Keyboard.K_SPACE = 32;
+Keyboard.K_CTRL = 17;

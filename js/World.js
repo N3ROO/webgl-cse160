@@ -49,11 +49,9 @@ class World {
      * It creates the world
      */
     create () {
-
-        // this.shapes.push(new Fox(this.gl, new Matrix4()));
+        this.shapes.push(new Fox(this.gl, (new Matrix4()).translate(-3, 0, 7).rotate(180, 0, 1, 0).scale(0.3,0.3,0.3)));
         this.shapes.push(new Axis(this.gl, [1,0,0], [0,1,0], [0,0,1]));
         this.shapes.push(new Cube(this.gl, (new Matrix4()).scale(100,100,100), [0, 0, 0.5], this.textures.getTexture('clouds'), 'clouds'));
-        //this.shapes.push(new Cube(this.gl, (new Matrix4()).scale(100,100,100), [0, 0.5, 1], null, 'clouds'));
 
         for (let shape of WORLD1) {
             let cube;
@@ -62,6 +60,8 @@ class World {
             cube = new Cube(this.gl, pos, null,  texture, shape.block);
             this.shapes.push(cube);
         }
+
+        this.getFox().toggleTailAnimation();
 
         this.gameLoop = new GameLoop(dt => this._update(dt), dt => this._render(dt));
         this.gameLoop.start();
@@ -83,7 +83,6 @@ class World {
                 dx *= this.MOUSE_ROTATION_SENS;
                 dy *= this.MOUSE_ROTATION_SENS;
             } else if (this.keyboard.isDown(Keyboard.K_Q)) {
-                // Rotate to left
                 dx = - this.KEYBOARD_ROTATION_SENS;
             } else {
                 dx = this.KEYBOARD_ROTATION_SENS;
@@ -99,21 +98,23 @@ class World {
         this.mouse.recordLastPos(this.mouse.getMovingPos());
 
         // Keyboard events //
-        if (this.keyboard.isDown(Keyboard.K_UP) || this.keyboard.isDown(Keyboard.K_W)) {
-            this.camera.moveForward(this.KEYBOARD_MOVING_SEN * dt);
-        }
 
-        if (this.keyboard.isDown(Keyboard.K_DOWN) || this.keyboard.isDown(Keyboard.K_S)) {
-            this.camera.moveBackward(this.KEYBOARD_MOVING_SEN * dt);
-        }
+        // Fox
+        this.getFox().move(
+            this.keyboard.isDown(Keyboard.K_UP),
+            this.keyboard.isDown(Keyboard.K_DOWN),
+            this.keyboard.isDown(Keyboard.K_RIGHT),
+            this.keyboard.isDown(Keyboard.K_LEFT));
 
-        if (this.keyboard.isDown(Keyboard.K_RIGHT) || this.keyboard.isDown(Keyboard.K_D)) {
-            this.camera.moveRight(this.KEYBOARD_MOVING_SEN * dt);
-        }
+        this.getFox().run(this.keyboard.isDown(Keyboard.K_SHIFT));
+        this.getFox().jump(this.keyboard.isDown(Keyboard.K_SPACE));
+        this.getFox().breakdance(this.keyboard.isDown(Keyboard.K_CTRL));
 
-        if (this.keyboard.isDown(Keyboard.K_LEFT) || this.keyboard.isDown(Keyboard.K_A)) {
-            this.camera.moveLeft(this.KEYBOARD_MOVING_SEN * dt);
-        }
+        // Camera
+        if (this.keyboard.isDown(Keyboard.K_W)) this.camera.moveForward(this.KEYBOARD_MOVING_SEN * dt);
+        if (this.keyboard.isDown(Keyboard.K_S)) this.camera.moveBackward(this.KEYBOARD_MOVING_SEN * dt);
+        if (this.keyboard.isDown(Keyboard.K_D)) this.camera.moveRight(this.KEYBOARD_MOVING_SEN * dt);
+        if (this.keyboard.isDown(Keyboard.K_A)) this.camera.moveLeft(this.KEYBOARD_MOVING_SEN * dt);
 
         // Update shapes //
         for (let shape of this.shapes) {
@@ -136,6 +137,10 @@ class World {
     }
 
     // Utility
+
+    getFox() {
+        return this.shapes[0];
+    }
 
     /**
      * It clears the screen.
