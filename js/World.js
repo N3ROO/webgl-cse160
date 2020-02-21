@@ -47,8 +47,8 @@ class World {
 
         // this.shapes.push(new Fox(this.gl, new Matrix4()));
         this.shapes.push(new Axis(this.gl, [1,0,0], [0,1,0], [0,0,1]));
-        //this.shapes.push(new Cube(this.gl, (new Matrix4()).scale(100,100,100), [0, 0, 0.9, 1], this.textures.getTexture('clouds'), 'clouds'));
-        this.shapes.push(new Cube(this.gl, (new Matrix4()).scale(100,100,100), [0, 0.5, 1], null, 'clouds'));
+        this.shapes.push(new Cube(this.gl, (new Matrix4()).scale(100,100,100), [0, 0, 0.5], this.textures.getTexture('clouds'), 'clouds'));
+        //this.shapes.push(new Cube(this.gl, (new Matrix4()).scale(100,100,100), [0, 0.5, 1], null, 'clouds'));
 
         for (let shape of WORLD1) {
             let cube;
