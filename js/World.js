@@ -52,6 +52,7 @@ class World {
         this.shapes.push(new Fox(this.gl, (new Matrix4()).translate(-3, 0, 7).rotate(180, 0, 1, 0).scale(0.3,0.3,0.3)));
         this.shapes.push(new Axis(this.gl, [1,0,0], [0,1,0], [0,0,1]));
         this.shapes.push(new Sky(this.gl, (new Matrix4()).translate(0, 50, 0).scale(80,80,80), this.textures.getTexture('SkySmackdown_night'), 'SkySmackdown_night'));
+        this.shapes.push(new Floor(this.gl, (new Matrix4()).translate(0,0.9,0).scale(80, 0.1, 80), this.textures.getTexture('grass'), 'grass', 80));
 
         for (let shape of WORLD1) {
             let cube;
