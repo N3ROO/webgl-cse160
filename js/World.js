@@ -149,7 +149,9 @@ class World {
         for (let shape of this.shapes) {
             if (!C_AXIS && shape instanceof Axis) continue;
             shape.build();
+            //if (shape.textureName === 'glass_black') this.gl.disable(this.gl.DEPTH_TEST);
             shape.draw();
+            //if (shape.textureName === 'glass_black') this.gl.enable(this.gl.DEPTH_TEST);
         }
     }
 
