@@ -90,7 +90,7 @@ class Engine {
             [
                 'stone', 'stonebrick', 'clouds', 'hardened_clay_stained_white',
                 'hardened_clay_stained_black', 'leaves_big_oak_opaque', 'planks_oak',
-                'door_wood_lower', 'door_wood_upper', 'glass_black'
+                'door_wood_lower', 'door_wood_upper', 'glass_black', 'grass', 'house'
             ]
         );
         await tm.loadTextures(gl);
