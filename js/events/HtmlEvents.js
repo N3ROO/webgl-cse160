@@ -15,6 +15,7 @@
 // Controls (used by the HTML buttons)
 
 var C_AXIS = true;
+var C_FOLLOW_FOX = true;
 
 class HtmlEvents {
 

@@ -65,6 +65,10 @@ class Camera {
 
         // Event listeners
         this.cameraMovingFunc = null;
+
+        // Animations
+        this.smoothRotation = 0;
+        this.smoothTranslation = 0;
     }
 
     // PROJECTION MATRIX //
@@ -113,6 +117,88 @@ class Camera {
      */
     moveRight (step) {
         this.move(step, 3);
+    }
+
+    /**
+     * It moves the camera to the specified position, but smoothly.
+     * Call resetAnimations() once that you reached the goal.
+     * @param {Float} x
+     * @param {Float} y
+     * @param {Float} z
+     * @param {Float} dt time elapsed since last call^
+     * @param {Float} time animation duration in seconds (4 by default)
+     */
+    moveToSmooth (x, y, z, dt, time=4) {
+        if (this.smoothTranslation < time) {
+            this.smoothTranslation += dt;
+            this.cameraX += (x - this.cameraX) * this.smoothTranslation / time;
+            this.cameraY += (y - this.cameraY) * this.smoothTranslation / time;
+            this.cameraZ += (z - this.cameraZ) * this.smoothTranslation / time;
+            this.updateViewMatrix();
+        } else {
+            this.moveTo(x, y, z);
+        }
+    }
+
+    /**
+     * It moves the camera to the specified position.
+     * @param {Float} x
+     * @param {Float} y
+     * @param {Float} z
+     */
+    moveTo (x, y, z) {
+        this.cameraX = x;
+        this.cameraY = y;
+        this.cameraZ = z;
+        this.updateViewMatrix();
+    }
+
+    /**
+     * It changes the camera's heading, but smoothly.
+     * Call resetAnimations() once that you reached the goal
+     * @param {Float} rx degrees (pitch)
+     * @param {Float} ry degrees (yaw)
+     * @param {Float} rz degrees (roll)
+     * @param {Float} dt time elapsed since last call
+     * @param {Float} time animation duration in seconds (4 by default)
+     */
+    headToSmooth (rx, ry, rz, dt, time=4) {
+        if (this.smoothRotation < time) {
+            this.smoothRotation += dt;
+            this.pitch += (rx - this.pitch) * this.smoothRotation / time;
+            this.yaw += (ry - this.yaw) * this.smoothRotation / time;
+            this.roll += (rz - this.roll) * this.smoothRotation / time;
+            this.updateViewMatrix();
+        } else {
+            this.headTo(rx, ry, rz);
+        }
+    }
+
+    /**
+     * Changes the camera's heading.
+     * @param {Float} rx degrees (pitch)
+     * @param {Float} ry degrees (yaw)
+     * @param {Float} rz degrees (roll)
+     */
+    headTo (rx, ry, rz) {
+        this.pitch = rx;
+        this.yaw = ry;
+        this.roll = rz;
+        this.updateViewMatrix();
+    }
+
+    /**
+     * It resets the timer of moveToSmooth().
+     */
+    resetMovingAnimation () {
+        this.smoothTranslation = 0;
+    }
+
+    /**
+     * It resets the timer of headToSmooth().
+     */
+    resetHeadingAnimation () {
+        this.smoothRotation = 0;
     }
 
     /**
