@@ -91,6 +91,12 @@ class Cube extends Shape {
             16,17,18,  16,18,19,    // down
             20,21,22,  20,22,23     // back
         ]);
+
+        this.u_Sampler = this.gl.getUniformLocation(this.gl.program,'u_Sampler');
+        this.u_ModelMatrix = this.gl.getUniformLocation(this.gl.program, 'u_ModelMatrix')
+        this.a_Color = this.gl.getAttribLocation(this.gl.program, 'a_Color');
+        this.a_Position = this.gl.getAttribLocation(this.gl.program, 'a_Position');
+        this.a_TexCoord = this.gl.getAttribLocation(this.gl.program, 'a_TexCoord');
     }
 
     /**
@@ -119,7 +125,7 @@ class Cube extends Shape {
             this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, this.indices, this.gl.STATIC_DRAW);
 
             // All the cubes have the same position
-            this._bindAttrib(this.vertices, 3, this.gl.FLOAT, 'a_Position');
+            this._bindAttrib(this.vertices, 3, this.gl.FLOAT, this.a_Position);
         } else {
             updateColor = this.colors === null ? false : !float32Equals(Shape.lastShape.colors, this.colors);
             updateTexture = this.texture === null ? false : !float32Equals(Shape.lastShape.textureCoords, this.textureCoords) || Shape.lastShape.textureName != this.textureName;
@@ -128,25 +134,24 @@ class Cube extends Shape {
 
         if (updateTexture) {
             // Remove the color
-            this._bindAttrib([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 3, this.gl.FLOAT, 'a_Color');
+            this._bindAttrib([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 3, this.gl.FLOAT, this.a_Color);
             // Bind the texture coords
-            this._bindAttrib(this.textureCoords, 2, this.gl.FLOAT, 'a_TexCoord');
+            this._bindAttrib(this.textureCoords, 2, this.gl.FLOAT, this.a_TexCoord);
             // Bind the texture to texture unit 0
             this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture);
             // Tell the shader we bound the texture to texture unit 0
-            this.gl.uniform1i(this.gl.getUniformLocation(this.gl.program,'u_Sampler'), 0);
+            this.gl.uniform1i(this.u_Sampler, 0);
         }
 
         if (updateColor) {
             if (this.texture === null) {
-                this.gl.disableVertexAttribArray(this.gl.getAttribLocation(this.gl.program, 'a_TexCoord'));
+                this.gl.disableVertexAttribArray(this.gl.getAttribLocation(this.gl.program, this.a_TexCoord));
             }
-            this._bindAttrib(this.colors, 3, this.gl.FLOAT, 'a_Color');
+            this._bindAttrib(this.colors, 3, this.gl.FLOAT, this.a_Color);
         }
 
         if (updateMatrix) {
-            let u_ModelMatrix = this.gl.getUniformLocation(this.gl.program, 'u_ModelMatrix');
-            this.gl.uniformMatrix4fv(u_ModelMatrix, false, this.matrix.elements);
+            this.gl.uniformMatrix4fv(this.u_ModelMatrix, false, this.matrix.elements);
         }
 
         Shape.lastShape = this;

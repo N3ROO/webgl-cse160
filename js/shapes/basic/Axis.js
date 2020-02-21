@@ -44,6 +44,10 @@ class Axis extends Shape {
         this.indices = new Uint8Array([
             0, 1, 2, 3, 4, 5
         ]);
+
+        this.u_ModelMatrix = this.gl.getUniformLocation(this.gl.program, 'u_ModelMatrix');
+        this.a_Color = this.gl.getAttribLocation(this.gl.program, 'a_Color');
+        this.a_Position = this.gl.getAttribLocation(this.gl.program, 'a_Position');
     }
 
     build () {
@@ -53,10 +57,9 @@ class Axis extends Shape {
             return null;
         }
 
-        this._bindAttrib(this.colors, 3, this.gl.FLOAT, 'a_Color');
-        this._bindAttrib(this.vertices, 3, this.gl.FLOAT, 'a_Position');
-        let u_ModelMatrix = this.gl.getUniformLocation(this.gl.program, 'u_ModelMatrix');
-        this.gl.uniformMatrix4fv(u_ModelMatrix, false, (new Matrix4()).elements);
+        this._bindAttrib(this.colors, 3, this.gl.FLOAT, this.a_Color);
+        this._bindAttrib(this.vertices, 3, this.gl.FLOAT, this.a_Position);
+        this.gl.uniformMatrix4fv(this.u_ModelMatrix, false, (new Matrix4()).elements);
 
         this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, buffer);
         this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, this.indices, this.gl.STATIC_DRAW);

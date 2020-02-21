@@ -35,7 +35,7 @@
                 position: absolute;
             }
 
-            #settings div {
+            #settings .column {
                 display: inline-block;
                 vertical-align: top;
                 margin-right: 20px;
@@ -43,6 +43,11 @@
 
             #camera {
                 color: gray;
+            }
+
+            .new {
+                color: red;
+                vertical-align: top;
             }
         </style>
 
@@ -67,30 +72,34 @@
             <span style="color:green;">Y</span>,
             <span style="color:blue;">Z</span>
             <br><br>
-            <div>
-                <b>Camera controls:</b>
-                <ul>
-                    <li>Translation: WASD</li>
-                    <li>Rotation: AE and <i class="fas fa-mouse"></i></li>
-                </ul>
-            </div>
 
             <div>
-                <b>Fox controls:</b>
-                <ul>
-                    <li>Translation: <i class="fas fa-arrow-up"></i> <i class="fas fa-arrow-down"></i> <i class="fas fa-arrow-right"></i> <i class="fas fa-arrow-left"></i></li>
-                    <li>Jump: SPACE</li>
-                    <li>Run: SHIFT</li>
-                    <li>Breakdance: CTRL</li>
-                </ul>
-            </div>
+                <div class="column">
+                    <b>Camera controls:</b>
+                    <ul>
+                        <li>Translation: WASD</li>
+                        <li>Rotation: AE and <i class="fas fa-mouse"></i></li>
+                    </ul>
+                </div>
 
-            <div>
-                <b>Cool features:</b>
-                <ul>
-                    <li>The camera is smooth (try that by moving the fox)</li>
-                    <li>It is possible to render textures and colors at the same time</li>
-                </ul>
+                <div class="column">
+                    <b>Fox controls:</b>
+                    <ul>
+                        <li>Translation: <i class="fas fa-arrow-up"></i> <i class="fas fa-arrow-down"></i> <i class="fas fa-arrow-right"></i> <i class="fas fa-arrow-left"></i></li>
+                        <li>Jump: SPACE</li>
+                        <li>Run: SHIFT</li>
+                        <li>Breakdance: CTRL</li>
+                    </ul>
+                </div>
+
+                <div class="column">
+                    <b>Cool features:</b>
+                    <ul>
+                        <li><i class="fa-fw fas fa-video fab"></i> The camera is smooth (try that by moving the fox)</li>
+                        <li><i class="fa-fw fas fa-palette"></i> It is possible to render textures and colors at the same time</li>
+                        <li><i class="fa-fw fas fa-images"></i> It is possible to use any texture as long as it is a png file</li>
+                    </ul>
+                </div>
             </div>
         </div>
 
