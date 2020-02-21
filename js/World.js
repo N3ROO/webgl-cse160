@@ -74,24 +74,48 @@ class World {
      */
     _update (dt) {
         // Mouse events //
-        if (this.mouse.isDown()) {
-            let factor = 0.1;
+        if (this.mouse.isDown() || this.keyboard.isDown(Keyboard.K_Q) || this.keyboard.isDown(Keyboard.K_E)) {
+            let dx = 0;
+            let dy = 0;
 
-            let dx = this.mouse.getDeltaPos()[0];
-            let dy = - this.mouse.getDeltaPos()[1];
+            if (this.mouse.isDown()) {
+                let factor = 5;
 
-            dx *= factor;
-            dy *= factor;
+                dx = this.mouse.getDeltaPos()[0];
+                dy = - this.mouse.getDeltaPos()[1];
+
+                dx *= factor;
+                dy *= factor;
+            } else if (this.keyboard.isDown(Keyboard.K_Q)) {
+                // Rotate to left
+                dx = -40;
+            } else {
+                dx = 40;
+            }
+
+            dx *= dt;
+            dy *= dt;
 
             this.camera.rotateX(Math.max(Math.min(dy, 90), -90));
             this.camera.rotateY(dx);
         }
 
         let step = 10 * dt;
-        if (this.keyboard.isDown(Keyboard.K_UP)) this.camera.moveForward(step);
-        if (this.keyboard.isDown(Keyboard.K_DOWN)) this.camera.moveBackward(step);
-        if (this.keyboard.isDown(Keyboard.K_RIGHT)) this.camera.moveRight(step);
-        if (this.keyboard.isDown(Keyboard.K_LEFT)) this.camera.moveLeft(step);
+        if (this.keyboard.isDown(Keyboard.K_UP) || this.keyboard.isDown(Keyboard.K_W)) {
+            this.camera.moveForward(step);
+        }
+
+        if (this.keyboard.isDown(Keyboard.K_DOWN) || this.keyboard.isDown(Keyboard.K_S)) {
+            this.camera.moveBackward(step);
+        }
+
+        if (this.keyboard.isDown(Keyboard.K_RIGHT) || this.keyboard.isDown(Keyboard.K_D)) {
+            this.camera.moveRight(step);
+        }
+
+        if (this.keyboard.isDown(Keyboard.K_LEFT) || this.keyboard.isDown(Keyboard.K_A)) {
+            this.camera.moveLeft(step);
+        }
 
         this.mouse.recordLastPos(this.mouse.getMovingPos());
 
