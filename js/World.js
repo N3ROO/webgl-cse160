@@ -38,6 +38,11 @@ class World {
             90.0, width, height,
             Camera.FIRST_PERSON);
         this.camera.rotateY(-90);
+
+        // Sensibilities
+        this.MOUSE_ROTATION_SENS = 5;
+        this.KEYBOARD_ROTATION_SENS = 40;
+        this.KEYBOARD_MOVING_SEN = 10;
     }
 
     /**
@@ -54,14 +59,7 @@ class World {
             let cube;
             let pos = (new Matrix4()).translate(shape.x+0.5, shape.y+0.5, shape.z+0.5).scale(0.5, 0.5, 0.5);
             let texture = this.textures.getTexture(shape.block);
-
-            if (shape.block.startsWith('door')) {
-                // TODO: zizi
-                cube = new Cube(this.gl, pos, null, texture, shape.block);
-            } else {
-                cube = new Cube(this.gl, pos, null,  texture, shape.block);
-            }
-
+            cube = new Cube(this.gl, pos, null,  texture, shape.block);
             this.shapes.push(cube);
         }
 
@@ -79,18 +77,16 @@ class World {
             let dy = 0;
 
             if (this.mouse.isDown()) {
-                let factor = 5;
-
                 dx = this.mouse.getDeltaPos()[0];
                 dy = - this.mouse.getDeltaPos()[1];
 
-                dx *= factor;
-                dy *= factor;
+                dx *= this.MOUSE_ROTATION_SENS;
+                dy *= this.MOUSE_ROTATION_SENS;
             } else if (this.keyboard.isDown(Keyboard.K_Q)) {
                 // Rotate to left
-                dx = -40;
+                dx = - this.KEYBOARD_ROTATION_SENS;
             } else {
-                dx = 40;
+                dx = this.KEYBOARD_ROTATION_SENS;
             }
 
             dx *= dt;
@@ -100,24 +96,24 @@ class World {
             this.camera.rotateY(dx);
         }
 
-        let step = 10 * dt;
+        this.mouse.recordLastPos(this.mouse.getMovingPos());
+
+        // Keyboard events //
         if (this.keyboard.isDown(Keyboard.K_UP) || this.keyboard.isDown(Keyboard.K_W)) {
-            this.camera.moveForward(step);
+            this.camera.moveForward(this.KEYBOARD_MOVING_SEN * dt);
         }
 
         if (this.keyboard.isDown(Keyboard.K_DOWN) || this.keyboard.isDown(Keyboard.K_S)) {
-            this.camera.moveBackward(step);
+            this.camera.moveBackward(this.KEYBOARD_MOVING_SEN * dt);
         }
 
         if (this.keyboard.isDown(Keyboard.K_RIGHT) || this.keyboard.isDown(Keyboard.K_D)) {
-            this.camera.moveRight(step);
+            this.camera.moveRight(this.KEYBOARD_MOVING_SEN * dt);
         }
 
         if (this.keyboard.isDown(Keyboard.K_LEFT) || this.keyboard.isDown(Keyboard.K_A)) {
-            this.camera.moveLeft(step);
+            this.camera.moveLeft(this.KEYBOARD_MOVING_SEN * dt);
         }
-
-        this.mouse.recordLastPos(this.mouse.getMovingPos());
 
         // Update shapes //
         for (let shape of this.shapes) {
