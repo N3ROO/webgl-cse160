@@ -88,9 +88,10 @@ class Engine {
         // Textures
         let tm = new TextureManager(
             [
-                'stone', 'stonebrick', 'clouds', 'hardened_clay_stained_white',
+                'stone', 'stonebrick', 'hardened_clay_stained_white',
                 'hardened_clay_stained_black', 'leaves_big_oak_opaque', 'planks_oak',
-                'door_wood_lower', 'door_wood_upper', 'glass_black', 'grass', 'house'
+                'door_wood_lower', 'door_wood_upper', 'glass_black', 'grass', 'house', 'SkySmackdown',
+                'SkySmackdown_night'
             ]
         );
         await tm.loadTextures(gl);

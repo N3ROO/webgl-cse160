@@ -51,7 +51,7 @@ class World {
     create () {
         this.shapes.push(new Fox(this.gl, (new Matrix4()).translate(-3, 0, 7).rotate(180, 0, 1, 0).scale(0.3,0.3,0.3)));
         this.shapes.push(new Axis(this.gl, [1,0,0], [0,1,0], [0,0,1]));
-        this.shapes.push(new Cube(this.gl, (new Matrix4()).scale(100,100,100), [0, 0, 0.5], this.textures.getTexture('clouds'), 'clouds'));
+        this.shapes.push(new Sky(this.gl, (new Matrix4()).translate(0, 50, 0).scale(80,80,80), this.textures.getTexture('SkySmackdown_night'), 'SkySmackdown_night'));
 
         for (let shape of WORLD1) {
             let cube;
@@ -158,8 +158,22 @@ class World {
         return this.camera;
     }
 
-    getFox() {
+    getFox () {
         return this.shapes[0];
+    }
+
+    /**
+     * It changes the world ambiance (day / night)
+     * @param {Boolean} day true -> sets the time to day, night otherwise
+     */
+    changeTime (day) {
+        let textureName;
+        if (day) {
+            textureName = 'SkySmackdown';
+        } else {
+            textureName = 'SkySmackdown_night';
+        }
+        this.shapes[2].changeTexture(this.textures.getTexture(textureName));
     }
 
     /**

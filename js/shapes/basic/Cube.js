@@ -64,7 +64,7 @@ class Cube extends Shape {
 
             this.textureCoords = new Float32Array([
                 1.0, 0.0,  0.0, 0.0,  0.0, 1.0,  1.0, 1.0, // Front
-                0.0, 0.0,  0.0, 1.0,  1.0, 1.0,  1.0, 0.0, // Right 0.0, 0.0,  1.0, 0.0,  1.0, 1.0,  0.0, 1.0,
+                0.0, 0.0,  0.0, 1.0,  1.0, 1.0,  1.0, 0.0, // Right
                 1.0, 0.0,  0.0, 0.0,  0.0, 1.0,  1.0, 1.0, // Top
                 0.0, 0.0,  1.0, 0.0,  1.0, 1.0,  0.0, 1.0, // Left
                 0.0, 0.0,  1.0, 0.0,  1.0, 1.0,  0.0, 1.0, // Bottom
@@ -166,5 +166,15 @@ class Cube extends Shape {
      */
     draw() {
         this.gl.drawElements(this.gl.TRIANGLES, this.indices.length, this.gl.UNSIGNED_BYTE, 0);
+    }
+
+    /**
+     * It changes the texture of the cube (it does not change the mappings).
+     * @param {WebGL Texture} texture
+     * @param {String} textureName
+     */
+    changeTexture (texture, textureName) {
+        this.texture = texture;
+        this.textureName = textureName;
     }
 }

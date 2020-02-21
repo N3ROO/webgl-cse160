@@ -38,6 +38,14 @@ class HtmlEvents {
                 'x: ' + c.x.toFixed(2) + '<br>y: ' + c.y.toFixed(2) + '<br>z: ' + c.z.toFixed(2) + '<br>' +
                 'pitch: ' + c.pitch.toFixed(2) + '<br>yaw: ' + c.yaw.toFixed(2) + '<br>roll: ' + c.roll.toFixed(2));
         });
+
+        getElement('night').onclick = e => {
+            if (e.target.checked) {
+                this.world.changeTime(false);
+            } else {
+                this.world.changeTime(true);
+            }
+        };
     }
 
     /**
