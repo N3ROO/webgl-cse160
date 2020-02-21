@@ -8,7 +8,7 @@ Made for the CSE160 class at UCSC (Winter 2020). Written by Lilian Gallon.
 
 ![Assignment1 Screenshot](.github/screenshots/assignment1.png)
 
-- Assignment 2: Animated Animal - Grade ?/10
+- Assignment 2: Animated Animal - Grade 10/10
 
 ![Assignment2 Screenshot](.github/screenshots/assignment2.png)
 
