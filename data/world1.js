@@ -475,6 +475,7 @@ const WORLD1 = [
     { x: -12, y: 2, z: 16, block: 'stonebrick' },
     { x: -12, y: 3, z: 16, block: 'stonebrick' },
     { x: -12, y: 3, z: 15, block: 'stonebrick' },
+
     { x: -12, y: 2, z: 15, block: 'house' },
 
 
