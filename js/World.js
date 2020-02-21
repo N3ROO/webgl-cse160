@@ -123,7 +123,7 @@ class World {
         if (this.keyboard.isDown(Keyboard.K_D)) this.camera.moveRight(this.KEYBOARD_MOVING_SEN * dt);
         if (this.keyboard.isDown(Keyboard.K_A)) this.camera.moveLeft(this.KEYBOARD_MOVING_SEN * dt);
 
-        if (this.getFox().isMoving()) {
+        if (this.getFox().isMoving() || this.getFox().jumping) {
             let pos = getPosition(this.getFox().matrix);
             this.camera.moveToSmooth(pos[0], pos[1] + 1, pos[2] - 3, dt);
             this.camera.headToSmooth(0, 90, 0, dt);
