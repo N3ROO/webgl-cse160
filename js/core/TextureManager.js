@@ -60,10 +60,14 @@ class TextureManager {
                     }
 
                     this.textures.set(textureName, texture);
+
+                    console.debug('Loaded image ' + textureName);
                     resolve();
                 }
 
-                image.src = texturesDir + textureName + texturesExt;
+                let src = texturesDir + textureName + texturesExt
+                console.debug('Loading image ' + textureName + ' from: ' + src);
+                image.src = src;
             }));
         }
 
