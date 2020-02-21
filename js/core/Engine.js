@@ -78,7 +78,6 @@ class Engine {
         gl.enable(gl.DEPTH_TEST);
         gl.activeTexture(this.gl.TEXTURE0);
 
-        //gl.enable(gl.ALPHA_TEST);
         gl.enable(gl.BLEND);
         gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
