@@ -33,7 +33,7 @@ class TextureManager {
         const srcType = gl.UNSIGNED_BYTE;
 
         // Texture path
-        const texturesDir = '../../resources/textures/';
+        const texturesDir = 'resources/textures/';
         const texturesExt = '.png';
 
         // To make "await" work
