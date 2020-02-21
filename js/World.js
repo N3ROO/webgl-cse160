@@ -56,7 +56,7 @@ class World {
 
         for (let shape of WORLD1) {
             let cube;
-            let pos = (new Matrix4()).translate(shape.x+0.5, shape.y+0.5, shape.z+0.5).scale(0.5, 0.5, 0.5);
+            let pos = (new Matrix4()).translate(shape.x+0.501, shape.y+0.501, shape.z+0.501).scale(0.499, 0.499, 0.499);
             let texture = this.textures.getTexture(shape.block);
             cube = new Cube(this.gl, pos, null,  texture, shape.block);
             this.shapes.push(cube);
