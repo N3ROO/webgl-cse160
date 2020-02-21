@@ -134,7 +134,7 @@ class Cube extends Shape {
 
         if (updateTexture) {
             // Remove the color
-            this._bindAttrib([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 3, this.gl.FLOAT, this.a_Color);
+            this._bindAttrib([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 4, this.gl.FLOAT, this.a_Color);
             // Bind the texture coords
             this._bindAttrib(this.textureCoords, 2, this.gl.FLOAT, this.a_TexCoord);
             // Bind the texture to texture unit 0
@@ -145,7 +145,7 @@ class Cube extends Shape {
 
         if (updateColor) {
             if (this.texture === null) {
-                this.gl.disableVertexAttribArray(this.gl.getAttribLocation(this.gl.program, this.a_TexCoord));
+                this.gl.disableVertexAttribArray(this.a_TexCoord);
             }
             this._bindAttrib(this.colors, 3, this.gl.FLOAT, this.a_Color);
         }

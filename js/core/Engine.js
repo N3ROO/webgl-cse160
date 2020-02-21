@@ -45,7 +45,7 @@ class Engine {
      * dev: It will call _postInit once done.
      */
     init () {
-        this.gl = getWebGLContext(getElement(this.CANVAS_ID));
+        this.gl = getWebGLContext(getElement(this.CANVAS_ID), {premultipliedAlpha: false});
         if (!this.gl) {
             console.error('Failed to get the rendering context for WebGL');
             return;
@@ -77,6 +77,9 @@ class Engine {
         // WebGL preparation
         gl.enable(gl.DEPTH_TEST);
         gl.activeTexture(this.gl.TEXTURE0);
+
+        gl.enable(gl.BLEND);
+        gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
         // Events - Keyboard
         let kb = new Keyboard();
