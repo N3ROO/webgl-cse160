@@ -32,7 +32,7 @@ class HtmlEvents {
      * It registers all the events.
      */
     registerEvents () {
-        this.world.getCamera().setOnCamMoving(cam => {
+        this.world.getCamera().addOnCamMovingListener(cam => {
             let c = cam.getInfo();
             getElement('camera').innerHTML = (
                 'x: ' + c.x.toFixed(2) + '<br>y: ' + c.y.toFixed(2) + '<br>z: ' + c.z.toFixed(2) + '<br>' +

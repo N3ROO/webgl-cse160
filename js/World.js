@@ -29,7 +29,8 @@ class World {
         this.gl = gl;
         this.mouse = mouse;
         this.keyboard = keyboard;
-        this.shapes = [];
+        this.opaqueShapes = [];
+        this.transparentShapes = [];
         this.gameLoop = null;
         this.textures = textures;
         this.camera = new Camera(gl,
@@ -49,18 +50,30 @@ class World {
      * It creates the world
      */
     create () {
-        this.shapes.push(new Fox(this.gl, (new Matrix4()).translate(-3, 0, 7).rotate(180, 0, 1, 0).scale(0.3,0.3,0.3)));
-        this.shapes.push(new Axis(this.gl, [1,0,0], [0,1,0], [0,0,1]));
-        this.shapes.push(new Sky(this.gl, (new Matrix4()).translate(0, 70, 0).scale(80,80,80), this.textures.getTexture('SkySmackdown_night'), 'SkySmackdown_night'));
-        this.shapes.push(new Floor(this.gl, (new Matrix4()).translate(0,0.9,0).scale(80, 0.1, 80), this.textures.getTexture('grass'), 'grass', 80));
+        this.opaqueShapes.push(new Fox(this.gl, (new Matrix4()).translate(-3, 0, 7).rotate(180, 0, 1, 0).scale(0.3,0.3,0.3)));
+        this.opaqueShapes.push(new Axis(this.gl, [1,0,0], [0,1,0], [0,0,1]));
+        this.opaqueShapes.push(new Sky(this.gl, (new Matrix4()).translate(0, 70, 0).scale(80,80,80), this.textures.getTexture('SkySmackdown_night'), 'SkySmackdown_night'));
+        this.opaqueShapes.push(new Floor(this.gl, (new Matrix4()).translate(0,0.9,0).scale(80, 0.1, 80), this.textures.getTexture('grass'), 'grass', 80));
 
-        for (let shape of WORLD1) {
-            let cube;
+        let createCube = (shape) => {
             let pos = (new Matrix4()).translate(shape.x+0.501, shape.y+0.501, shape.z+0.501).scale(0.499, 0.499, 0.499);
             let texture = this.textures.getTexture(shape.block);
-            cube = new Cube(this.gl, pos, null,  texture, shape.block);
-            this.shapes.push(cube);
+            return new Cube(this.gl, pos, null,  texture, shape.block);
         }
+
+        // Opaque textures first
+        for (let shape of WORLD1.opaque) {
+            this.opaqueShapes.push(createCube(shape));
+        }
+
+        // Then, transparent textures
+        for (let shape of WORLD1.transparent) {
+            this.transparentShapes.push(createCube(shape));
+        }
+
+        // Then, we sort the transparent texutres according to the distance from the camera
+        this.sortTransparentShapes();
+        this.camera.addOnCamMovingListener((cam) => { this.sortTransparentShapes(); });
 
         this.getFox().toggleTailAnimation();
 
@@ -134,8 +147,12 @@ class World {
         }
 
         // Update shapes //
-        for (let shape of this.shapes) {
+        for (let shape of this.opaqueShapes) {
             if (!C_AXIS && shape instanceof Axis) continue;
+            shape.update(dt);
+        }
+
+        for (let shape of this.transparentShapes) {
             shape.update(dt);
         }
     }
@@ -146,23 +163,46 @@ class World {
     _render (dt) {
         this.clear();
 
-        for (let shape of this.shapes) {
+        for (let shape of this.opaqueShapes) {
             if (!C_AXIS && shape instanceof Axis) continue;
             shape.build();
-            //if (shape.textureName === 'leaves_big_oak_opaque') this.gl.depthMask(this.gl.FALSE));
             shape.draw();
-            //if (shape.textureName === 'glass_black') this.gl.enable(this.gl.DEPTH_TEST);
+        }
+
+        for (let shape of this.transparentShapes) {
+            shape.build();
+            shape.draw();
         }
     }
 
     // Utility
+
+    sortTransparentShapes () {
+        this.transparentShapes.sort( (a, b) => {
+            let cam = this.camera.getInfo();
+            let posa = getPosition(a.matrix);
+            let posb = getPosition(b.matrix);
+            let dista = Math.sqrt(
+                (cam.x - posa[0])**2 +
+                (cam.y - posa[1])**2 +
+                (cam.z - posa[2])**2
+            );
+            let distb = Math.sqrt(
+                (cam.x - posb[0])**2 +
+                (cam.y - posb[1])**2 +
+                (cam.z - posb[2])**2
+            );
+
+            return distb - dista;
+        });
+    }
 
     getCamera () {
         return this.camera;
     }
 
     getFox () {
-        return this.shapes[0];
+        return this.opaqueShapes[0];
     }
 
     /**
@@ -176,7 +216,7 @@ class World {
         } else {
             textureName = 'SkySmackdown_night';
         }
-        this.shapes[2].changeTexture(this.textures.getTexture(textureName));
+        this.opaqueShapes[2].changeTexture(this.textures.getTexture(textureName));
     }
 
     /**

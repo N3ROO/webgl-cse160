@@ -32,6 +32,9 @@ class Camera {
 
         if (mode === Camera.THIRD_PERSON) console.warn("Third person camera not working correctly yet");
 
+        // Event listeners
+        this.cameraMovingListeners = [];
+
         // Projection matrix
 
         this.fov = fov;
@@ -62,9 +65,6 @@ class Camera {
 
         this.u_ViewMatrix = this.gl.getUniformLocation(this.gl.program, 'u_ViewMatrix');
         this.updateViewMatrix();
-
-        // Event listeners
-        this.cameraMovingFunc = null;
 
         // Animations
         this.smoothRotation = 0;
@@ -380,8 +380,8 @@ class Camera {
         this.gl.uniformMatrix4fv(this.u_ViewMatrix, false, viewMatrix.elements);
 
         // Events
-        if (this.cameraMovingFunc !== undefined && this.cameraMovingFunc !== null) {
-            this.cameraMovingFunc(this);
+        for (let listener of this.cameraMovingListeners) {
+            listener(this);
         }
     }
 
@@ -389,8 +389,8 @@ class Camera {
      * The given function will be called everytime the camera moves.
      * @param {function with Camera as argument} func
      */
-    setOnCamMoving (func) {
-        this.cameraMovingFunc = func;
+    addOnCamMovingListener (func) {
+        this.cameraMovingListeners.push(func);
     }
 
     fireEvents () {
