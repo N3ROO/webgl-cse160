@@ -43,6 +43,7 @@ class Cube extends Shape {
         this.textureName = null;
         this.texture = null;
 
+        // Color
         if (colors !== null) {
             let vcolors = [];
             for (let i = 0; i < 6; i++) {
@@ -58,6 +59,7 @@ class Cube extends Shape {
             this.colors = new Float32Array(vcolors);
         }
 
+        // Texture
         if (texture !== null) {
             this.textureName = textureName;
             this.texture = texture;
@@ -73,6 +75,16 @@ class Cube extends Shape {
         }
 
         if (texture === null && colors === null) console.error('Please specify either the colors or the teture of the cube');
+
+        // Lighting
+        this.normals = new Float32Array([
+            0.0, 0.0,  1.0,   0.0,  0.0,  1.0,   0.0,  0.0,  1.0,   0.0,  0.0,  1.0,// Front
+            0.0, 0.0, -1.0,   0.0,  0.0, -1.0,   0.0,  0.0, -1.0,   0.0,  0.0, -1.0, // Back
+            0.0, 1.0,  0.0,   0.0,  1.0,  0.0,   0.0,  1.0,  0.0,   0.0,  1.0,  0.0, // Top
+            0.0, -1.0, 0.0,   0.0, -1.0,  0.0,   0.0, -1.0,  0.0,   0.0, -1.0,  0.0, // Bottom
+            1.0, 0.0,  0.0,   1.0,  0.0,  0.0,   1.0,  0.0,  0.0,   1.0,  0.0,  0.0, // Right
+            -1.0, 0.0, 0.0,  -1.0,  0.0,  0.0,  -1.0,  0.0,  0.0,  -1.0,  0.0,  0.0 // Left
+        ]);
 
         this.vertices = new Float32Array([
             1.0, 1.0, 1.0,  -1.0, 1.0, 1.0,  -1.0,-1.0, 1.0,   1.0,-1.0, 1.0,  // v0-v1-v2-v3 front
@@ -92,11 +104,17 @@ class Cube extends Shape {
             20,21,22,  20,22,23     // back
         ]);
 
-        this.u_Sampler = this.gl.getUniformLocation(this.gl.program,'u_Sampler');
-        this.u_ModelMatrix = this.gl.getUniformLocation(this.gl.program, 'u_ModelMatrix')
+        // Color
         this.a_Color = this.gl.getAttribLocation(this.gl.program, 'a_Color');
+        // Position
+        this.u_ModelMatrix = this.gl.getUniformLocation(this.gl.program, 'u_ModelMatrix')
         this.a_Position = this.gl.getAttribLocation(this.gl.program, 'a_Position');
+        // Texture
+        this.u_Sampler = this.gl.getUniformLocation(this.gl.program,'u_Sampler');
         this.a_TexCoord = this.gl.getAttribLocation(this.gl.program, 'a_TexCoord');
+        // Lighting
+        this.a_Normal = this.gl.getUniformLocation(this.gl.program, 'a_Normal');
+        this.a_VertexNormal = this.gl.getAttribLocation(this.gl.program, 'a_VertexNormal');
     }
 
     /**
@@ -117,12 +135,11 @@ class Cube extends Shape {
 
             // The last shape is not a cube, so we need to update the index buffer
             let indexBuffer = this.gl.createBuffer();
-            if (!indexBuffer) {
-                console.error('Could not create a buffer');
-                return null;
-            }
             this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
             this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, this.indices, this.gl.STATIC_DRAW);
+
+            // Update normals
+            this._bindAttrib(this.normals, 3, this.gl.FLOAT, this.a_Normal);
 
             // All the cubes have the same position
             this._bindAttrib(this.vertices, 3, this.gl.FLOAT, this.a_Position);

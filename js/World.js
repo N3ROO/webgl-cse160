@@ -92,6 +92,10 @@ class World {
         this.gameLoop = new GameLoop(dt => this._update(dt), dt => this._render(dt));
         this.gameLoop.start();
 
+        // Lighting
+        //let u_ReverseLightDirection = this.gl.getUniformLocation(this.gl.program, 'u_ReverseLightDirection');
+        //this.gl.uniform3fv(u_ReverseLightDirection, [0.5, 0.7, 1]); // set the light direction.
+
         // Send the event to all the listeners to init them with the initial cam
         this.camera.fireEvents();
     }
