@@ -74,12 +74,19 @@ class Engine {
             return;
         }
 
-        // WebGL preparation
+        // To prevent rendering shapes that are behind over the other ones
         gl.enable(gl.DEPTH_TEST);
+
+        // To use texture0
         gl.activeTexture(this.gl.TEXTURE0);
 
+        // Transparency
         gl.enable(gl.BLEND);
         gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+
+        // Only the front fact should be rendered
+        gl.enable(gl.CULL_FACE);
+        gl.cullFace(gl.BACK);
 
         // Events - Keyboard
         let kb = new Keyboard();

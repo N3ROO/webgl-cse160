@@ -26,4 +26,10 @@ class Sky extends Cube {
             0.5, 1.0,  0.75, 1.0,  0.75, 0.0,  0.5, 0.0, // Back
         ]);
     }
+
+    draw () {
+        this.gl.cullFace(this.gl.FRONT);
+        super.draw();
+        this.gl.cullFace(this.gl.BACK);
+    }
 }
