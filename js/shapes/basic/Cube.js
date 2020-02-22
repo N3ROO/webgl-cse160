@@ -68,7 +68,7 @@ class Cube extends Shape {
                 1.0, 0.0,  0.0, 0.0,  0.0, 1.0,  1.0, 1.0, // Top
                 0.0, 0.0,  1.0, 0.0,  1.0, 1.0,  0.0, 1.0, // Left
                 0.0, 0.0,  1.0, 0.0,  1.0, 1.0,  0.0, 1.0, // Bottom
-                0.0, 1.0,  1.0, 1.0,  1.0, 0.0,  0.0, 0.0, // Back
+                0.0, 1.0,  1.0, 1.0,  1.0, 0.0,  0.0, 0.0 // Back
             ]);
         }
 
@@ -133,10 +133,13 @@ class Cube extends Shape {
         }
 
         if (updateTexture) {
-            // Remove the color
-            this._bindAttrib([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 4, this.gl.FLOAT, this.a_Color);
+            // Remove the colors
+            this.gl.disableVertexAttribArray(this.a_Color);
+            this.gl.vertexAttrib4f(this.a_Color, 0, 0, 0, 0);
+
             // Bind the texture coords
             this._bindAttrib(this.textureCoords, 2, this.gl.FLOAT, this.a_TexCoord);
+
             // Bind the texture to texture unit 0
             this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture);
             // Tell the shader we bound the texture to texture unit 0
@@ -149,7 +152,8 @@ class Cube extends Shape {
                 // add a texture when we only use the colors. The texture will be
                 // overriden anyway
                 // TODO: use two different fragment shaders?
-                this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture);
+                this.gl.bindTexture(this.gl.TEXTURE_2D, null);
+                this.gl.disableVertexAttribArray(this.a_TexCoord);
             }
             this._bindAttrib(this.colors, 3, this.gl.FLOAT, this.a_Color);
         }
