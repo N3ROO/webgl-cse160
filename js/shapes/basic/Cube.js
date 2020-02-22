@@ -47,9 +47,9 @@ class Cube extends Shape {
             let vcolors = [];
             for (let i = 0; i < 6; i++) {
                 for (let j = 0; j < 4; j++) {
-                    for (let k = 0; k < 3; k++) {
+                    for (let k = 0; k < 4; k++) {
                         vcolors.push(
-                            colors.length === 3 ? colors[k] : colors[k+3*i]
+                            colors.length === 4 ? colors[k] : colors[k+4*i]
                         );
                     }
                 }
@@ -155,7 +155,7 @@ class Cube extends Shape {
                 this.gl.bindTexture(this.gl.TEXTURE_2D, null);
                 this.gl.disableVertexAttribArray(this.a_TexCoord);
             }
-            this._bindAttrib(this.colors, 3, this.gl.FLOAT, this.a_Color);
+            this._bindAttrib(this.colors, 4, this.gl.FLOAT, this.a_Color);
         }
 
         if (updateMatrix) {

@@ -2,28 +2,6 @@ const WORLD1 = {
     // Opaque textures FIRST //
 
     opaque: [
-        { x: -2, y: 7, z: 6, block: 'leaves_big_oak_opaque' },
-        { x: -2, y: 7, z: 7, block: 'leaves_big_oak_opaque' },
-        { x: -3, y: 5, z: 4, block: 'leaves_big_oak_opaque' },
-        { x: -4, y: 5, z: 4, block: 'leaves_big_oak_opaque' },
-        { x: -5, y: 5, z: 4, block: 'leaves_big_oak_opaque' },
-        { x: -6, y: 5, z: 4, block: 'leaves_big_oak_opaque' },
-        { x: -7, y: 5, z: 4, block: 'leaves_big_oak_opaque' },
-        { x: -8, y: 5, z: 4, block: 'leaves_big_oak_opaque' },
-        { x: -9, y: 5, z: 4, block: 'leaves_big_oak_opaque' },
-        { x: -9, y: 5, z: 5, block: 'leaves_big_oak_opaque' },
-        { x: -9, y: 5, z: 6, block: 'leaves_big_oak_opaque' },
-        { x: -9, y: 5, z: 7, block: 'leaves_big_oak_opaque' },
-        { x: -9, y: 5, z: 8, block: 'leaves_big_oak_opaque' },
-        { x: -9, y: 5, z: 9, block: 'leaves_big_oak_opaque' },
-        { x: -3, y: 5, z: 9, block: 'leaves_big_oak_opaque' },
-        { x: -4, y: 5, z: 9, block: 'leaves_big_oak_opaque' },
-        { x: -5, y: 5, z: 9, block: 'leaves_big_oak_opaque' },
-        { x: -6, y: 5, z: 9, block: 'leaves_big_oak_opaque' },
-        { x: -7, y: 5, z: 9, block: 'leaves_big_oak_opaque' },
-        { x: -8, y: 5, z: 9, block: 'leaves_big_oak_opaque' },
-        { x: -9, y: 5, z: 9, block: 'leaves_big_oak_opaque' },
-
         { x: -4, y: 1, z: 9, block: 'door_wood_lower' },
         { x: -3, y: 1, z: 9, block: 'door_wood_lower' },
 
@@ -333,6 +311,28 @@ const WORLD1 = {
     // Transparent at the end //
 
     transparent: [
+        { x: -2, y: 7, z: 6, block: 'leaves_big_oak' },
+        { x: -2, y: 7, z: 7, block: 'leaves_big_oak' },
+        { x: -3, y: 5, z: 4, block: 'leaves_big_oak' },
+        { x: -4, y: 5, z: 4, block: 'leaves_big_oak' },
+        { x: -5, y: 5, z: 4, block: 'leaves_big_oak' },
+        { x: -6, y: 5, z: 4, block: 'leaves_big_oak' },
+        { x: -7, y: 5, z: 4, block: 'leaves_big_oak' },
+        { x: -8, y: 5, z: 4, block: 'leaves_big_oak' },
+        { x: -9, y: 5, z: 4, block: 'leaves_big_oak' },
+        { x: -9, y: 5, z: 5, block: 'leaves_big_oak' },
+        { x: -9, y: 5, z: 6, block: 'leaves_big_oak' },
+        { x: -9, y: 5, z: 7, block: 'leaves_big_oak' },
+        { x: -9, y: 5, z: 8, block: 'leaves_big_oak' },
+        { x: -9, y: 5, z: 9, block: 'leaves_big_oak' },
+        { x: -3, y: 5, z: 9, block: 'leaves_big_oak' },
+        { x: -4, y: 5, z: 9, block: 'leaves_big_oak' },
+        { x: -5, y: 5, z: 9, block: 'leaves_big_oak' },
+        { x: -6, y: 5, z: 9, block: 'leaves_big_oak' },
+        { x: -7, y: 5, z: 9, block: 'leaves_big_oak' },
+        { x: -8, y: 5, z: 9, block: 'leaves_big_oak' },
+        { x: -9, y: 5, z: 9, block: 'leaves_big_oak' },
+
         { x: -1, y: 1, z: 2, block: 'glass_black' },
         { x: -1, y: 2, z: 2, block: 'glass_black' },
         { x: -1, y: 3, z: 2, block: 'glass_black' },

@@ -56,9 +56,21 @@ class World {
         this.opaqueShapes.push(new Floor(this.gl, (new Matrix4()).translate(0,0.9,0).scale(80, 0.1, 80), this.textures.getTexture('grass'), 'grass', 80));
 
         let createCube = (shape) => {
-            let pos = (new Matrix4()).translate(shape.x+0.501, shape.y+0.501, shape.z+0.501).scale(0.499, 0.499, 0.499);
+            let pos = (new Matrix4()).translate(shape.x+0.501, shape.y+0.501, shape.z+0.501)
+
+            if (shape.block.startsWith('door')) {
+                pos.translate(0, 0, 0.399).scale(0.499, 0.499, 0.1); // Heading z+
+            } else {
+                pos.scale(0.499, 0.499, 0.499);
+            }
+
             let texture = this.textures.getTexture(shape.block);
-            return new Cube(this.gl, pos, null,  texture, shape.block);
+
+            if (shape.block.startsWith('leaves')) {
+                return new Cube(this.gl, pos, [0, 0.3, 0, 0], texture, shape.block);
+            } else {
+                return new Cube(this.gl, pos, null,  texture, shape.block);
+            }
         }
 
         // Opaque textures first
