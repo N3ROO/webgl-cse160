@@ -43,13 +43,15 @@ class GameLoop {
 
         this.uFunc = updateFunc;
         this.rFunc = renderFunc;
+
+        this._tick = this._tick.bind(this);
     }
 
     /**
      * It starts the gameloop.
      */
     start () {
-        requestAnimationFrame(this._tick.bind(this));
+        requestAnimationFrame(this._tick);
     }
 
     /**
@@ -71,7 +73,7 @@ class GameLoop {
         this.fpsmeter.tick();
 
         this.last = now;
-        requestAnimationFrame(this._tick.bind(this));
+        requestAnimationFrame(this._tick);
     }
 
     /**
