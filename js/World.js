@@ -155,6 +155,8 @@ class World {
         for (let shape of this.transparentShapes) {
             shape.update(dt);
         }
+
+        //console.log("end");
     }
 
     /**

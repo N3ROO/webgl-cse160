@@ -50,7 +50,6 @@ class Shape {
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffer);
         this.gl.bufferData(this.gl.ARRAY_BUFFER, data, this.gl.STATIC_DRAW);
 
-
         this.gl.vertexAttribPointer(a_attr, num, type, false, 0, 0);
         this.gl.enableVertexAttribArray(a_attr);
     }

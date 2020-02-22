@@ -145,7 +145,11 @@ class Cube extends Shape {
 
         if (updateColor) {
             if (this.texture === null) {
-                this.gl.disableVertexAttribArray(this.a_TexCoord);
+                // Since we use one fragment shader for color & texture, we need to
+                // add a texture when we only use the colors. The texture will be
+                // overriden anyway
+                // TODO: use two different fragment shaders?
+                this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture);
             }
             this._bindAttrib(this.colors, 3, this.gl.FLOAT, this.a_Color);
         }
