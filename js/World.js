@@ -45,7 +45,8 @@ class World {
         this.KEYBOARD_ROTATION_SENS = 40;
         this.KEYBOARD_MOVING_SEN = 10;
 
-        this.uNormalMatrix = this.gl.getUniformLocation(this.gl.program, 'u_NormalMatrix');
+        this.u_TransposeInverseModel = this.gl.getUniformLocation(this.gl.program, 'u_TransposeInverseModel');
+        this.a_LightPos = this.gl.getAttribLocation(this.gl.program, 'a_LightPos');
     }
 
     /**
@@ -88,15 +89,16 @@ class World {
         // Then, we sort the transparent texutres according to the distance from the camera
         this.sortTransparentShapes();
         this.camera.addOnCamMovingListener((cam) => { this.sortTransparentShapes(); });
+        this.camera.addOnCamMovingListener((cam) => {
+            /*
+            let pos = cam.getInfo();
+            this.gl.vertexAttrib3f(this.a_LightPos, pos.x, pos.y, pos.z);*/
+        });
 
         this.getFox().toggleTailAnimation();
 
         this.gameLoop = new GameLoop(dt => this._update(dt), dt => this._render(dt));
         this.gameLoop.start();
-
-        // Lighting
-        //let u_ReverseLightDirection = this.gl.getUniformLocation(this.gl.program, 'u_ReverseLightDirection');
-        //this.gl.uniform3fv(u_ReverseLightDirection, [0.5, 0.7, 1]); // set the light direction.
 
         // Send the event to all the listeners to init them with the initial cam
         this.camera.fireEvents();
@@ -159,6 +161,8 @@ class World {
             let pos = getPosition(this.getFox().matrix);
             this.camera.moveToSmooth(pos[0], pos[1] + 1, pos[2] - 3, dt);
             this.camera.headToSmooth(0, 90, 0, dt);
+
+            this.gl.vertexAttrib3f(this.a_LightPos, pos[0], pos[1], pos[2]);
         } else {
             this.camera.resetMovingAnimation();
             this.camera.resetHeadingAnimation();
@@ -187,15 +191,22 @@ class World {
             if (!C_AXIS && shape instanceof Axis) continue;
             shape.build();
 
-            let normalMatrix = (new Matrix4(this.camera.viewMatrix)).multiply(shape.matrix).invert();
-            normalMatrix = normalMatrix.transpose();
-            this.gl.uniformMatrix4fv(this.uNormalMatrix, false, normalMatrix.elements);
+            let model = new Matrix4(shape.matrix);
+
+            let transposeInverseModel = model.invert();
+            transposeInverseModel = transposeInverseModel.transpose();
+            this.gl.uniformMatrix4fv(this.u_TransposeInverseModel, false, transposeInverseModel.elements);
 
             shape.draw();
         }
 
         for (let shape of this.transparentShapes) {
             shape.build();
+
+            let transposeInverseModel = (new Matrix4(shape.matrix)).invert();
+            transposeInverseModel = transposeInverseModel.transpose();
+            this.gl.uniformMatrix4fv(this.u_TransposeInverseModel, false, transposeInverseModel.elements);
+
             shape.draw();
         }
     }
