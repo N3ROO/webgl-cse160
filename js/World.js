@@ -45,8 +45,17 @@ class World {
         this.KEYBOARD_ROTATION_SENS = 40;
         this.KEYBOARD_MOVING_SEN = 10;
 
-        this.u_TransposeInverseModel = this.gl.getUniformLocation(this.gl.program, 'u_TransposeInverseModel');
-        this.a_LightPos = this.gl.getAttribLocation(this.gl.program, 'a_LightPos');
+        // Lighting
+        this.normalMatrix = new Matrix4();
+        this.u_NormalMatrix = this.gl.getUniformLocation(this.gl.program, 'u_NormalMatrix');
+
+        this.u_AmbientLight = this.gl.getUniformLocation(this.gl.program, 'u_AmbientLight');
+        this.u_LightColor = this.gl.getUniformLocation(this.gl.program, 'u_LightColor');
+        this.u_LightDirection = this.gl.getUniformLocation(this.gl.program, 'u_LightDirection');
+
+        this.gl.uniform3f(this.u_AmbientLight, 0.2, 0.2, 0.2);
+        this.gl.uniform3f(this.u_LightColor, 1.0, 0.0, 0.0);
+        this.gl.uniform3f(this.u_LightDirection, 0.5, 3.0, 4.0);
     }
 
     /**
@@ -89,12 +98,6 @@ class World {
         // Then, we sort the transparent texutres according to the distance from the camera
         this.sortTransparentShapes();
         this.camera.addOnCamMovingListener((cam) => { this.sortTransparentShapes(); });
-        this.camera.addOnCamMovingListener((cam) => {
-            /*
-            let pos = cam.getInfo();
-            this.gl.vertexAttrib3f(this.a_LightPos, pos.x, pos.y, pos.z);*/
-        });
-
         this.getFox().toggleTailAnimation();
 
         this.gameLoop = new GameLoop(dt => this._update(dt), dt => this._render(dt));
@@ -161,8 +164,6 @@ class World {
             let pos = getPosition(this.getFox().matrix);
             this.camera.moveToSmooth(pos[0], pos[1] + 1, pos[2] - 3, dt);
             this.camera.headToSmooth(0, 90, 0, dt);
-
-            this.gl.vertexAttrib3f(this.a_LightPos, pos[0], pos[1], pos[2]);
         } else {
             this.camera.resetMovingAnimation();
             this.camera.resetHeadingAnimation();
@@ -177,8 +178,6 @@ class World {
         for (let shape of this.transparentShapes) {
             shape.update(dt);
         }
-
-        //console.log("end");
     }
 
     /**
@@ -191,11 +190,9 @@ class World {
             if (!C_AXIS && shape instanceof Axis) continue;
             shape.build();
 
-            let model = new Matrix4(shape.matrix);
-
-            let transposeInverseModel = model.invert();
-            transposeInverseModel = transposeInverseModel.transpose();
-            this.gl.uniformMatrix4fv(this.u_TransposeInverseModel, false, transposeInverseModel.elements);
+            this.normalMatrix = this.normalMatrix.setInverseOf(shape.matrix);
+            this.normalMatrix.transpose();
+            this.gl.uniformMatrix4fv(this.u_NormalMatrix, false, this.normalMatrix.elements);
 
             shape.draw();
         }
@@ -203,9 +200,9 @@ class World {
         for (let shape of this.transparentShapes) {
             shape.build();
 
-            let transposeInverseModel = (new Matrix4(shape.matrix)).invert();
-            transposeInverseModel = transposeInverseModel.transpose();
-            this.gl.uniformMatrix4fv(this.u_TransposeInverseModel, false, transposeInverseModel.elements);
+            this.normalMatrix = this.normalMatrix.setInverseOf(shape.matrix);
+            this.normalMatrix.transpose();
+            this.gl.uniformMatrix4fv(this.u_NormalMatrix, false, this.normalMatrix.elements);
 
             shape.draw();
         }

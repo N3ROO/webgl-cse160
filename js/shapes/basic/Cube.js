@@ -79,11 +79,11 @@ class Cube extends Shape {
         // Lighting
         this.normals = new Float32Array([
             0.0, 0.0,  1.0,   0.0,  0.0,  1.0,   0.0,  0.0,  1.0,   0.0,  0.0,  1.0, // Front  -> z++
-            0.0, 0.0, -1.0,   0.0,  0.0, -1.0,   0.0,  0.0, -1.0,   0.0,  0.0, -1.0, // Back   -> z --
-            0.0, 1.0,  0.0,   0.0,  1.0,  0.0,   0.0,  1.0,  0.0,   0.0,  1.0,  0.0, // Top    -> y ++
-            0.0, -1.0, 0.0,   0.0, -1.0,  0.0,   0.0, -1.0,  0.0,   0.0, -1.0,  0.0, // Bottom -> y --
             1.0, 0.0,  0.0,   1.0,  0.0,  0.0,   1.0,  0.0,  0.0,   1.0,  0.0,  0.0, // Right  -> x++
-            -1.0, 0.0, 0.0,  -1.0,  0.0,  0.0,  -1.0,  0.0,  0.0,  -1.0,  0.0,  0.0  // Left   -> x --
+            0.0, 1.0,  0.0,   0.0,  1.0,  0.0,   0.0,  1.0,  0.0,   0.0,  1.0,  0.0, // Top    -> y ++
+            -1.0, 0.0, 0.0,  -1.0,  0.0,  0.0,  -1.0,  0.0,  0.0,  -1.0,  0.0,  0.0,  // Left   -> x --
+            0.0, -1.0, 0.0,   0.0, -1.0,  0.0,   0.0, -1.0,  0.0,   0.0, -1.0,  0.0, // Bottom -> y --
+            0.0, 0.0, -1.0,   0.0,  0.0, -1.0,   0.0,  0.0, -1.0,   0.0,  0.0, -1.0 // Back   -> z --
         ]);
 
         this.vertices = new Float32Array([
@@ -113,7 +113,7 @@ class Cube extends Shape {
         this.u_Sampler = this.gl.getUniformLocation(this.gl.program,'u_Sampler');
         this.a_TexCoord = this.gl.getAttribLocation(this.gl.program, 'a_TexCoord');
         // Lighting
-        this.a_VertexNormal = this.gl.getAttribLocation(this.gl.program, 'a_VertexNormal');
+        this.a_Normal = this.gl.getAttribLocation(this.gl.program, 'a_Normal');
     }
 
     /**
@@ -138,7 +138,7 @@ class Cube extends Shape {
             this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, this.indices, this.gl.STATIC_DRAW);
 
             // Update normals
-            this._bindAttrib(this.normals, 3, this.gl.FLOAT, this.a_VertexNormal);
+            this._bindAttrib(this.normals, 3, this.gl.FLOAT, this.a_Normal);
 
             // All the cubes have the same position
             this._bindAttrib(this.vertices, 3, this.gl.FLOAT, this.a_Position);
