@@ -71,7 +71,15 @@
             <span style="color:red;">X</span>,
             <span style="color:green;">Y</span>,
             <span style="color:blue;">Z</span>
+            &nbsp; | &nbsp;
             <input id="night" type="checkbox" checked> Night mode
+            &nbsp; | &nbsp;
+            <input id="light-pos" type="button" value="Change light position">
+            &nbsp; | &nbsp;
+            Light color:
+            Red: <input id="light-red" type="range" min="0.0" max="1.0" value="0.2" step="0.01" style="width:50px;">
+            Green: <input id="light-green" type="range" min="0.0" max="1.0" value="0.2" step="0.01" style="width:50px;">
+            Blue: <input id="light-blue" type="range" min="0.0" max="1.0" value="0.2" step="0.01" style="width:50px;">
             <br>
             <b>Stats:</b>
             Firefox: <span style="color:darkgreen">75-85 fps</span>  |
@@ -108,8 +116,9 @@
                         <li><i class="fa-fw fas fa-cloud-moon"></i> The skybox is mapped to look "real"</li>
                         <li><i class="fa-fw fas fa-square"></i> The floor is composed of only one cube where the mipmap is repeated</li>
                         <li><i class="fa-fw fas fa-glasses"></i> Semi-transparent textures are rendered properly (because the transparent textures are sorted dynamically)</li>
-                        <li><i class="fas fa-bahai"></i> No z-fighting</li>
-                        <li><i class="fas fa-eye"></i> Only the visible face is rendered for each cube (face culling)</li>
+                        <li><i class="fa-fw fas fa-bahai"></i> No z-fighting</li>
+                        <li><i class="fa-fw fas fa-eye"></i> Only the visible face is rendered for each cube (face culling)</li>
+                        <li><i class="fa-fw fas fa-lightbulb"></i> The <b>fragment</b> lighting is working. It is possible to move the light, to change its color, and it gets updated according to the daytime (night/day)</li>
                     </ul>
                 </div>
             </div>
@@ -145,6 +154,7 @@
         <script src="js/events/Mouse.js"></script>
         <script src="js/events/HtmlEvents.js"></script>
         <!-- Core -->
+        <script src="js/core/Lighting.js"></script>
         <script src="js/core/Camera.js"></script>
         <script src="js/core/GameLoop.js"></script>
         <script src="js/core/TextureManager.js"></script>

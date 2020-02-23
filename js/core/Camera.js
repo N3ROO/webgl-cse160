@@ -69,6 +69,8 @@ class Camera {
         // Animations
         this.smoothRotation = 0;
         this.smoothTranslation = 0;
+
+        this.viewMatrix = new Matrix4();
     }
 
     // PROJECTION MATRIX //
@@ -350,13 +352,13 @@ class Camera {
      * It applies the last changes to the camera.
      */
     updateViewMatrix () {
-        let viewMatrix = new Matrix4();
+        this.viewMatrix = new Matrix4();
         if (this.mode === Camera.THIRD_PERSON) {
             // Not working properly, need to think about it if I want to implement 3rd person view
-            viewMatrix.lookAt(this.cameraX, this.cameraY, this.cameraZ, this.directionX, this.directionY, this.directionZ, this.upX, this.upY, this.upZ);
-            viewMatrix.rotate(this.pitch, 1, 0, 0);
-            viewMatrix.rotate(this.yaw, 0, 1, 0);
-            viewMatrix.rotate(this.roll, 0, 0, 1);
+            this.viewMatrix.lookAt(this.cameraX, this.cameraY, this.cameraZ, this.directionX, this.directionY, this.directionZ, this.upX, this.upY, this.upZ);
+            this.viewMatrix.rotate(this.pitch, 1, 0, 0);
+            this.viewMatrix.rotate(this.yaw, 0, 1, 0);
+            this.viewMatrix.rotate(this.roll, 0, 0, 1);
         } else {
             let toRad = Math.PI/180;
 
@@ -372,12 +374,12 @@ class Camera {
                 this.lastRoll = this.roll;
             }
 
-            viewMatrix.lookAt(
+            this.viewMatrix.lookAt(
                 this.cameraX, this.cameraY, this.cameraZ,
                 this.directionX + this.cameraX, this.directionY + this.cameraY, this.directionZ + this.cameraZ,
                 this.upX, this.upY, this.upZ);
         }
-        this.gl.uniformMatrix4fv(this.u_ViewMatrix, false, viewMatrix.elements);
+        this.gl.uniformMatrix4fv(this.u_ViewMatrix, false, this.viewMatrix.elements);
 
         // Events
         for (let listener of this.cameraMovingListeners) {

@@ -44,6 +44,11 @@ class World {
         this.MOUSE_ROTATION_SENS = 5;
         this.KEYBOARD_ROTATION_SENS = 40;
         this.KEYBOARD_MOVING_SEN = 10;
+
+        // Lighting
+        this.normalMatrix = new Matrix4();
+        this.u_NormalMatrix = this.gl.getUniformLocation(this.gl.program, 'u_NormalMatrix');
+        this.lighting = new Lighting(this.gl, 10, 10, 10, 0.3, 0.3, 0.3, 0.2, 0.2, 0.2); // Needs to by sync with HTML!
     }
 
     /**
@@ -86,7 +91,11 @@ class World {
         // Then, we sort the transparent texutres according to the distance from the camera
         this.sortTransparentShapes();
         this.camera.addOnCamMovingListener((cam) => { this.sortTransparentShapes(); });
-
+        /* move light with cam
+        this.camera.addOnCamMovingListener((cam) => { 
+            let pos = cam.getInfo();
+            this.gl.uniform3f(this.u_LightPosition, pos.x, pos.y, pos.z);
+        });*/
         this.getFox().toggleTailAnimation();
 
         this.gameLoop = new GameLoop(dt => this._update(dt), dt => this._render(dt));
@@ -167,8 +176,6 @@ class World {
         for (let shape of this.transparentShapes) {
             shape.update(dt);
         }
-
-        //console.log("end");
     }
 
     /**
@@ -177,19 +184,46 @@ class World {
     _render (dt) {
         this.clear();
 
+        this.lighting.renderLightCube();
+
         for (let shape of this.opaqueShapes) {
             if (!C_AXIS && shape instanceof Axis) continue;
             shape.build();
+
+            this.normalMatrix = this.normalMatrix.setInverseOf(shape.matrix);
+            this.normalMatrix.transpose();
+            this.gl.uniformMatrix4fv(this.u_NormalMatrix, false, this.normalMatrix.elements);
+
             shape.draw();
         }
 
         for (let shape of this.transparentShapes) {
             shape.build();
+
+            this.normalMatrix = this.normalMatrix.setInverseOf(shape.matrix);
+            this.normalMatrix.transpose();
+            this.gl.uniformMatrix4fv(this.u_NormalMatrix, false, this.normalMatrix.elements);
+
             shape.draw();
         }
     }
 
     // Utility
+
+    updateLightPosition () {
+        let pos = this.camera.getInfo();
+        this.lighting.setPos(pos.x, pos.y, pos.z);
+        this.lighting.updateLightCube();
+    }
+
+    updateLightColor (r, g, b) {
+        this.lighting.setLightColor(r, g, b);
+        this.lighting.updateLightCube();
+    }
+
+    updateAmbientColor (r, g, b) {
+        this.lighting.setAmbientColor(r, g, b);
+    }
 
     sortTransparentShapes () {
         this.transparentShapes.sort( (a, b) => {

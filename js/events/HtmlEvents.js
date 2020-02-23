@@ -42,10 +42,29 @@ class HtmlEvents {
         getElement('night').onclick = e => {
             if (e.target.checked) {
                 this.world.changeTime(false);
+                this.world.updateAmbientColor(0.2, 0.2, 0.2);
             } else {
                 this.world.changeTime(true);
+                this.world.updateAmbientColor(0.9, 0.9, 0.9);
             }
         };
+
+        getElement('light-pos').onclick = e => {
+            this.world.updateLightPosition();
+        }
+
+        function updateLightColor () {
+            let r = getElement('light-red').value;
+            let g = getElement('light-green').value;
+            let b = getElement('light-blue').value;
+            this.world.updateLightColor(r, g, b);
+        }
+
+        updateLightColor = updateLightColor.bind(this);
+
+        getElement('light-red').oninput = e => updateLightColor();
+        getElement('light-green').oninput = e => updateLightColor();
+        getElement('light-blue').oninput = e => updateLightColor();
     }
 
     /**
