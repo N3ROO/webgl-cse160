@@ -396,8 +396,8 @@ class Camera {
     }
 
     fireEvents () {
-        if (this.cameraMovingFunc !== undefined && this.cameraMovingFunc !== null) {
-            this.cameraMovingFunc(this);
+        for (let listener of this.cameraMovingListeners) {
+            listener(this);
         }
     }
 
