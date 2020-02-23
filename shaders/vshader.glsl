@@ -16,7 +16,7 @@ varying vec2 v_TexCoord;
 attribute vec4 a_Normal;
 uniform vec3 u_AmbientLight;
 uniform vec3 u_LightColor;
-uniform vec3 u_LightDirection;
+uniform vec3 u_LightPosition;
 uniform mat4 u_NormalMatrix;
 varying vec3 v_Lighting;
 
@@ -29,7 +29,9 @@ void main() {
     // Lighting
 
     vec3 normal = normalize(vec3(u_NormalMatrix * a_Normal)); // Length = 1
-    float nDotL = max(dot(normalize(u_LightDirection), normal), 0.0); // Resulting vector between the light direction and the normal vector
+    vec4 vertexPosition = u_ModelMatrix * a_Position; // World coordinate of the vertex
+    vec3 lightDirection = normalize(u_LightPosition - vec3(vertexPosition)); // Light direction w/ length=1
+    float nDotL = max(dot(normalize(lightDirection), normal), 0.0); // Resulting vector between the light direction and the normal vector
     vec3 diffuse = u_LightColor * nDotL; // Calculate the color due to the refexion
 
     // Send the lighint effect to the fragment shader

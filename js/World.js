@@ -51,11 +51,11 @@ class World {
 
         this.u_AmbientLight = this.gl.getUniformLocation(this.gl.program, 'u_AmbientLight');
         this.u_LightColor = this.gl.getUniformLocation(this.gl.program, 'u_LightColor');
-        this.u_LightDirection = this.gl.getUniformLocation(this.gl.program, 'u_LightDirection');
+        this.u_LightPosition = this.gl.getUniformLocation(this.gl.program, 'u_LightPosition');
 
         this.gl.uniform3f(this.u_AmbientLight, 0.2, 0.2, 0.2);
         this.gl.uniform3f(this.u_LightColor, 1.0, 0.0, 0.0);
-        this.gl.uniform3f(this.u_LightDirection, 0.5, 3.0, 4.0);
+        this.gl.uniform3f(this.u_LightPosition, 10, 0.0, 0.0);
     }
 
     /**
@@ -98,6 +98,11 @@ class World {
         // Then, we sort the transparent texutres according to the distance from the camera
         this.sortTransparentShapes();
         this.camera.addOnCamMovingListener((cam) => { this.sortTransparentShapes(); });
+        /* move light with cam
+        this.camera.addOnCamMovingListener((cam) => { 
+            let pos = cam.getInfo();
+            this.gl.uniform3f(this.u_LightPosition, pos.x, pos.y, pos.z);
+        });*/
         this.getFox().toggleTailAnimation();
 
         this.gameLoop = new GameLoop(dt => this._update(dt), dt => this._render(dt));
