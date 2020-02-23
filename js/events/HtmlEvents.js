@@ -46,6 +46,10 @@ class HtmlEvents {
                 this.world.changeTime(true);
             }
         };
+
+        getElement('light-pos').onclick = e => {
+            this.world.updateLightPosition();
+        }
     }
 
     /**

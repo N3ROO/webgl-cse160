@@ -48,14 +48,7 @@ class World {
         // Lighting
         this.normalMatrix = new Matrix4();
         this.u_NormalMatrix = this.gl.getUniformLocation(this.gl.program, 'u_NormalMatrix');
-
-        this.u_AmbientLight = this.gl.getUniformLocation(this.gl.program, 'u_AmbientLight');
-        this.u_LightColor = this.gl.getUniformLocation(this.gl.program, 'u_LightColor');
-        this.u_LightPosition = this.gl.getUniformLocation(this.gl.program, 'u_LightPosition');
-
-        this.gl.uniform3f(this.u_AmbientLight, 0.2, 0.2, 0.2);
-        this.gl.uniform3f(this.u_LightColor, 1.0, 0.0, 0.0);
-        this.gl.uniform3f(this.u_LightPosition, 10, 0.0, 0.0);
+        this.lighting = new Lighting(this.gl, 10, 10, 10, 1, 0, 0, 0.2, 0.2, 0.2);
     }
 
     /**
@@ -191,6 +184,8 @@ class World {
     _render (dt) {
         this.clear();
 
+        this.lighting.renderLightCube();
+
         for (let shape of this.opaqueShapes) {
             if (!C_AXIS && shape instanceof Axis) continue;
             shape.build();
@@ -214,6 +209,12 @@ class World {
     }
 
     // Utility
+
+    updateLightPosition () {
+        let pos = this.camera.getInfo();
+        this.lighting.setPos(pos.x, pos.y, pos.z);
+        this.lighting.updateLightCube();
+    }
 
     sortTransparentShapes () {
         this.transparentShapes.sort( (a, b) => {
