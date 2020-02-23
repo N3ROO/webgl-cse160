@@ -48,7 +48,7 @@ class World {
         // Lighting
         this.normalMatrix = new Matrix4();
         this.u_NormalMatrix = this.gl.getUniformLocation(this.gl.program, 'u_NormalMatrix');
-        this.lighting = new Lighting(this.gl, 10, 10, 10, 1, 0, 0, 0.2, 0.2, 0.2);
+        this.lighting = new Lighting(this.gl, 10, 10, 10, 0.3, 0.3, 0.3, 0.2, 0.2, 0.2); // Needs to by sync with HTML!
     }
 
     /**
@@ -214,6 +214,15 @@ class World {
         let pos = this.camera.getInfo();
         this.lighting.setPos(pos.x, pos.y, pos.z);
         this.lighting.updateLightCube();
+    }
+
+    updateLightColor (r, g, b) {
+        this.lighting.setLightColor(r, g, b);
+        this.lighting.updateLightCube();
+    }
+
+    updateAmbientColor (r, g, b) {
+        this.lighting.setAmbientColor(r, g, b);
     }
 
     sortTransparentShapes () {
