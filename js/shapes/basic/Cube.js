@@ -113,7 +113,6 @@ class Cube extends Shape {
         this.u_Sampler = this.gl.getUniformLocation(this.gl.program,'u_Sampler');
         this.a_TexCoord = this.gl.getAttribLocation(this.gl.program, 'a_TexCoord');
         // Lighting
-        this.a_Normal = this.gl.getUniformLocation(this.gl.program, 'a_Normal');
         this.a_VertexNormal = this.gl.getAttribLocation(this.gl.program, 'a_VertexNormal');
     }
 
@@ -139,7 +138,7 @@ class Cube extends Shape {
             this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, this.indices, this.gl.STATIC_DRAW);
 
             // Update normals
-            this._bindAttrib(this.normals, 3, this.gl.FLOAT, this.a_Normal);
+            this._bindAttrib(this.normals, 3, this.gl.FLOAT, this.a_VertexNormal);
 
             // All the cubes have the same position
             this._bindAttrib(this.vertices, 3, this.gl.FLOAT, this.a_Position);

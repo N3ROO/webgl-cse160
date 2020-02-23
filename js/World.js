@@ -44,6 +44,8 @@ class World {
         this.MOUSE_ROTATION_SENS = 5;
         this.KEYBOARD_ROTATION_SENS = 40;
         this.KEYBOARD_MOVING_SEN = 10;
+
+        this.uNormalMatrix = this.gl.getUniformLocation(this.gl.program, 'u_NormalMatrix');
     }
 
     /**
@@ -184,6 +186,11 @@ class World {
         for (let shape of this.opaqueShapes) {
             if (!C_AXIS && shape instanceof Axis) continue;
             shape.build();
+
+            let normalMatrix = (new Matrix4(this.camera.viewMatrix)).multiply(shape.matrix).invert();
+            normalMatrix = normalMatrix.transpose();
+            this.gl.uniformMatrix4fv(this.uNormalMatrix, false, normalMatrix.elements);
+
             shape.draw();
         }
 
