@@ -16,6 +16,10 @@ uniform vec3 u_LightPosition;
 varying vec3 v_Position;
 varying vec3 v_Normal;
 
+// Shadow
+uniform sampler2D u_ShadowMap;
+varying vec4 v_PositionFromLight;
+
 void main() {
     // Texture / coloring
     vec4 texel = v_Color + texture2D(u_Sampler, v_TexCoord);
@@ -28,6 +32,13 @@ void main() {
 
     vec3 lighting = u_AmbientLight + diffuse;
 
+    // Shadow
+    vec3 shadowCoord = (v_PositionFromLight.xyz / v_PositionFromLight.w) / 2.0 + 0.5;
+    vec4 rgbaDepth = texture2D(u_ShadowMap, shadowCoord.xy);
+    float depth = rgbaDepth.r;
+
+    float visibility = (shadowCoord.z > depth + 0.005) ? 0.7 : 1.0;
+
     // Result
-    gl_FragColor = vec4(texel.rgb * lighting, texel.a);
+    gl_FragColor = vec4(texel.rgb * lighting /** visibility*/, texel.a);
 }

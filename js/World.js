@@ -49,6 +49,29 @@ class World {
         this.normalMatrix = new Matrix4();
         this.u_NormalMatrix = this.gl.getUniformLocation(this.gl.program, 'u_NormalMatrix');
         this.lighting = new Lighting(this.gl, 10, 10, 10, 0.3, 0.3, 0.3, 0.2, 0.2, 0.2); // Needs to by sync with HTML!
+
+        // Shadow
+        this.u_ShadowMap = this.gl.getUniformLocation(this.gl.program, 'u_ShadowMap');
+        this.u_MvpMatrixFromLight = this.gl.getUniformLocation(this.gl.program, 'u_MvpMatrixFromLight');
+
+        this.OFFSCREEN_WIDTH = 2048;
+        this.OFFSCREEN_HEIGHT = 2048;
+        // Prepare a view projection matrix for generating a shadow map
+        this.viewProjMatrixFromLight = new Matrix4(); // Prepare a view projection matrix for generating a shadow map
+        this.viewProjMatrixFromLight.setPerspective(70.0, this.OFFSCREEN_WIDTH/this.OFFSCREEN_HEIGHT, 1.0, 100.0);
+        this.viewProjMatrixFromLight.lookAt(10, 10, 10, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+
+        this.mvpMatrixFromLight_t = new Matrix4(); // A model view projection matrix from light source (for triangle)
+        this.mvpMatrixFromLight_p = new Matrix4(); // A model view projection matrix from light source (for plane)
+
+        // Initialize framebuffer object (FBO)
+        this.fbo = this.initFramebufferObject(gl);
+        if (!this.fbo) {
+            console.log('Failed to initialize frame buffer object');
+            return;
+        }
+        gl.activeTexture(gl.TEXTURE0); // Set a texture object to the texture unit
+        gl.bindTexture(gl.TEXTURE_2D, this.fbo.texture);
     }
 
     /**
@@ -182,17 +205,40 @@ class World {
      * @param {float} dt time difference since last update
      */
     _render (dt) {
-        this.clear();
+
+        // Shadow
+        this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.fbo);          // Change the drawing destination to FBO
+        this.gl.viewport(0, 0, this.OFFSCREEN_HEIGHT, this.OFFSCREEN_HEIGHT); // Set view port for FBO
+        this.clear();   // Clear FBO    
+
+        this.gl.useProgram(this.gl.shadowProgram);
+        this.arender(false);
+
+        // Actual
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null);               // Change the drawing destination to color buffer
+        gl.viewport(0, 0, canvas.width, canvas.height);
+        this.clear();    // Clear color and depth buffer
+
+        this.gl.useProgram(this.gl.program);
+        gl.uniform1i(this.u_ShadowMap, 0); // Pass 0 because gl.TEXTURE0 is enabled
+        gl.uniformMatrix4fv(this.u_MvpMatrixFromLight, false, this.viewProjMatrixFromLight.elements);
+        gl.uniformMatrix4fv(this.u_MvpMatrixFromLight, false, this.viewProjMatrixFromLight.elements);
+        this.arender(true);
 
         this.lighting.renderLightCube();
+    }
 
+    arender(bool) {
         for (let shape of this.opaqueShapes) {
             if (!C_AXIS && shape instanceof Axis) continue;
             shape.build();
 
-            this.normalMatrix = this.normalMatrix.setInverseOf(shape.matrix);
-            this.normalMatrix.transpose();
-            this.gl.uniformMatrix4fv(this.u_NormalMatrix, false, this.normalMatrix.elements);
+            if (bool) {
+
+                this.normalMatrix = this.normalMatrix.setInverseOf(shape.matrix);
+                this.normalMatrix.transpose();
+                this.gl.uniformMatrix4fv(this.u_NormalMatrix, false, this.normalMatrix.elements);
+            }
 
             shape.draw();
         }
@@ -200,13 +246,74 @@ class World {
         for (let shape of this.transparentShapes) {
             shape.build();
 
-            this.normalMatrix = this.normalMatrix.setInverseOf(shape.matrix);
-            this.normalMatrix.transpose();
-            this.gl.uniformMatrix4fv(this.u_NormalMatrix, false, this.normalMatrix.elements);
+            if (bool) {
+                this.normalMatrix = this.normalMatrix.setInverseOf(shape.matrix);
+                this.normalMatrix.transpose();
+                this.gl.uniformMatrix4fv(this.u_NormalMatrix, false, this.normalMatrix.elements);
+            }
 
             shape.draw();
         }
     }
+
+    initFramebufferObject(gl) {
+        var framebuffer, texture, depthBuffer;
+      
+        // Define the error handling function
+        var error = function() {
+          if (framebuffer) gl.deleteFramebuffer(framebuffer);
+          if (texture) gl.deleteTexture(texture);
+          if (depthBuffer) gl.deleteRenderbuffer(depthBuffer);
+          return null;
+        }
+      
+        // Create a framebuffer object (FBO)
+        framebuffer = gl.createFramebuffer();
+        if (!framebuffer) {
+          console.log('Failed to create frame buffer object');
+          return error();
+        }
+      
+        // Create a texture object and set its size and parameters
+        texture = gl.createTexture(); // Create a texture object
+        if (!texture) {
+          console.log('Failed to create texture object');
+          return error();
+        }
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, this.OFFSCREEN_WIDTH, this.OFFSCREEN_HEIGHT, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+      
+        // Create a renderbuffer object and Set its size and parameters
+        depthBuffer = gl.createRenderbuffer(); // Create a renderbuffer object
+        if (!depthBuffer) {
+          console.log('Failed to create renderbuffer object');
+          return error();
+        }
+        gl.bindRenderbuffer(gl.RENDERBUFFER, depthBuffer);
+        gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, this.OFFSCREEN_WIDTH,this. OFFSCREEN_HEIGHT);
+      
+        // Attach the texture and the renderbuffer object to the FBO
+        gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
+        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
+        gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, depthBuffer);
+      
+        // Check if FBO is configured correctly
+        var e = gl.checkFramebufferStatus(gl.FRAMEBUFFER);
+        if (gl.FRAMEBUFFER_COMPLETE !== e) {
+          console.log('Frame buffer object is incomplete: ' + e.toString());
+          return error();
+        }
+      
+        framebuffer.texture = texture; // keep the required object
+      
+        // Unbind the buffer object
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+        gl.bindTexture(gl.TEXTURE_2D, null);
+        gl.bindRenderbuffer(gl.RENDERBUFFER, null);
+      
+        return framebuffer;
+      }
 
     // Utility
 

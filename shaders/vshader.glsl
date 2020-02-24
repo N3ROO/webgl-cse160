@@ -18,6 +18,10 @@ uniform mat4 u_NormalMatrix;
 varying vec3 v_Normal;
 varying vec3 v_Position;
 
+// Shadow
+uniform mat4 u_MvpMatrixFromLight;
+varying vec4 v_PositionFromLight;
+
 void main() {
     gl_Position = u_ProjectionMatrix * u_ViewMatrix * u_ModelMatrix * a_Position;
 
@@ -30,4 +34,7 @@ void main() {
     // Used for lighting
     v_Position = vec3(u_ModelMatrix * a_Position);
     v_Normal = normalize(vec3(u_NormalMatrix * a_Normal));
+
+    // Shadow
+    v_PositionFromLight = u_MvpMatrixFromLight * a_Position;
 }

@@ -25,6 +25,8 @@ class Engine {
     constructor (canvasId) {
         this.VSHADER_SOURCE = null;
         this.FSHADER_SOURCE = null;
+        this.SHADOW_VSHADER_SOURCE = null;
+        this.SHADOW_FSHADER_SOURCE = null;
         this.CANVAS_ID = canvasId;
         this.gl = null;
         this.started = false;
@@ -51,8 +53,10 @@ class Engine {
             return;
         }
 
-        this._loadShaderFile(this.gl, 'shaders/fshader.glsl', this.gl.FRAGMENT_SHADER);
-        this._loadShaderFile(this.gl, 'shaders/vshader.glsl', this.gl.VERTEX_SHADER);
+        this._loadShaderFile(this.gl, 'shaders/fshader.glsl', 'FRAGMENT_SHADER');
+        this._loadShaderFile(this.gl, 'shaders/vshader.glsl', 'VERTEX_SHADER');
+        this._loadShaderFile(this.gl, 'shaders/shadow_fshader.glsl', 'SHADOW_FRAGMENT_SHADER');
+        this._loadShaderFile(this.gl, 'shaders/shadow_vshader.glsl', 'SHADOW_VERTEX_SHADER');
 
         // It will automatically call _postInit once that the shaders' files are loaded
         // -> Because file loading is asynchronous
@@ -67,12 +71,23 @@ class Engine {
      * @param {WebGL2RenderingContext} gl WebGL Context
      */
     async _postInit(gl) {
-        if (!initShaders(gl, this.VSHADER_SOURCE, this.FSHADER_SOURCE)) {
-            console.error('Failed to initialize shaders:');
-            console.error("Vertex shader code:", this.VSHADER_SOURCE);
-            console.error("Fragment shader code:", this.FSHADER_SOURCE);
-            return;
+
+        var program = createProgram(gl, this.VSHADER_SOURCE, this.FSHADER_SOURCE);
+        if (!program) {
+            console.error('Failed to create program');
+            return false;
         }
+
+        var shadowProgram = createProgram(gl, this.SHADOW_VSHADER_SOURCE, this.SHADOW_FSHADER_SOURCE);
+        if (!shadowProgram) {
+            console.error('Failed to create shadow program');
+            return false;
+        }
+
+        gl.useProgram(program);
+
+        gl.program = program;
+        gl.shadowProgram = shadowProgram;
 
         // To prevent rendering shapes that are behind over the other ones
         gl.enable(gl.DEPTH_TEST);
@@ -132,7 +147,7 @@ class Engine {
      *
      * @param {WebGL2RenderingContext} gl WebGL context
      * @param {String} path shader path (../../../filename.extension)
-     * @param {Shader} shader kind of shader (gl.VERTEX_SHADER or gl.FRAGMENT_SHADER)
+     * @param {String} shader kind of shader
      */
     _loadShaderFile(gl, path, shader) {
         // ES7 async code
@@ -163,15 +178,21 @@ class Engine {
      *
      * @param {WebGL2RenderingContext} gl WebGL context
      * @param {String} code the shader's code
-     * @param {Shader} type kind of shader (gl.VERTEX_SHADER or gl.FRAGMENT_SHADER)
+     * @param {String} type kind of shader
      */
     _onLoadShader(gl, code, shader) {
         switch (shader) {
-            case gl.VERTEX_SHADER:
+            case 'VERTEX_SHADER':
                 this.VSHADER_SOURCE = code;
                 break;
-            case gl.FRAGMENT_SHADER:
+            case 'FRAGMENT_SHADER':
                 this.FSHADER_SOURCE = code;
+                break;
+            case 'SHADOW_VERTEX_SHADER':
+                this.SHADOW_VSHADER_SOURCE = code;
+                break;
+            case 'SHADOW_FRAGMENT_SHADER':
+                this.SHADOW_FSHADER_SOURCE = code;
                 break;
             default:
                 console.error("Unknown shader type", shader);
@@ -187,9 +208,11 @@ class Engine {
      * Returns true if the shaders' source codes were loaded.
      * Sources:
      * - VSHADER_SOURCE,
-     * - FSHADER_SOURCE
+     * - FSHADER_SOURCE,
+     * - SHADOW_FSHADER_SOURCE,
+     * - SHADOW_VSHADER_SOURCE
      */
     _shadersLoaded() {
-        return this.VSHADER_SOURCE !== null && this.FSHADER_SOURCE !== null;
+        return this.VSHADER_SOURCE !== null && this.FSHADER_SOURCE !== null && this.SHADOW_FSHADER_SOURCE !== null && this.SHADOW_VSHADER_SOURCE !== null;
     }
 }
