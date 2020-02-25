@@ -14,7 +14,9 @@ Made for the CSE160 class at UCSC (Winter 2020). Written by Lilian Gallon.
 
 ![Assignment2 Diagram](.github/diagrams/assignment2.png)
 
-- Assignment 3: Low budget Minecraft - Grade ?/10
+- Assignment 3: Low budget Minecraft - Grade 10/10
+
+![Assignment3 Screenshot](.github/screenshots/assignment3.png)
 
 
 ### Conventions
