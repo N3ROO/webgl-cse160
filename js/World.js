@@ -49,6 +49,10 @@ class World {
         this.normalMatrix = new Matrix4();
         this.u_NormalMatrix = this.gl.getUniformLocation(this.gl.program, 'u_NormalMatrix');
         this.lighting = new Lighting(this.gl, 10, 10, 10, 0.3, 0.3, 0.3, 0.2, 0.2, 0.2); // Needs to by sync with HTML!
+
+        this.onFocusChangedListeners = []
+        this.foxFocused = false;
+        this.lastFoxFocused = false;
     }
 
     /**
@@ -132,9 +136,15 @@ class World {
             yaw *= dt;
             pitch *= dt;
 
-            this.camera.rotateX(Math.max(Math.min(pitch, 90), -90));
-            this.camera.rotateY(yaw);
-            //this.camera.rotateZ(Math.max(Math.min(roll, 180), -180));
+            if (this.foxFocused) {
+                // Rotate fox
+                this.getFox().rotate(yaw);
+                this.getFox().applyMovements();
+            } else {
+                this.camera.rotateX(Math.max(Math.min(pitch, 90), -90));
+                this.camera.rotateY(yaw);
+                //this.camera.rotateZ(Math.max(Math.min(roll, 180), -180));
+            }
         }
 
         this.mouse.recordLastPos(this.mouse.getMovingPos());
@@ -153,15 +163,14 @@ class World {
         this.getFox().breakdance(this.keyboard.isDown(Keyboard.K_CTRL));
 
         // Camera
-        if (this.keyboard.isDown(Keyboard.K_W)) this.camera.moveForward(this.KEYBOARD_MOVING_SEN * dt);
-        if (this.keyboard.isDown(Keyboard.K_S)) this.camera.moveBackward(this.KEYBOARD_MOVING_SEN * dt);
-        if (this.keyboard.isDown(Keyboard.K_D)) this.camera.moveRight(this.KEYBOARD_MOVING_SEN * dt);
-        if (this.keyboard.isDown(Keyboard.K_A)) this.camera.moveLeft(this.KEYBOARD_MOVING_SEN * dt);
+        if (this.keyboard.isDown(Keyboard.K_W)) { this.foxFocused = false; this.camera.moveForward(this.KEYBOARD_MOVING_SEN * dt); };
+        if (this.keyboard.isDown(Keyboard.K_S)) { this.foxFocused = false; this.camera.moveBackward(this.KEYBOARD_MOVING_SEN * dt); };
+        if (this.keyboard.isDown(Keyboard.K_D)) { this.foxFocused = false; this.camera.moveRight(this.KEYBOARD_MOVING_SEN * dt); };
+        if (this.keyboard.isDown(Keyboard.K_A)) { this.foxFocused = false; this.camera.moveLeft(this.KEYBOARD_MOVING_SEN * dt); };
 
         if (this.getFox().isMoving() || this.getFox().jumping) {
-            let pos = getPosition(this.getFox().matrix);
-            this.camera.moveToSmooth(pos[0], pos[1] + 1, pos[2] - 3, dt);
-            this.camera.headToSmooth(0, 90, 0, dt);
+            this.followFox(dt);
+            this.foxFocused = true;
         } else {
             this.camera.resetMovingAnimation();
             this.camera.resetHeadingAnimation();
@@ -176,6 +185,26 @@ class World {
         for (let shape of this.transparentShapes) {
             shape.update(dt);
         }
+
+        if (this.lastFoxFocused !== this.foxFocused) {
+            for(let listener of this.onFocusChangedListeners) listener(this.foxFocused);
+        }
+        this.lastFoxFocused = this.foxFocused;
+    }
+
+    followFox (dt) {
+        let lengthXZfromFox = 3;
+        let heightFromFox = 1;
+
+        // Calculate new cam position
+        let alpha = -(this.getFox().getRotation()+90);
+        let x = Math.cos(alpha * Math.PI/180) * lengthXZfromFox;
+        let z = Math.sin(alpha * Math.PI/180) * lengthXZfromFox;
+        let pos = getPosition(this.getFox().matrix);
+        this.camera.moveToSmooth(x + pos[0], pos[1] + heightFromFox, z + pos[2], dt);
+
+        // Calculate new cam rotation to look at the fox
+        this.camera.headToSmooth(0, - this.getFox().getRotation()+90, 0, dt)
     }
 
     /**
@@ -209,6 +238,10 @@ class World {
     }
 
     // Utility
+
+    onFocusChangedListener (func) {
+        this.onFocusChangedListeners.push(func);
+    }
 
     updateLightPosition () {
         let pos = this.camera.getInfo();

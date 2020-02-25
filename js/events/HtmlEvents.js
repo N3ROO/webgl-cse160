@@ -39,6 +39,20 @@ class HtmlEvents {
                 'pitch: ' + c.pitch.toFixed(2) + '<br>yaw: ' + c.yaw.toFixed(2) + '<br>roll: ' + c.roll.toFixed(2));
         });
 
+        this.world.onFocusChangedListener(fox => {
+            if (fox) {
+                getElement('fox').style.color = 'green';
+                getElement('fox').innerHTML = 'selected';
+                getElement('cam').style.color = 'red';
+                getElement('cam').innerHTML = 'unselected';
+            } else {
+                getElement('cam').style.color = 'green';
+                getElement('cam').innerHTML = 'selected';
+                getElement('fox').style.color = 'red';
+                getElement('fox').innerHTML = 'unselected';
+            }
+        });
+
         getElement('night').onclick = e => {
             if (e.target.checked) {
                 this.world.changeTime(false);

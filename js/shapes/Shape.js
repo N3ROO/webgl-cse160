@@ -22,6 +22,7 @@ class Shape {
     constructor(gl, matrix) {
         this.gl = gl;
         this.matrix = matrix;
+        this.defmatrix = new Matrix4(matrix);
     }
 
     //// ABSTRACT METHODS ////
@@ -61,6 +62,10 @@ class Shape {
      */
     getMatrix() {
         return this.matrix;
+    }
+
+    getDefaultMatrix() {
+        return new Matrix4(this.defmatrix);
     }
 
     //// SETTERS ////

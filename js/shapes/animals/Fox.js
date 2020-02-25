@@ -38,8 +38,8 @@ var K_BD_SPIN = "K_BD_SPIN";
 
 class Fox extends Animal {
 
-    constructor(gl, matrix) {
-        super(gl, new Matrix4().translate(0, 1.6, 0).multiply(matrix));
+    constructor(gl, matrix, size) {
+        super(gl, new Matrix4().translate(0, 1.6, 0).multiply(matrix), size);
         this.matrixUpdated = true;
 
         // Animations
@@ -59,10 +59,16 @@ class Fox extends Animal {
         ];
 
         // Movement
+        this.directionX = 0;
+        this.directionZ = 1;
+        this.posX = getPosition(this.matrix)[0];
+        this.posZ = getPosition(this.matrix)[2];
+        this.ry = -90;
+
         this.moving = false;
         this.movingDirection = this.N;
         this.running = false;
-        this.RUN_COEF = 4;
+        this.RUN_COEF = 3;
 
         // Jumping
         this.jumping = false;
@@ -151,8 +157,8 @@ class Fox extends Animal {
         this.matrixUpdated = true;
     }
 
-    getDefaultMatrix() {
-        return (new Matrix4()).translate(0, 1.6, 0);
+    getRotation () {
+        return this.ry + 90;
     }
 
     //// ANIMATION HANDLERS METHODS ////
@@ -170,33 +176,41 @@ class Fox extends Animal {
         if (up) {
             if (right) {
                 direction = this.NE;
+                this._move(STEP, 0);
+                this._move(STEP, 3);
             } else if (left) {
                 direction = this.NW;
+                this._move(STEP, 0);
+                this._move(STEP, 2);
             } else {
                 direction = this.N;
+                this._move(STEP, 0);
             }
         } else if (down) {
             if (right) {
                 direction = this.SE;
+                this._move(STEP, 1);
+                this._move(STEP, 3);
             } else if (left) {
                 direction = this.SW;
+                this._move(STEP, 1);
+                this._move(STEP, 2);
             } else {
                 direction = this.S;
+                this._move(STEP, 1);
             }
         } else if (right) {
             direction = this.E;
+            this._move(STEP, 3);
         } else if (left) {
             direction = this.W;
+            this._move(STEP, 2);
         }
 
         // Translate
-        let alpha = (direction * 45) * Math.PI / 180;
-        let dx = Math.cos(alpha) * STEP;
-        let dz = - Math.sin(alpha) * STEP;
-        this.setMatrix(this.matrix.translate(dx, 0, dz));
+        this.applyMovements();
 
         // Start the animations
-
         for (let anim of this.movingAnimations) {
             if (anim.isFinished()) {
                 anim.start();
@@ -206,6 +220,41 @@ class Fox extends Animal {
         // Tell that it's moving
         this.movingDirection = direction;
         this.moving = true;
+    }
+
+    rotate (alpha) {
+        this.ry += alpha % 360;
+    }
+
+    /**
+     * Moves the fox.
+     * @param {Float} step
+     * @param {0, 1, 2, or 3} direction 0: forward, 1: backward, 2: left, 3: right
+     */
+    _move (step, dir) {
+        if (dir === 0 || dir === 2) step *= -1;
+
+        if (dir === 0 || dir === 1) {
+            this.posX += step * this.directionX;
+            this.posZ += step * this.directionZ;
+        } else {
+            let cx = - this.directionZ;
+            let cz = this.directionX;
+
+            let length = Math.sqrt(cx**2 + cz**2);
+            let normX = cx / length;
+            let normZ = cz / length;
+
+            this.posX += normX * step;
+            this.posZ += normZ * step;
+        }
+    }
+
+    applyMovements () {
+        let toRad = Math.PI/180;
+        this.directionX = Math.cos(this.ry * toRad);
+        this.directionZ = Math.sin(this.ry * toRad);
+        this.setMatrix(this.getDefaultMatrix().translate(this.posX, 0, - this.posZ).translate(0, 0, 2).rotate(this.ry +90, 0, 1, 0).translate(0, 0, -2));
     }
 
     toggleTailAnimation () {
@@ -480,6 +529,6 @@ class Fox extends Animal {
     }
 
     _getMMatrixCopy() {
-        return new Matrix4(this.matrix);
+        return new Matrix4(this.getMatrix());
     }
 }
