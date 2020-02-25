@@ -13,7 +13,9 @@
  *  use. In fact, they are meant to work for any use.
  */
 
- /**
+/**
+ * Warning: It only works in 2D. TODO: update it for 3D?
+ *
  * From coordinates on the canvas, it returns the coordinates on the
  * WebGL world.
  * @param {Float} x x canvas coordinate
@@ -34,15 +36,6 @@ function canvasToWebglCoords(x, y, r, worldX=0.0, worldY=0.0) {
 }
 
 /**
- * It clears the screen to black.
- * @param {WebGL2RenderingContext} gl WebGL context
- */
-function clear(gl) {
-    gl.clearColor(0.0, 0.4, 1.0, 1.0);
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-}
-
-/**
  * It returns the element with the specified id. It writes an
  * error if the id could not be found.
  *
@@ -60,45 +53,12 @@ function getElement(id) {
 }
 
 /**
- * This function returns true if the delay has been reached.
- * @param {*} time time to compare (ms),
- * @param {*} delay delay (ms).
- */
-function delayReached(time, delay) {
-    return Date.now() - time >= delay;
-}
-
-/**
- * This functions returns true if the given square is outside of
- * the screen.
- * @param {*} x position of the middle of the square (x)
- * @param {*} y position of the middle of the square (y)
- * @param {*} width width of the square
- * @param {*} height height of the square
- * @param {*} worldX world x (if the center of the canvas is not 0,0)
- * @param {*} worldY world y (if the center of the canvas is not 0,0)
- */
-function outsideOfScreen(x, y, width, height, worldX, worldY) {
-    return ( (x + width/2 + worldX < - 1.0) || // out left
-        (x - width/2 + worldX > + 1.0) || // out right
-        (y + height/2 + worldY < - 1.0) || // out bottom
-        (y - height/2 + worldY > + 1.0)    // out top
-    )
-}
-
-/**
- * Returns the timestamp in ms.
- */
-function timestamp() {
-    return window.performance && window.performance.now ? window.performance.now() : new Date().getTime();
-}
-
-/**
  * Returns true if the arrays are the same.
  * @param {Float32Array} source
  * @param {Float32Array} target
  */
 function float32Equals(source, target) {
+    if (source === undefined) return false;
     if (source === null || target === null) return false;
     if (source.length !== target.length) return false;
     for (let i = 0; i < source.length; i++) {

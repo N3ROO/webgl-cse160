@@ -137,10 +137,17 @@ class Animation {
         return this.currentValue;
     }
 
+    /**
+     * Returns the last value of the Animation (the last progress).
+     */
     getLastProgress() {
         return this.lastValue;
     }
 
+    /**
+     * It returns the difference between the last value, and the current one.
+     * So it returns the progress made since last tick.
+     */
     getProgressDiff() {
         return this.lastValue - this.currentValue;
     }

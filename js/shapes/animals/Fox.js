@@ -9,7 +9,7 @@
  * - Animal.js
  *
  * Description:
- *  This class creates a beautiful cubic cat!
+ *  This class creates a beautiful? cubic fox
  */
 
 // Left, right, back and front are relative to the fox
@@ -54,6 +54,10 @@ class Fox extends Animal {
         this.animations.set(K_BD_ROTATE, new Animation(0,  180, 500, false)); // Breakdance rotate
         this.animations.set(K_BD_SPIN,   new Animation(0, 1800, 500, false)); // Breakdance spin
 
+        this.movingAnimations = [
+            this.animations.get(K_FEET_ANIM)
+        ];
+
         // Movement
         this.moving = false;
         this.movingDirection = this.N;
@@ -62,7 +66,7 @@ class Fox extends Animal {
 
         // Jumping
         this.jumping = false;
-        this.jump_height = 1;
+        this.jump_height = 0.5;
         this.jump_time = 500;
         this.jump_time_elapsed = 0;
         this.jump_last_val = 0;
@@ -92,20 +96,20 @@ class Fox extends Animal {
 
         // Shapes
         this.shapes = new Map();
-        this.shapes.set(K_BODY, new Cube(gl, new Matrix4(), [1,0.5,0, 1,0.5,0, 1,0.5,0, 1,0.5,0, 1,0.45,0, 1,0.5,0]));
-        this.shapes.set(K_FR_FOOT   , new Cube(gl, new Matrix4(), [1.0, 0.4, 0.0]));
-        this.shapes.set(K_FL_FOOT   , new Cube(gl, new Matrix4(), [1.0, 0.4, 0.0]));
-        this.shapes.set(K_BR_FOOT   , new Cube(gl, new Matrix4(), [1.0, 0.4, 0.0]));
-        this.shapes.set(K_BL_FOOT   , new Cube(gl, new Matrix4(), [1.0, 0.4, 0.0]));
-        this.shapes.set(K_TAIL_1    , new Cube(gl, new Matrix4(), [1.0, 0.4, 0.0]));
-        this.shapes.set(K_TAIL_2    , new Cube(gl, new Matrix4(), [0.1, 0.1, 0.1]));
-        this.shapes.set(K_R_EAR     , new Cube(gl, new Matrix4(), [0.2, 0.2, 0.2]));
-        this.shapes.set(K_L_EAR     , new Cube(gl, new Matrix4(), [0.2, 0.2, 0.2]));
-        this.shapes.set(K_NOSE      , new Cube(gl, new Matrix4(), [0.2, 0.2, 0.2]));
-        this.shapes.set(K_R_EYE     , new Cube(gl, new Matrix4(), [1.0, 1.0, 1.0]));
-        this.shapes.set(K_R_EYE_BALL, new Cube(gl, new Matrix4(), [0.1, 0.1, 0.1]));
-        this.shapes.set(K_L_EYE     , new Cube(gl, new Matrix4(), [1.0, 1.0, 1.0]));
-        this.shapes.set(K_L_EYE_BALL, new Cube(gl, new Matrix4(), [0.1, 0.1, 0.1]));
+        this.shapes.set(K_BODY, new Cube(gl, new Matrix4(), [1,0.5,0,1, 1,0.5,0,1, 1,0.5,0,1, 1,0.5,0,1, 1,0.45,0,1, 1,0.5,0,1], null, null));
+        this.shapes.set(K_FR_FOOT   , new Cube(gl, new Matrix4(), [1.0, 0.4, 0.0, 1], null, null));
+        this.shapes.set(K_FL_FOOT   , new Cube(gl, new Matrix4(), [1.0, 0.4, 0.0, 1], null, null));
+        this.shapes.set(K_BR_FOOT   , new Cube(gl, new Matrix4(), [1.0, 0.4, 0.0, 1], null, null));
+        this.shapes.set(K_BL_FOOT   , new Cube(gl, new Matrix4(), [1.0, 0.4, 0.0, 1], null, null));
+        this.shapes.set(K_TAIL_1    , new Cube(gl, new Matrix4(), [1.0, 0.4, 0.0, 1], null, null));
+        this.shapes.set(K_TAIL_2    , new Cube(gl, new Matrix4(), [0.1, 0.1, 0.1, 1], null, null));
+        this.shapes.set(K_R_EAR     , new Cube(gl, new Matrix4(), [0.2, 0.2, 0.2, 1], null, null));
+        this.shapes.set(K_L_EAR     , new Cube(gl, new Matrix4(), [0.2, 0.2, 0.2, 1], null, null));
+        this.shapes.set(K_NOSE      , new Cube(gl, new Matrix4(), [0.2, 0.2, 0.2, 1], null, null));
+        this.shapes.set(K_R_EYE     , new Cube(gl, new Matrix4(), [1.0, 1.0, 1.0, 1], null, null));
+        this.shapes.set(K_R_EYE_BALL, new Cube(gl, new Matrix4(), [0.1, 0.1, 0.1, 1], null, null));
+        this.shapes.set(K_L_EYE     , new Cube(gl, new Matrix4(), [1.0, 1.0, 1.0, 1], null, null));
+        this.shapes.set(K_L_EYE_BALL, new Cube(gl, new Matrix4(), [0.1, 0.1, 0.1, 1], null, null));
     }
 
     update(dt) {
@@ -154,9 +158,12 @@ class Fox extends Animal {
     //// ANIMATION HANDLERS METHODS ////
 
     move (up, down, right, left) {
-        if (!up && !down && !right && !left) return;
+        if (!up && !down && !right && !left) {
+            this.stopMoving();
+            return;
+        }
 
-        const STEP = 0.03 * (this.running ? this.RUN_COEF : 1);
+        const STEP = 0.1 * (this.running ? this.RUN_COEF : 1);
 
         // Find the direction
         let direction;
@@ -189,13 +196,8 @@ class Fox extends Animal {
         this.setMatrix(this.matrix.translate(dx, 0, dz));
 
         // Start the animations
-        let movingAnimations = [
-            this.animations.get(K_FEET_ANIM),
-            this.animations.get(K_TAIL_ANIM1),
-            this.animations.get(K_TAIL_ANIM2)
-        ]
 
-        for (let anim of movingAnimations) {
+        for (let anim of this.movingAnimations) {
             if (anim.isFinished()) {
                 anim.start();
             }
@@ -206,15 +208,25 @@ class Fox extends Animal {
         this.moving = true;
     }
 
+    toggleTailAnimation () {
+        let tail_anim = this.animations.get(K_TAIL_ANIM1);
+        if (tail_anim.isFinished()) {
+            tail_anim.start();
+        } else {
+            tail_anim.stop();
+        }
+    }
+
     stopMoving () {
+        if (!this.moving) return;
+
         // Stop animations
-        this.animations.forEach((animation, k) => {
+        for (let animation of this.movingAnimations){
             animation.stop();
-        });
+        };
 
         // Reset dynamic parts to their defaut position
         this._updateFeet();
-        this._updateTail();
 
         // Tell that the fox is not moving
         this.moving = false;
@@ -224,8 +236,8 @@ class Fox extends Animal {
         return this.moving;
     }
 
-    jump () {
-        if (!this.jumping) {
+    jump (bool) {
+        if (!this.jumping && bool) {
             this.jump_last_val = 0;
             this.jump_time_elapsed = 0;
             this.jumping = true;
@@ -243,8 +255,8 @@ class Fox extends Animal {
         }
     }
 
-    breakdance () {
-        if (!this.breakdancing) {
+    breakdance (bool) {
+        if (!this.breakdancing && bool) {
             this.bdStep = 0;
             this.breakdancing = true;
             this.bdChangingStep = true;
@@ -301,7 +313,7 @@ class Fox extends Animal {
                         this.matrix.rotate(anim.getProgressDiff(), 0, 0, 1);
                         break;
                     case 1:
-                        this.matrix.rotate(anim.getProgressDiff(), 0, 1, 0);
+                        this.matrix.translate(0, 0, 2).rotate(anim.getProgressDiff(), 0, 1, 0).translate(0, 0, -2);
                         break;
                     case 2:
                         this.matrix.rotate(anim.getProgressDiff(), 0, 0, 1);
@@ -314,6 +326,9 @@ class Fox extends Animal {
     }
 
     _updateJump (dt) {
+        // Update time elapsed
+        this.jump_time_elapsed += dt * 1000;
+
         let m = new Matrix4();
 
         // Cancel current jump
@@ -331,8 +346,6 @@ class Fox extends Animal {
         this.matrix = m.multiply(this.matrix); // do that to prevent rotations from interfering with the jump
         this.requestUpdate();
 
-        // Update time elapsed
-        this.jump_time_elapsed += dt * 1000;
         this.jumping = this.jump_time_elapsed < this.jump_time;
     }
 
