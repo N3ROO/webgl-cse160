@@ -254,7 +254,7 @@ class Fox extends Animal {
         let toRad = Math.PI/180;
         this.directionX = Math.cos(this.ry * toRad);
         this.directionZ = Math.sin(this.ry * toRad);
-        this.setMatrix(this.getDefaultMatrix().translate(this.posX, 0, - this.posZ).rotate(this.ry +90, 0, 1, 0));
+        this.setMatrix(this.getDefaultMatrix().translate(this.posX, 0, - this.posZ).translate(0, 0, 2).rotate(this.ry +90, 0, 1, 0).translate(0, 0, -2));
     }
 
     toggleTailAnimation () {
