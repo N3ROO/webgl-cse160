@@ -50,7 +50,9 @@ class World {
         this.u_NormalMatrix = this.gl.getUniformLocation(this.gl.program, 'u_NormalMatrix');
         this.lighting = new Lighting(this.gl, 10, 10, 10, 0.3, 0.3, 0.3, 0.2, 0.2, 0.2); // Needs to by sync with HTML!
 
+        this.onFocusChangedListeners = []
         this.foxFocused = false;
+        this.lastFoxFocused = false;
     }
 
     /**
@@ -183,6 +185,11 @@ class World {
         for (let shape of this.transparentShapes) {
             shape.update(dt);
         }
+
+        if (this.lastFoxFocused !== this.foxFocused) {
+            for(let listener of this.onFocusChangedListeners) listener(this.foxFocused);
+        }
+        this.lastFoxFocused = this.foxFocused;
     }
 
     followFox (dt) {
@@ -231,6 +238,10 @@ class World {
     }
 
     // Utility
+
+    onFocusChangedListener (func) {
+        this.onFocusChangedListeners.push(func);
+    }
 
     updateLightPosition () {
         let pos = this.camera.getInfo();
