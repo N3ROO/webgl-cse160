@@ -70,7 +70,7 @@ class Lighting {
      */
     updateLightCube () {
         let size = 0.2;
-        let mat = (new Matrix4()).translate(this.pos.x + (1-size), this.pos.y + (1-size), this.pos.z + (1-size)).scale(size, size, size);
+        let mat = (new Matrix4()).translate(this.pos.x, this.pos.y, this.pos.z).scale(size, size, size);
         this.lightCube = new Cube(this.gl, mat, [this.lightColor.r, this.lightColor.g, this.lightColor.b, 1], null, null);
     }
 
