@@ -13,7 +13,7 @@ varying vec2 v_TexCoord;
 uniform vec3 u_AmbientLight;
 uniform vec3 u_LightColor;
 uniform vec3 u_LightPosition;
-uniform vec3 u_ViewPosition;
+varying vec3 v_ViewPosition;
 varying vec3 v_Position;
 varying vec3 v_Normal;
 
@@ -30,10 +30,9 @@ void main() {
     vec3 diffuse = u_LightColor * nDotL; // Calculate the color due to the refexion
 
     // Specular lighting
-    float n = 32.0;
-    vec3 V = normalize(u_ViewPosition - v_Position);
+    float n = 64.0;
+    vec3 V = normalize(v_ViewPosition - v_Position);
     vec3 R = reflect(- lightDirection, normal);
-
     vec3 specular = vec3(1.0, 0.0, 0.0) * pow(max(dot(V, R), 0.0), n);
 
     vec3 lighting = u_AmbientLight + diffuse + specular;
