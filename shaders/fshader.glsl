@@ -38,7 +38,7 @@ void main() {
     vec3 lighting = u_AmbientLight + diffuse + specular;
 
     // Result
-    //gl_FragColor = vec4(texel.rgb * lighting, texel.a);
-    gl_FragColor = vec4(normal*0.5+0.5, texel.a);
+    gl_FragColor = vec4(texel.rgb * lighting, texel.a);
+    //gl_FragColor = vec4(normal*0.5+0.5, texel.a);
 
 }

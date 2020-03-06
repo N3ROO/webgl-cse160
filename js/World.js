@@ -93,8 +93,8 @@ class World {
             this.transparentShapes.push(createCube(shape));
         }*/
 
-        this.opaqueShapes.push(new Cube(this.gl, (new Matrix4()).scale(3, 3, 3).translate(-1.5, 0, 0), [1.0, 1.0, 1.0, 1.0], null, null));
-        this.opaqueShapes.push(new Sphere(this.gl, (new Matrix4()).scale(3, 3, 3).translate(1.5, 0, 0), [1.0, 1.0, 1.0, 1.0]));
+        this.opaqueShapes.push(new Cube(this.gl, (new Matrix4()).scale(3, 3, 3).translate(-1.5, 0, 0), [0.5, 0.5, 0.5, 1.0], null, null));
+        this.opaqueShapes.push(new Sphere(this.gl, (new Matrix4()).scale(3, 3, 3).translate(1.5, 0, 0), [0.5, 0.5, 0.5, 1.0]));
 
         // Then, we sort the transparent texutres according to the distance from the camera
         this.sortTransparentShapes();

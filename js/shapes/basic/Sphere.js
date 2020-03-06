@@ -59,11 +59,13 @@ class Sphere extends Shape {
 
         // Color
         this.colors = [];
-        for (let j = 0; j < this.vertices.length; j ++) {
-            this.colors.push(color[0]);
-            this.colors.push(color[1]);
-            this.colors.push(color[2]);
-            this.colors.push(color[3]);
+        for (let j = 0; j <= pitch; j ++) {
+            for (let i = 0; i <= pitch; i ++) {
+                this.colors.push(color[0]);
+                this.colors.push(color[1]);
+                this.colors.push(color[2]);
+                this.colors.push(color[3]);
+            }
         }
         this.colors = new Float32Array(this.colors);
     }
@@ -74,6 +76,7 @@ class Sphere extends Shape {
 
         if (Shape.lastShape === null || !(Shape.lastShape instanceof Sphere)) {
             updateMatrix = true;
+            updateColor = true;
 
             // The last shape is not a sphere, so we need to update the index buffer
             let indexBuffer = this.gl.createBuffer();
