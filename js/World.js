@@ -59,6 +59,7 @@ class World {
      * It creates the world
      */
     create () {
+        /*
         this.opaqueShapes.push(new Fox(this.gl, (new Matrix4()).translate(-3, 0, 7).rotate(180, 0, 1, 0).scale(0.3,0.3,0.3)));
         this.opaqueShapes.push(new Axis(this.gl, [1,0,0], [0,1,0], [0,0,1]));
         this.opaqueShapes.push(new Sky(this.gl, (new Matrix4()).translate(0, 70, 0).scale(80,80,80), this.textures.getTexture('SkySmackdown_night'), 'SkySmackdown_night'));
@@ -90,7 +91,10 @@ class World {
         // Then, transparent textures
         for (let shape of WORLD1.transparent) {
             this.transparentShapes.push(createCube(shape));
-        }
+        }*/
+
+        this.opaqueShapes.push(new Cube(this.gl, (new Matrix4()).scale(3, 3, 3).translate(-1.5, 0, 0), [1.0, 1.0, 1.0, 1.0], null, null));
+        this.opaqueShapes.push(new Sphere(this.gl, (new Matrix4()).scale(3, 3, 3).translate(1.5, 0, 0), [1.0, 1.0, 1.0, 1.0]));
 
         // Then, we sort the transparent texutres according to the distance from the camera
         this.sortTransparentShapes();
@@ -100,7 +104,7 @@ class World {
             let pos = cam.getInfo();
             this.gl.uniform3f(this.u_LightPosition, pos.x, pos.y, pos.z);
         });*/
-        this.getFox().toggleTailAnimation();
+        //this.getFox().toggleTailAnimation();
 
         this.gameLoop = new GameLoop(dt => this._update(dt), dt => this._render(dt));
         this.gameLoop.start();
@@ -152,6 +156,7 @@ class World {
         // Keyboard events //
 
         // Fox
+        /*
         this.getFox().move(
             this.keyboard.isDown(Keyboard.K_UP),
             this.keyboard.isDown(Keyboard.K_DOWN),
@@ -161,6 +166,7 @@ class World {
         this.getFox().run(this.keyboard.isDown(Keyboard.K_SHIFT));
         this.getFox().jump(this.keyboard.isDown(Keyboard.K_SPACE));
         this.getFox().breakdance(this.keyboard.isDown(Keyboard.K_CTRL));
+        */
 
         // Camera
         if (this.keyboard.isDown(Keyboard.K_W)) { this.foxFocused = false; this.camera.moveForward(this.KEYBOARD_MOVING_SEN * dt); };
@@ -168,6 +174,7 @@ class World {
         if (this.keyboard.isDown(Keyboard.K_D)) { this.foxFocused = false; this.camera.moveRight(this.KEYBOARD_MOVING_SEN * dt); };
         if (this.keyboard.isDown(Keyboard.K_A)) { this.foxFocused = false; this.camera.moveLeft(this.KEYBOARD_MOVING_SEN * dt); };
 
+        /*
         if (this.getFox().isMoving() || this.getFox().jumping) {
             this.followFox(dt);
             this.foxFocused = true;
@@ -175,6 +182,7 @@ class World {
             this.camera.resetMovingAnimation();
             this.camera.resetHeadingAnimation();
         }
+        */
 
         // Update shapes //
         for (let shape of this.opaqueShapes) {
