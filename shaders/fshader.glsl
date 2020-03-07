@@ -10,8 +10,10 @@ uniform sampler2D u_Sampler;
 varying vec2 v_TexCoord;
 
 // Lighting
+uniform float u_SpecularN;
 uniform vec3 u_AmbientLight;
-uniform vec3 u_LightColor;
+uniform vec3 u_DiffuseColor;
+uniform vec3 u_SpecularColor;
 uniform vec3 u_LightPosition;
 uniform vec3 u_ViewPosition;
 varying vec3 v_Position;
@@ -27,7 +29,7 @@ void main() {
 
     // Diffuse lighting
     float nDotL = max(dot(normalize(lightDirection), normal), 0.0); // Resulting vector between the light direction and the normal vector
-    vec3 diffuse = u_LightColor * nDotL; // Calculate the color due to the refexion
+    vec3 diffuse = u_DiffuseColor * nDotL; // Calculate the color due to the refexion
 
     // Specular lighting
     vec3 specular = vec3(0, 0, 0);
@@ -40,7 +42,7 @@ void main() {
         float n = 10.0;
         vec3 V = normalize(u_ViewPosition - v_Position);
         vec3 R = reflect(- lightDirection, normal);
-        specular = vec3(1.0, 1.0, 1.0) * pow(clamp(dot(V, R), 0.0, 1.0), n);
+        specular = u_SpecularColor * pow(clamp(dot(V, R), 0.0, 1.0), u_SpecularN);
     }
 
     vec3 lighting = u_AmbientLight + diffuse + specular;

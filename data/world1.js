@@ -294,18 +294,6 @@ const WORLD1 = {
         { x: -2, y: 8, z: 6, block: 'hardened_clay_stained_black' },
         { x: -2, y: 8, z: 5, block: 'hardened_clay_stained_black' },
         { x: -2, y: 8, z: 4, block: 'hardened_clay_stained_black' },
-
-        { x: -12, y: 3, z: 14, block: 'stonebrick' },
-        { x: -12, y: 2, z: 14, block: 'stonebrick' },
-        { x: -12, y: 1, z: 14, block: 'stonebrick' },
-        { x: -12, y: 1, z: 15, block: 'stonebrick' },
-        { x: -12, y: 1, z: 16, block: 'stonebrick' },
-        { x: -12, y: 2, z: 16, block: 'stonebrick' },
-        { x: -12, y: 3, z: 16, block: 'stonebrick' },
-        { x: -12, y: 3, z: 15, block: 'stonebrick' },
-
-        { x: -12, y: 2, z: 15, block: 'house' },
-        { x: 0, y: 2, z: 6, block: 'house' }
     ],
 
     // Transparent at the end //

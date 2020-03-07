@@ -5,7 +5,6 @@ class Sphere extends Shape {
 
         let pitch = 10;
         let pos = getPosition(this.getMatrix());
-        console.log(pos);
 
         // Vertices
         this.normals = [];

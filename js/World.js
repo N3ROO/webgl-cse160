@@ -48,23 +48,27 @@ class World {
         // Lighting
         this.normalMatrix = new Matrix4();
         this.u_NormalMatrix = this.gl.getUniformLocation(this.gl.program, 'u_NormalMatrix');
-        this.lighting = new Lighting(this.gl, 10, 10, 10, 0.3, 0.3, 0.3, 0.2, 0.2, 0.2); // Needs to by sync with HTML!
+        this.lighting = new Lighting(this.gl, 10, 10, 10, 0.3, 0.3, 0.3, 1.0, 1.0, 1.0, 10, 0.2, 0.2, 0.2); // Needs to by sync with HTML!
 
         this.onFocusChangedListeners = []
         this.foxFocused = false;
         this.lastFoxFocused = false;
+
+        this.renderHouse = false;
+        this.renderAxis = false;
     }
 
     /**
      * It creates the world
      */
     create () {
-        
-        //this.opaqueShapes.push(new Fox(this.gl, (new Matrix4()).translate(-3, 0, 7).rotate(180, 0, 1, 0).scale(0.3,0.3,0.3)));
-        this.opaqueShapes.push(new Axis(this.gl, [1,0,0], [0,1,0], [0,0,1]));
-        this.opaqueShapes.push(new Sky(this.gl, (new Matrix4()).translate(0, 70, 0).scale(80,80,80), this.textures.getTexture('SkySmackdown_night'), 'SkySmackdown_night'));
-        //this.opaqueShapes.push(new Floor(this.gl, (new Matrix4()).translate(0,0.9,0).scale(80, 0.1, 80), this.textures.getTexture('grass'), 'grass', 80));
-/*
+        this.opaqueShapes.push(['sky', new Sky(this.gl, (new Matrix4()).translate(0, 70, 0).scale(80,80,80), this.textures.getTexture('SkySmackdown_night'), 'SkySmackdown_night')]);
+        this.opaqueShapes.push(['fox', new Fox(this.gl, (new Matrix4()).translate(-3, 0, 7).rotate(180, 0, 1, 0).scale(0.3,0.3,0.3))]);
+        this.opaqueShapes.push(['axis', new Axis(this.gl, [1,0,0], [0,1,0], [0,0,1])]);
+        this.opaqueShapes.push(['floor', new Floor(this.gl, (new Matrix4()).translate(0,0.9,0).scale(80, 0.1, 80), this.textures.getTexture('grass'), 'grass', 80)]);
+        this.opaqueShapes.push(['demo_cube', new Cube(this.gl, (new Matrix4()).translate(-1.5, 15, 0), [0.5, 0.5, 0.5, 1.0], null, null)]);
+        this.opaqueShapes.push(['demo_sphere', new Sphere(this.gl, (new Matrix4()).translate(1.5, 15, 0), [0.5, 0.5, 0.5, 1.0])]);
+
         let createCube = (shape) => {
             let pos = (new Matrix4()).translate(shape.x+0.501, shape.y+0.501, shape.z+0.501)
 
@@ -85,26 +89,18 @@ class World {
 
         // Opaque textures first
         for (let shape of WORLD1.opaque) {
-            this.opaqueShapes.push(createCube(shape));
+            this.opaqueShapes.push(['house', createCube(shape)]);
         }
 
         // Then, transparent textures
         for (let shape of WORLD1.transparent) {
-            this.transparentShapes.push(createCube(shape));
-        }*/
-
-        this.opaqueShapes.push(new Cube(this.gl, (new Matrix4()).translate(-1.5, 0, 0), [0.5, 0.5, 0.5, 1.0], null, null));
-        this.opaqueShapes.push(new Sphere(this.gl, (new Matrix4()).translate(1.5, 0, 0), [0.5, 0.5, 0.5, 1.0]));
+            this.transparentShapes.push(['house', createCube(shape)]);
+        }
 
         // Then, we sort the transparent texutres according to the distance from the camera
         this.sortTransparentShapes();
         this.camera.addOnCamMovingListener((cam) => { this.sortTransparentShapes(); });
-        /* move light with cam
-        this.camera.addOnCamMovingListener((cam) => { 
-            let pos = cam.getInfo();
-            this.gl.uniform3f(this.u_LightPosition, pos.x, pos.y, pos.z);
-        });*/
-        //this.getFox().toggleTailAnimation();
+        this.getFox().toggleTailAnimation();
 
         this.gameLoop = new GameLoop(dt => this._update(dt), dt => this._render(dt));
         this.gameLoop.start();
@@ -112,8 +108,7 @@ class World {
         // Send the event to all the listeners to init them with the initial cam
         this.camera.fireEvents();
 
-
-        this.movingLightAnimation = new Animation(0, 180, 50, true);
+        this.movingLightAnimation = new Animation(0, 180, 30, true);
         this.movingLightAnimation.start();
     }
 
@@ -123,7 +118,7 @@ class World {
     _update (dt) {
         this.movingLightAnimation.tick(dt);
 
-        let r = 20.0;
+        let r = 80.0;
         let alpha = this.movingLightAnimation.getProgress()
         let x = Math.cos(Math.PI / 180 * alpha) * r;
         let y = Math.sin(Math.PI / 180 * alpha) * r;
@@ -169,7 +164,6 @@ class World {
         // Keyboard events //
 
         // Fox
-        /*
         this.getFox().move(
             this.keyboard.isDown(Keyboard.K_UP),
             this.keyboard.isDown(Keyboard.K_DOWN),
@@ -179,7 +173,6 @@ class World {
         this.getFox().run(this.keyboard.isDown(Keyboard.K_SHIFT));
         this.getFox().jump(this.keyboard.isDown(Keyboard.K_SPACE));
         this.getFox().breakdance(this.keyboard.isDown(Keyboard.K_CTRL));
-        */
 
         // Camera
         if (this.keyboard.isDown(Keyboard.K_W)) { this.foxFocused = false; this.camera.moveForward(this.KEYBOARD_MOVING_SEN * dt); };
@@ -187,7 +180,6 @@ class World {
         if (this.keyboard.isDown(Keyboard.K_D)) { this.foxFocused = false; this.camera.moveRight(this.KEYBOARD_MOVING_SEN * dt); };
         if (this.keyboard.isDown(Keyboard.K_A)) { this.foxFocused = false; this.camera.moveLeft(this.KEYBOARD_MOVING_SEN * dt); };
 
-        /*
         if (this.getFox().isMoving() || this.getFox().jumping) {
             this.followFox(dt);
             this.foxFocused = true;
@@ -195,15 +187,19 @@ class World {
             this.camera.resetMovingAnimation();
             this.camera.resetHeadingAnimation();
         }
-        */
 
         // Update shapes //
-        for (let shape of this.opaqueShapes) {
-            if (!C_AXIS && shape instanceof Axis) continue;
+        for (let shapeInfo of this.opaqueShapes) {
+            if (shapeInfo[0] == 'house' && !this.renderHouse) continue;
+            if (shapeInfo[0] == 'axis' && !this.renderAxis) continue;
+
+            let shape = shapeInfo[1];
             shape.update(dt);
         }
 
-        for (let shape of this.transparentShapes) {
+        for (let shapeInfo of this.transparentShapes) {
+            if (shapeInfo[0] == 'house' && !this.renderHouse) continue;
+            let shape = shapeInfo[1];
             shape.update(dt);
         }
 
@@ -236,8 +232,12 @@ class World {
 
         this.lighting.renderLightCube();
 
-        for (let shape of this.opaqueShapes) {
-            if (!C_AXIS && shape instanceof Axis) continue;
+        for (let shapeInfo of this.opaqueShapes) {
+            if (shapeInfo[0] == 'house' && !this.renderHouse) continue;
+            if (shapeInfo[0] == 'axis' && !this.renderAxis) continue;
+
+            let shape = shapeInfo[1];
+
             shape.build();
 
             this.normalMatrix = this.normalMatrix.setInverseOf(shape.matrix);
@@ -247,7 +247,11 @@ class World {
             shape.draw();
         }
 
-        for (let shape of this.transparentShapes) {
+        for (let shapeInfo of this.transparentShapes) {
+            if (shapeInfo[0] == 'house' && !this.renderHouse) continue;
+
+            let shape = shapeInfo[1];
+
             shape.build();
 
             this.normalMatrix = this.normalMatrix.setInverseOf(shape.matrix);
@@ -270,8 +274,13 @@ class World {
         this.lighting.updateLightCube();
     }
 
-    updateLightColor (r, g, b) {
-        this.lighting.setLightColor(r, g, b);
+    updateDiffuseColor (r, g, b) {
+        this.lighting.setDiffuseColor(r, g, b);
+        this.lighting.updateLightCube();
+    }
+
+    updateSpecularColor (r, g, b, n) {
+        this.lighting.setSpecularColor(r, g, b, n);
         this.lighting.updateLightCube();
     }
 
@@ -281,6 +290,9 @@ class World {
 
     sortTransparentShapes () {
         this.transparentShapes.sort( (a, b) => {
+            a = a[1];
+            b = b[1];
+
             let cam = this.camera.getInfo();
             let posa = getPosition(a.matrix);
             let posb = getPosition(b.matrix);
@@ -304,7 +316,7 @@ class World {
     }
 
     getFox () {
-        return this.opaqueShapes[0];
+        return this.opaqueShapes[1][1];
     }
 
     /**
@@ -318,7 +330,7 @@ class World {
         } else {
             textureName = 'SkySmackdown_night';
         }
-        this.opaqueShapes[1].changeTexture(this.textures.getTexture(textureName));
+        this.opaqueShapes[0].changeTexture(this.textures.getTexture(textureName));
     }
 
     /**

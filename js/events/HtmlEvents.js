@@ -67,18 +67,40 @@ class HtmlEvents {
             this.world.updateLightPosition();
         }
 
-        function updateLightColor () {
-            let r = getElement('light-red').value;
-            let g = getElement('light-green').value;
-            let b = getElement('light-blue').value;
-            this.world.updateLightColor(r, g, b);
+        getElement('renderHouse').onclick = e => {
+            this.world.renderHouse = e.target.checked
         }
 
-        updateLightColor = updateLightColor.bind(this);
+        getElement('renderAxis').onclick = e => {
+            this.world.renderAxis = e.target.checked;
+        }
 
-        getElement('light-red').oninput = e => updateLightColor();
-        getElement('light-green').oninput = e => updateLightColor();
-        getElement('light-blue').oninput = e => updateLightColor();
+        function updateDiffuseColor () {
+            let r = getElement('diffuse-red').value;
+            let g = getElement('diffuse-green').value;
+            let b = getElement('diffuse-blue').value;
+            this.world.updateDiffuseColor(r, g, b);
+        }
+
+        function updateSpecularColor () {
+            let r = getElement('specular-red').value;
+            let g = getElement('specular-green').value;
+            let b = getElement('specular-blue').value;
+            let n = getElement('specular-n').value;
+            this.world.updateSpecularColor(r, g, b, n);
+        }
+
+        updateDiffuseColor = updateDiffuseColor.bind(this);
+        updateSpecularColor = updateSpecularColor.bind(this);
+
+        getElement('diffuse-red').oninput = e => updateDiffuseColor();
+        getElement('diffuse-green').oninput = e => updateDiffuseColor();
+        getElement('diffuse-blue').oninput = e => updateDiffuseColor();
+
+        getElement('specular-red').oninput = e => updateSpecularColor();
+        getElement('specular-green').oninput = e => updateSpecularColor();
+        getElement('specular-blue').oninput = e => updateSpecularColor();
+        getElement('specular-n').oninput = e => updateSpecularColor();
     }
 
     /**
