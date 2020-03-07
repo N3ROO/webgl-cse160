@@ -59,12 +59,12 @@ class World {
      * It creates the world
      */
     create () {
-        /*
-        this.opaqueShapes.push(new Fox(this.gl, (new Matrix4()).translate(-3, 0, 7).rotate(180, 0, 1, 0).scale(0.3,0.3,0.3)));
+        
+        //this.opaqueShapes.push(new Fox(this.gl, (new Matrix4()).translate(-3, 0, 7).rotate(180, 0, 1, 0).scale(0.3,0.3,0.3)));
         this.opaqueShapes.push(new Axis(this.gl, [1,0,0], [0,1,0], [0,0,1]));
-        this.opaqueShapes.push(new Sky(this.gl, (new Matrix4()).translate(0, 70, 0).scale(80,80,80), this.textures.getTexture('SkySmackdown_night'), 'SkySmackdown_night'));
-        this.opaqueShapes.push(new Floor(this.gl, (new Matrix4()).translate(0,0.9,0).scale(80, 0.1, 80), this.textures.getTexture('grass'), 'grass', 80));
-
+        //this.opaqueShapes.push(new Sky(this.gl, (new Matrix4()).translate(0, 70, 0).scale(80,80,80), this.textures.getTexture('SkySmackdown_night'), 'SkySmackdown_night'));
+        //this.opaqueShapes.push(new Floor(this.gl, (new Matrix4()).translate(0,0.9,0).scale(80, 0.1, 80), this.textures.getTexture('grass'), 'grass', 80));
+/*
         let createCube = (shape) => {
             let pos = (new Matrix4()).translate(shape.x+0.501, shape.y+0.501, shape.z+0.501)
 
@@ -93,8 +93,8 @@ class World {
             this.transparentShapes.push(createCube(shape));
         }*/
 
-        this.opaqueShapes.push(new Cube(this.gl, (new Matrix4()).scale(3, 3, 3).translate(-1.5, 0, 0), [0.5, 0.5, 0.5, 1.0], null, null));
-        this.opaqueShapes.push(new Sphere(this.gl, (new Matrix4()).scale(3, 3, 3).translate(1.5, 0, 0), [0.5, 0.5, 0.5, 1.0]));
+        this.opaqueShapes.push(new Cube(this.gl, (new Matrix4()).translate(-1.5, 0, 0), [0.5, 0.5, 0.5, 1.0], null, null));
+        this.opaqueShapes.push(new Sphere(this.gl, (new Matrix4()).translate(1.5, 0, 0), [0.5, 0.5, 0.5, 1.0]));
 
         // Then, we sort the transparent texutres according to the distance from the camera
         this.sortTransparentShapes();
@@ -111,12 +111,25 @@ class World {
 
         // Send the event to all the listeners to init them with the initial cam
         this.camera.fireEvents();
+
+
+        this.movingLightAnimation = new Animation(0, 360, 50, true);
+        this.movingLightAnimation.start();
     }
 
     /**
      * @param {float} dt time difference since last update
      */
     _update (dt) {
+        this.movingLightAnimation.tick(dt);
+
+        let r = 4.0;
+        let alpha = this.movingLightAnimation.getProgress()
+        let x = Math.cos(Math.PI / 180 * alpha) * r;
+        let z = Math.sin(Math.PI / 180 * alpha) * r;
+        this.lighting.setPos(x, 0, z);
+        this.lighting.updateLightCube();
+
         // Mouse events //
         if (this.mouse.isDown() || this.keyboard.isDown(Keyboard.K_Q) || this.keyboard.isDown(Keyboard.K_E)) {
             let pitch = 0; // rx

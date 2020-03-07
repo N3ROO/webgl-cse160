@@ -381,7 +381,7 @@ class Camera {
                 this.upX, this.upY, this.upZ);
         }
         this.gl.uniformMatrix4fv(this.u_ViewMatrix, false, this.viewMatrix.elements);
-        this.gl.uniform3f(this.u_ViewPosition, false, this.cameraX, this.cameraY, this.cameraZ);
+        this.gl.uniform3f(this.u_ViewPosition, this.cameraX, this.cameraY, this.cameraZ);
 
         // Events
         for (let listener of this.cameraMovingListeners) {

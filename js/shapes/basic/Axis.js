@@ -36,9 +36,9 @@ class Axis extends Shape {
         ]);
 
         this.colors = new Float32Array([
-            xColor[0], yColor[0], zColor[0], xColor[0], yColor[0], zColor[0],
-            xColor[1], yColor[1], zColor[1], xColor[1], yColor[1], zColor[1],
-            xColor[2], yColor[2], zColor[2], xColor[2], yColor[2], zColor[2],
+            xColor[0], xColor[1], xColor[2], xColor[0], xColor[1], xColor[2],
+            yColor[0], yColor[1], yColor[2], yColor[0], yColor[1], yColor[2],
+            zColor[0], zColor[1], zColor[2], zColor[0], zColor[1], zColor[2]
         ]);
 
         this.indices = new Uint8Array([
@@ -57,12 +57,12 @@ class Axis extends Shape {
             return null;
         }
 
+        this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, buffer);
+        this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, this.indices, this.gl.STATIC_DRAW);
+
         this._bindAttrib(this.colors, 3, this.gl.FLOAT, this.a_Color);
         this._bindAttrib(this.vertices, 3, this.gl.FLOAT, this.a_Position);
         this.gl.uniformMatrix4fv(this.u_ModelMatrix, false, (new Matrix4()).elements);
-
-        this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, buffer);
-        this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, this.indices, this.gl.STATIC_DRAW);
 
         Shape.lastShape = this;
     }

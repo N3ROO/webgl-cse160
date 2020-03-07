@@ -69,7 +69,7 @@ class Lighting {
      * It updates the light cube representing the light
      */
     updateLightCube () {
-        let size = 0.2;
+        let size = 0.1;
         let mat = (new Matrix4()).translate(this.pos.x, this.pos.y, this.pos.z).scale(size, size, size);
         this.lightCube = new Cube(this.gl, mat, [this.lightColor.r, this.lightColor.g, this.lightColor.b, 1], null, null);
     }
