@@ -35,7 +35,10 @@ class Lighting {
         this.setPos(x, y, z);
         this.setLightColor(lr, lg, lb);
         this.setAmbientColor(ar, ag, ab);
-        this.updateLightCube();
+
+        this.lightSize = 0.1;
+        let mat = (new Matrix4()).translate(this.pos.x, this.pos.y, this.pos.z).scale(this.lightSize, this.lightSize, this.lightSize);
+        this.lightCube = new Cube(this.gl, mat, [this.lightColor.r, this.lightColor.g, this.lightColor.b, 1], null, null);
     }
 
     setPos (x, y, z) {
@@ -69,9 +72,7 @@ class Lighting {
      * It updates the light cube representing the light
      */
     updateLightCube () {
-        let size = 0.1;
-        let mat = (new Matrix4()).translate(this.pos.x, this.pos.y, this.pos.z).scale(size, size, size);
-        this.lightCube = new Cube(this.gl, mat, [this.lightColor.r, this.lightColor.g, this.lightColor.b, 1], null, null);
+        this.lightCube.matrix = (new Matrix4()).translate(this.pos.x, this.pos.y, this.pos.z).scale(this.lightSize, this.lightSize, this.lightSize);
     }
 
     /**
