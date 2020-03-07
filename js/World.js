@@ -45,6 +45,10 @@ class World {
         this.KEYBOARD_ROTATION_SENS = 40;
         this.KEYBOARD_MOVING_SEN = 10;
 
+        // Rendering
+        this.u_RenderNormals = this.gl.getUniformLocation(this.gl.program, 'u_RenderNormals');
+        this.gl.uniform1i(this.u_RenderNormals, 0);
+
         // Lighting
         this.normalMatrix = new Matrix4();
         this.u_NormalMatrix = this.gl.getUniformLocation(this.gl.program, 'u_NormalMatrix');
@@ -311,6 +315,10 @@ class World {
         });
     }
 
+    setRenderNormals (bool) {
+        this.gl.uniform1i(this.u_RenderNormals, bool ? 1 : 0);
+    }
+
     getCamera () {
         return this.camera;
     }
@@ -330,7 +338,7 @@ class World {
         } else {
             textureName = 'SkySmackdown_night';
         }
-        this.opaqueShapes[0].changeTexture(this.textures.getTexture(textureName));
+        this.opaqueShapes[0][1].changeTexture(this.textures.getTexture(textureName));
     }
 
     /**

@@ -75,6 +75,10 @@ class HtmlEvents {
             this.world.renderAxis = e.target.checked;
         }
 
+        getElement('renderNormals').onclick = e => {
+            this.world.setRenderNormals(e.target.checked);
+        }
+
         function updateDiffuseColor () {
             let r = getElement('diffuse-red').value;
             let g = getElement('diffuse-green').value;
