@@ -79,6 +79,10 @@ class HtmlEvents {
             this.world.setRenderNormals(e.target.checked);
         }
 
+        getElement('automateAmbientColor').onclick = e => {
+            this.world.setAutomateAmbientColor(e.target.checked);
+        }
+
         function updateDiffuseColor () {
             let r = getElement('diffuse-red').value;
             let g = getElement('diffuse-green').value;

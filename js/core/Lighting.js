@@ -43,9 +43,9 @@ class Lighting {
         this.setSpecularColor(sr, sg, sb, sn);
         this.setAmbientColor(ar, ag, ab);
 
-        this.lightSize = 0.1;
+        this.lightSize = 1;
         let mat = (new Matrix4()).translate(this.pos.x, this.pos.y, this.pos.z).scale(this.lightSize, this.lightSize, this.lightSize);
-        this.lightCube = new Cube(this.gl, mat, [this.diffuseColor.r, this.diffuseColor.g, this.diffuseColor.b, 1], null, null);
+        this.lightCube = new Cube(this.gl, mat, [1.0, 1.0, 1.0, 1], null, null);
     }
 
     setPos (x, y, z) {

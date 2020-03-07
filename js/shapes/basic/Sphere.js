@@ -4,7 +4,6 @@ class Sphere extends Shape {
         super(gl, matrix);
 
         let pitch = 10;
-        let pos = getPosition(this.getMatrix());
 
         // Vertices
         this.normals = [];

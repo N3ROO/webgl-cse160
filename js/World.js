@@ -58,8 +58,12 @@ class World {
         this.foxFocused = false;
         this.lastFoxFocused = false;
 
+        // Handled by controls
         this.renderHouse = false;
         this.renderAxis = false;
+
+        this.animateLight = true;
+        this.automateAmbientColor = true;
     }
 
     /**
@@ -112,7 +116,7 @@ class World {
         // Send the event to all the listeners to init them with the initial cam
         this.camera.fireEvents();
 
-        this.movingLightAnimation = new Animation(0, 180, 30, true);
+        this.movingLightAnimation = new Animation(0, 180, 20, true);
         this.movingLightAnimation.start();
     }
 
@@ -120,14 +124,26 @@ class World {
      * @param {float} dt time difference since last update
      */
     _update (dt) {
-        this.movingLightAnimation.tick(dt);
+        // Light animation
+        if (this.animateLight) {
+            this.movingLightAnimation.tick(dt);
 
-        let r = 80.0;
-        let alpha = this.movingLightAnimation.getProgress()
-        let x = Math.cos(Math.PI / 180 * alpha) * r;
-        let y = Math.sin(Math.PI / 180 * alpha) * r;
-        this.lighting.setPos(x, y-1, 0);
-        this.lighting.updateLightCube();
+            // Compute new position
+            let r = 80.0;
+            let alpha = this.movingLightAnimation.getProgress()
+            let x = Math.cos(Math.PI / 180 * alpha) * r;
+            let y = Math.sin(Math.PI / 180 * alpha) * r;
+            this.lighting.setPos(x, y-1, 0);
+            this.lighting.updateLightCube();
+
+            // Compute new color according to position
+            if (this.automateAmbientColor) {
+                this.lighting.setAmbientColor(
+                    this.lighting.ambientColor.r,
+                    Math.sin(Math.PI / 180 * alpha) * (this.lighting.ambientColor.r-0.15) + 0.15,
+                    Math.sin(Math.PI / 180 * alpha) * this.lighting.ambientColor.r);
+            }
+        }
 
         // Mouse events //
         if (this.mouse.isDown() || this.keyboard.isDown(Keyboard.K_Q) || this.keyboard.isDown(Keyboard.K_E)) {
@@ -290,6 +306,23 @@ class World {
 
     updateAmbientColor (r, g, b) {
         this.lighting.setAmbientColor(r, g, b);
+    }
+
+    setAnimateLight (bool) {
+        this.animateLight = bool;
+        if (bool) {
+            this.movingLightAnimation.resume()
+        } else {
+            this.movingLightAnimation.pause()
+        }
+    }
+
+    setAutomateAmbientColor (bool) {
+        this.automateAmbientColor = bool;
+        if (!bool) {
+            // reset default
+            this.lighting.setAmbientColor(0.2, 0.2, 0.2);
+        }
     }
 
     sortTransparentShapes () {
