@@ -87,14 +87,16 @@
             Green: <input id="specular-green" type="range" min="0.0" max="1.0" value="1.0" step="0.01" style="width:50px;">
             Blue: <input id="specular-blue" type="range" min="0.0" max="1.0" value="1.0" step="0.01" style="width:50px;">
             Force: <input id="specular-n" type="range" min="1" max="128" value="10" step="1" style="width:50px;">
-            <br>
-            <input id="light-pos" type="button" value="Change light position">
 
             <br>
-            <b>Automation options:</b>
+            <b>Other options:</b>
             <input id="automateAmbientColor" type="checkbox" checked> Automate ambient color
             &nbsp; | &nbsp;
-            <input id="night" type="checkbox" checked> Night mode
+            <input id="cycle" type="checkbox" checked> Day/Night cycle
+            &nbsp; | &nbsp;
+            <input id="night" type="button" value="Change daytime" disabled>
+            &nbsp; | &nbsp;
+            <input id="light-pos" type="button" value="Change light position" disabled>
 
             <br><br>
 
@@ -123,7 +125,17 @@
                 </div>
 
                 <div class="column">
-                    <b>Cool features:</b>
+                    <b>Cool NEW features:</b>
+                    <ul>
+                        <li><i class="fa-fw fas fa-lightbulb"></i> The specular lighting is working properly</li>
+                        <li><i class="fa-fw fas fa-sun"></i> Day/Night cycle with dynamic ambient color</li>
+                        <li><i class="fa-fw fas fa-sliders-h"></i> It is possible to change the diffuse & specular colors</li>
+                        <li><i class="fa-fw fas fa-arrow-up"></i> It is possible to render normals</li>
+                    </ul>
+                </div>
+
+                <div class="column">
+                    <b>Cool features from assignment 3:</b>
                     <ul>
                         <li><i class="fa-fw fas fa-video fab"></i> The camera is smooth (try that by moving the fox)</li>
                         <li><i class="fa-fw fas fa-palette"></i> It is possible to render textures and colors at the same time (and mixing them is possible -> take a look at the leaves)</li>
@@ -137,8 +149,6 @@
                     </ul>
                 </div>
             </div>
-
-            <small>If the console shwos the error "gl.INVALID_OPERATION in drawElements(gl.TRIANGLES, 36, gl.UNSIGNED_BYTE, 0)" then you need to turn on "hardware acceleration" in your browser.</small>
         </div>
 
 

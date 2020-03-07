@@ -53,16 +53,6 @@ class HtmlEvents {
             }
         });
 
-        getElement('night').onclick = e => {
-            if (e.target.checked) {
-                this.world.changeTime(false);
-                this.world.updateAmbientColor(0.2, 0.2, 0.2);
-            } else {
-                this.world.changeTime(true);
-                this.world.updateAmbientColor(0.9, 0.9, 0.9);
-            }
-        };
-
         getElement('light-pos').onclick = e => {
             this.world.updateLightPosition();
         }
@@ -82,6 +72,28 @@ class HtmlEvents {
         getElement('automateAmbientColor').onclick = e => {
             this.world.setAutomateAmbientColor(e.target.checked);
         }
+
+        getElement('cycle').onclick = e => {
+            this.world.setDayNightCycle(e.target.checked);
+
+            if (e.target.checked) {
+                getElement('automateAmbientColor').disabled = false;
+                getElement('night').disabled = true;
+                getElement('light-pos').disabled = true;
+            } else {
+                getElement('automateAmbientColor').disabled = true;
+                getElement('night').disabled = false;
+                getElement('light-pos').disabled = false;
+            }
+        }
+
+        getElement('night').onclick = e => {
+            if (e.target.checked) {
+                this.world.changeTime(this.world.isNight);
+            } else {
+                this.world.changeTime(this.world.isNight);
+            }
+        };
 
         function updateDiffuseColor () {
             let r = getElement('diffuse-red').value;

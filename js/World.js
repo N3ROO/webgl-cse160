@@ -62,8 +62,9 @@ class World {
         this.renderHouse = false;
         this.renderAxis = false;
 
-        this.animateLight = true;
         this.automateAmbientColor = true;
+        this.dayNightCycle = true;
+        this.isNight = true;
     }
 
     /**
@@ -125,12 +126,17 @@ class World {
      */
     _update (dt) {
         // Light animation
-        if (this.animateLight) {
+
+        if (this.dayNightCycle) {
             this.movingLightAnimation.tick(dt);
+            let alpha = this.movingLightAnimation.getProgress()
+
+            if (alpha === 180) {
+                this.changeTime(this.isNight);
+            }
 
             // Compute new position
             let r = 80.0;
-            let alpha = this.movingLightAnimation.getProgress()
             let x = Math.cos(Math.PI / 180 * alpha) * r;
             let y = Math.sin(Math.PI / 180 * alpha) * r;
             this.lighting.setPos(x, y-1, 0);
@@ -138,10 +144,11 @@ class World {
 
             // Compute new color according to position
             if (this.automateAmbientColor) {
+                let max = this.isNight ? 0.1 : 0.9;
                 this.lighting.setAmbientColor(
-                    this.lighting.ambientColor.r,
-                    Math.sin(Math.PI / 180 * alpha) * (this.lighting.ambientColor.r-0.15) + 0.15,
-                    Math.sin(Math.PI / 180 * alpha) * this.lighting.ambientColor.r);
+                    Math.max(Math.sin(Math.PI / 180 * alpha) * max, 0.1),
+                    Math.sin(Math.PI / 180 * alpha) * max + 0.1,
+                    Math.sin(Math.PI / 180 * alpha) * max + 0.1);
             }
         }
 
@@ -308,8 +315,8 @@ class World {
         this.lighting.setAmbientColor(r, g, b);
     }
 
-    setAnimateLight (bool) {
-        this.animateLight = bool;
+    setDayNightCycle (bool) {
+        this.dayNightCycle = bool;
         if (bool) {
             this.movingLightAnimation.resume()
         } else {
@@ -365,11 +372,14 @@ class World {
      * @param {Boolean} day true -> sets the time to day, night otherwise
      */
     changeTime (day) {
+        this.isNight = !day;
         let textureName;
-        if (day) {
-            textureName = 'SkySmackdown';
-        } else {
+        if (this.isNight) {
             textureName = 'SkySmackdown_night';
+            this.updateAmbientColor(0.2, 0.2, 0.2);
+        } else {
+            textureName = 'SkySmackdown';
+            this.updateAmbientColor(0.9, 0.9, 0.9);
         }
         this.opaqueShapes[0][1].changeTexture(this.textures.getTexture(textureName));
     }
