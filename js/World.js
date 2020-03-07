@@ -62,7 +62,7 @@ class World {
         
         //this.opaqueShapes.push(new Fox(this.gl, (new Matrix4()).translate(-3, 0, 7).rotate(180, 0, 1, 0).scale(0.3,0.3,0.3)));
         this.opaqueShapes.push(new Axis(this.gl, [1,0,0], [0,1,0], [0,0,1]));
-        //this.opaqueShapes.push(new Sky(this.gl, (new Matrix4()).translate(0, 70, 0).scale(80,80,80), this.textures.getTexture('SkySmackdown_night'), 'SkySmackdown_night'));
+        this.opaqueShapes.push(new Sky(this.gl, (new Matrix4()).translate(0, 70, 0).scale(80,80,80), this.textures.getTexture('SkySmackdown_night'), 'SkySmackdown_night'));
         //this.opaqueShapes.push(new Floor(this.gl, (new Matrix4()).translate(0,0.9,0).scale(80, 0.1, 80), this.textures.getTexture('grass'), 'grass', 80));
 /*
         let createCube = (shape) => {
@@ -113,7 +113,7 @@ class World {
         this.camera.fireEvents();
 
 
-        this.movingLightAnimation = new Animation(0, 360, 50, true);
+        this.movingLightAnimation = new Animation(0, 180, 50, true);
         this.movingLightAnimation.start();
     }
 
@@ -123,11 +123,11 @@ class World {
     _update (dt) {
         this.movingLightAnimation.tick(dt);
 
-        let r = 4.0;
+        let r = 20.0;
         let alpha = this.movingLightAnimation.getProgress()
         let x = Math.cos(Math.PI / 180 * alpha) * r;
-        let z = Math.sin(Math.PI / 180 * alpha) * r;
-        this.lighting.setPos(x, 0, z);
+        let y = Math.sin(Math.PI / 180 * alpha) * r;
+        this.lighting.setPos(x, y-1, 0);
         this.lighting.updateLightCube();
 
         // Mouse events //
@@ -318,7 +318,7 @@ class World {
         } else {
             textureName = 'SkySmackdown_night';
         }
-        this.opaqueShapes[2].changeTexture(this.textures.getTexture(textureName));
+        this.opaqueShapes[1].changeTexture(this.textures.getTexture(textureName));
     }
 
     /**
