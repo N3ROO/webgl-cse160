@@ -49,6 +49,9 @@ class World {
         this.u_RenderNormals = this.gl.getUniformLocation(this.gl.program, 'u_RenderNormals');
         this.gl.uniform1i(this.u_RenderNormals, 0);
 
+        this.u_UseLighting = this.gl.getUniformLocation(this.gl.program, 'u_UseLighting');
+        this.gl.uniform1i(this.u_UseLighting, 1);
+
         // Lighting
         this.normalMatrix = new Matrix4();
         this.u_NormalMatrix = this.gl.getUniformLocation(this.gl.program, 'u_NormalMatrix');
@@ -77,6 +80,7 @@ class World {
         this.opaqueShapes.push(['floor', new Floor(this.gl, (new Matrix4()).translate(0,0.9,0).scale(80, 0.1, 80), this.textures.getTexture('grass'), 'grass', 80)]);
         this.opaqueShapes.push(['demo_cube', new Cube(this.gl, (new Matrix4()).translate(-1.5, 15, 0), [0.5, 0.5, 0.5, 1.0], null, null)]);
         this.opaqueShapes.push(['demo_sphere', new Sphere(this.gl, (new Matrix4()).translate(1.5, 15, 0), [0.5, 0.5, 0.5, 1.0])]);
+        this.opaqueShapes.push(['demo_sphere', new Sphere(this.gl, (new Matrix4()).translate(6, 15, 0).scale(2, 2, 2), [0.5, 0.5, 0.5, 1.0])]);
 
         let createCube = (shape) => {
             let pos = (new Matrix4()).translate(shape.x+0.501, shape.y+0.501, shape.z+0.501)
@@ -353,6 +357,10 @@ class World {
 
             return distb - dista;
         });
+    }
+
+    setLighting (bool) {
+        this.gl.uniform1i(this.u_UseLighting, bool ? 1 : 0);
     }
 
     setRenderNormals (bool) {

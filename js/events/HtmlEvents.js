@@ -93,7 +93,11 @@ class HtmlEvents {
             } else {
                 this.world.changeTime(this.world.isNight);
             }
-        };
+        }
+
+        getElement('toggleLighting').onclick = e => {
+            this.world.setLighting(e.target.checked);
+        }
 
         function updateDiffuseColor () {
             let r = getElement('diffuse-red').value;
