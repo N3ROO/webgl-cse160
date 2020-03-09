@@ -23,6 +23,17 @@ class Shape {
         this.gl = gl;
         this.matrix = matrix;
         this.defmatrix = new Matrix4(matrix);
+
+        // Color
+        this.a_Color = this.gl.getAttribLocation(this.gl.program, 'a_Color');
+        // Position
+        this.u_ModelMatrix = this.gl.getUniformLocation(this.gl.program, 'u_ModelMatrix')
+        this.a_Position = this.gl.getAttribLocation(this.gl.program, 'a_Position');
+        // Texture
+        this.u_Sampler = this.gl.getUniformLocation(this.gl.program,'u_Sampler');
+        this.a_TexCoord = this.gl.getAttribLocation(this.gl.program, 'a_TexCoord');
+        // Lighting
+        this.a_Normal = this.gl.getAttribLocation(this.gl.program, 'a_Normal');
     }
 
     //// ABSTRACT METHODS ////

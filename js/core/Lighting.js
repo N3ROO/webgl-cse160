@@ -18,24 +18,34 @@ class Lighting {
      * @param {Float} x light position
      * @param {Float} y light position
      * @param {Float} z light position
-     * @param {Float} lr light color
-     * @param {Float} lg light color
-     * @param {Float} lb light color
+     * @param {Float} dr diffuse color
+     * @param {Float} dg diffuse color
+     * @param {Float} db diffuse color
+     * @param {Float} sr specular color
+     * @param {Float} sg specular color
+     * @param {Float} sb specular color
+     * @param {Float} sn specular power
      * @param {Float} ar ambient color
      * @param {Float} ag ambient color
      * @param {Float} ab ambient color
      */
-    constructor (gl, x, y, z, lr, lg, lb, ar, ag, ab) {
+    constructor (gl, x, y, z, dr, dg, db, sr, sg, sb, sn, ar, ag, ab) {
         this.gl = gl;
 
         this.u_AmbientLight = this.gl.getUniformLocation(this.gl.program, 'u_AmbientLight');
-        this.u_LightColor = this.gl.getUniformLocation(this.gl.program, 'u_LightColor');
+        this.u_DiffuseColor = this.gl.getUniformLocation(this.gl.program, 'u_DiffuseColor');
+        this.u_SpecularColor = this.gl.getUniformLocation(this.gl.program, 'u_SpecularColor');
+        this.u_SpecularN = this.gl.getUniformLocation(this.gl.program, 'u_SpecularN');
         this.u_LightPosition = this.gl.getUniformLocation(this.gl.program, 'u_LightPosition');
 
         this.setPos(x, y, z);
-        this.setLightColor(lr, lg, lb);
+        this.setDiffuseColor(dr, dg, db);
+        this.setSpecularColor(sr, sg, sb, sn);
         this.setAmbientColor(ar, ag, ab);
-        this.updateLightCube();
+
+        this.lightSize = 1;
+        let mat = (new Matrix4()).translate(this.pos.x, this.pos.y, this.pos.z).scale(this.lightSize, this.lightSize, this.lightSize);
+        this.lightCube = new Cube(this.gl, mat, [1.0, 1.0, 1.0, 1], null, null);
     }
 
     setPos (x, y, z) {
@@ -47,13 +57,24 @@ class Lighting {
         this.gl.uniform3f(this.u_LightPosition, x, y, z);
     }
 
-    setLightColor (r, g, b) {
-        this.lightColor = {
+    setDiffuseColor (r, g, b) {
+        this.diffuseColor = {
             r: r,
             g: g,
             b: b
         };
-        this.gl.uniform3f(this.u_LightColor, r, g, b);
+        this.gl.uniform3f(this.u_DiffuseColor, r, g, b);
+    }
+
+    setSpecularColor (r, g, b, n) {
+        this.specularColor = {
+            r: r,
+            g: g,
+            b: b,
+            n: n
+        };
+        this.gl.uniform3f(this.u_SpecularColor, r, g, b);
+        this.gl.uniform1f(this.u_SpecularN, n);
     }
 
     setAmbientColor (r, g, b) {
@@ -69,9 +90,7 @@ class Lighting {
      * It updates the light cube representing the light
      */
     updateLightCube () {
-        let size = 0.2;
-        let mat = (new Matrix4()).translate(this.pos.x, this.pos.y, this.pos.z).scale(size, size, size);
-        this.lightCube = new Cube(this.gl, mat, [this.lightColor.r, this.lightColor.g, this.lightColor.b, 1], null, null);
+        this.lightCube.matrix = (new Matrix4()).translate(this.pos.x, this.pos.y, this.pos.z).scale(this.lightSize, this.lightSize, this.lightSize);
     }
 
     /**

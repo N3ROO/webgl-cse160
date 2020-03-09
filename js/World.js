@@ -45,24 +45,42 @@ class World {
         this.KEYBOARD_ROTATION_SENS = 40;
         this.KEYBOARD_MOVING_SEN = 10;
 
+        // Rendering
+        this.u_RenderNormals = this.gl.getUniformLocation(this.gl.program, 'u_RenderNormals');
+        this.gl.uniform1i(this.u_RenderNormals, 0);
+
+        this.u_UseLighting = this.gl.getUniformLocation(this.gl.program, 'u_UseLighting');
+        this.gl.uniform1i(this.u_UseLighting, 1);
+
         // Lighting
         this.normalMatrix = new Matrix4();
         this.u_NormalMatrix = this.gl.getUniformLocation(this.gl.program, 'u_NormalMatrix');
-        this.lighting = new Lighting(this.gl, 10, 10, 10, 0.3, 0.3, 0.3, 0.2, 0.2, 0.2); // Needs to by sync with HTML!
+        this.lighting = new Lighting(this.gl, 10, 10, 10, 0.3, 0.3, 0.3, 1.0, 1.0, 1.0, 10, 0.2, 0.2, 0.2); // Needs to by sync with HTML!
 
         this.onFocusChangedListeners = []
         this.foxFocused = false;
         this.lastFoxFocused = false;
+
+        // Handled by controls
+        this.renderHouse = false;
+        this.renderAxis = false;
+
+        this.automateAmbientColor = true;
+        this.dayNightCycle = true;
+        this.isNight = true;
     }
 
     /**
      * It creates the world
      */
     create () {
-        this.opaqueShapes.push(new Fox(this.gl, (new Matrix4()).translate(-3, 0, 7).rotate(180, 0, 1, 0).scale(0.3,0.3,0.3)));
-        this.opaqueShapes.push(new Axis(this.gl, [1,0,0], [0,1,0], [0,0,1]));
-        this.opaqueShapes.push(new Sky(this.gl, (new Matrix4()).translate(0, 70, 0).scale(80,80,80), this.textures.getTexture('SkySmackdown_night'), 'SkySmackdown_night'));
-        this.opaqueShapes.push(new Floor(this.gl, (new Matrix4()).translate(0,0.9,0).scale(80, 0.1, 80), this.textures.getTexture('grass'), 'grass', 80));
+        this.opaqueShapes.push(['sky', new Sky(this.gl, (new Matrix4()).translate(0, 70, 0).scale(80,80,80), this.textures.getTexture('SkySmackdown_night'), 'SkySmackdown_night')]);
+        this.opaqueShapes.push(['fox', new Fox(this.gl, (new Matrix4()).translate(-3, 0, 7).rotate(180, 0, 1, 0).scale(0.3,0.3,0.3))]);
+        this.opaqueShapes.push(['axis', new Axis(this.gl, [1,0,0], [0,1,0], [0,0,1])]);
+        this.opaqueShapes.push(['floor', new Floor(this.gl, (new Matrix4()).translate(0,0.9,0).scale(80, 0.1, 80), this.textures.getTexture('grass'), 'grass', 80)]);
+        this.opaqueShapes.push(['demo_cube', new Cube(this.gl, (new Matrix4()).translate(-1.5, 15, 0), [0.5, 0.5, 0.5, 1.0], null, null)]);
+        this.opaqueShapes.push(['demo_sphere', new Sphere(this.gl, (new Matrix4()).translate(1.5, 15, 0), [0.5, 0.5, 0.5, 1.0])]);
+        this.opaqueShapes.push(['demo_sphere', new Sphere(this.gl, (new Matrix4()).translate(6, 15, 0).scale(2, 2, 2), [0.5, 0.5, 0.5, 1.0])]);
 
         let createCube = (shape) => {
             let pos = (new Matrix4()).translate(shape.x+0.501, shape.y+0.501, shape.z+0.501)
@@ -84,22 +102,17 @@ class World {
 
         // Opaque textures first
         for (let shape of WORLD1.opaque) {
-            this.opaqueShapes.push(createCube(shape));
+            this.opaqueShapes.push(['house', createCube(shape)]);
         }
 
         // Then, transparent textures
         for (let shape of WORLD1.transparent) {
-            this.transparentShapes.push(createCube(shape));
+            this.transparentShapes.push(['house', createCube(shape)]);
         }
 
         // Then, we sort the transparent texutres according to the distance from the camera
         this.sortTransparentShapes();
         this.camera.addOnCamMovingListener((cam) => { this.sortTransparentShapes(); });
-        /* move light with cam
-        this.camera.addOnCamMovingListener((cam) => { 
-            let pos = cam.getInfo();
-            this.gl.uniform3f(this.u_LightPosition, pos.x, pos.y, pos.z);
-        });*/
         this.getFox().toggleTailAnimation();
 
         this.gameLoop = new GameLoop(dt => this._update(dt), dt => this._render(dt));
@@ -107,12 +120,42 @@ class World {
 
         // Send the event to all the listeners to init them with the initial cam
         this.camera.fireEvents();
+
+        this.movingLightAnimation = new Animation(0, 180, 20, true);
+        this.movingLightAnimation.start();
     }
 
     /**
      * @param {float} dt time difference since last update
      */
     _update (dt) {
+        // Light animation
+
+        if (this.dayNightCycle) {
+            this.movingLightAnimation.tick(dt);
+            let alpha = this.movingLightAnimation.getProgress()
+
+            if (alpha === 180) {
+                this.changeTime(this.isNight);
+            }
+
+            // Compute new position
+            let r = 80.0;
+            let x = Math.cos(Math.PI / 180 * alpha) * r;
+            let y = Math.sin(Math.PI / 180 * alpha) * r;
+            this.lighting.setPos(x, y-1, 0);
+            this.lighting.updateLightCube();
+
+            // Compute new color according to position
+            if (this.automateAmbientColor) {
+                let max = this.isNight ? 0.1 : 0.9;
+                this.lighting.setAmbientColor(
+                    Math.max(Math.sin(Math.PI / 180 * alpha) * max, 0.1),
+                    Math.sin(Math.PI / 180 * alpha) * max + 0.1,
+                    Math.sin(Math.PI / 180 * alpha) * max + 0.1);
+            }
+        }
+
         // Mouse events //
         if (this.mouse.isDown() || this.keyboard.isDown(Keyboard.K_Q) || this.keyboard.isDown(Keyboard.K_E)) {
             let pitch = 0; // rx
@@ -177,12 +220,17 @@ class World {
         }
 
         // Update shapes //
-        for (let shape of this.opaqueShapes) {
-            if (!C_AXIS && shape instanceof Axis) continue;
+        for (let shapeInfo of this.opaqueShapes) {
+            if (shapeInfo[0] == 'house' && !this.renderHouse) continue;
+            if (shapeInfo[0] == 'axis' && !this.renderAxis) continue;
+
+            let shape = shapeInfo[1];
             shape.update(dt);
         }
 
-        for (let shape of this.transparentShapes) {
+        for (let shapeInfo of this.transparentShapes) {
+            if (shapeInfo[0] == 'house' && !this.renderHouse) continue;
+            let shape = shapeInfo[1];
             shape.update(dt);
         }
 
@@ -215,8 +263,12 @@ class World {
 
         this.lighting.renderLightCube();
 
-        for (let shape of this.opaqueShapes) {
-            if (!C_AXIS && shape instanceof Axis) continue;
+        for (let shapeInfo of this.opaqueShapes) {
+            if (shapeInfo[0] == 'house' && !this.renderHouse) continue;
+            if (shapeInfo[0] == 'axis' && !this.renderAxis) continue;
+
+            let shape = shapeInfo[1];
+
             shape.build();
 
             this.normalMatrix = this.normalMatrix.setInverseOf(shape.matrix);
@@ -226,7 +278,11 @@ class World {
             shape.draw();
         }
 
-        for (let shape of this.transparentShapes) {
+        for (let shapeInfo of this.transparentShapes) {
+            if (shapeInfo[0] == 'house' && !this.renderHouse) continue;
+
+            let shape = shapeInfo[1];
+
             shape.build();
 
             this.normalMatrix = this.normalMatrix.setInverseOf(shape.matrix);
@@ -249,8 +305,13 @@ class World {
         this.lighting.updateLightCube();
     }
 
-    updateLightColor (r, g, b) {
-        this.lighting.setLightColor(r, g, b);
+    updateDiffuseColor (r, g, b) {
+        this.lighting.setDiffuseColor(r, g, b);
+        this.lighting.updateLightCube();
+    }
+
+    updateSpecularColor (r, g, b, n) {
+        this.lighting.setSpecularColor(r, g, b, n);
         this.lighting.updateLightCube();
     }
 
@@ -258,8 +319,28 @@ class World {
         this.lighting.setAmbientColor(r, g, b);
     }
 
+    setDayNightCycle (bool) {
+        this.dayNightCycle = bool;
+        if (bool) {
+            this.movingLightAnimation.resume()
+        } else {
+            this.movingLightAnimation.pause()
+        }
+    }
+
+    setAutomateAmbientColor (bool) {
+        this.automateAmbientColor = bool;
+        if (!bool) {
+            // reset default
+            this.lighting.setAmbientColor(0.2, 0.2, 0.2);
+        }
+    }
+
     sortTransparentShapes () {
         this.transparentShapes.sort( (a, b) => {
+            a = a[1];
+            b = b[1];
+
             let cam = this.camera.getInfo();
             let posa = getPosition(a.matrix);
             let posb = getPosition(b.matrix);
@@ -278,12 +359,20 @@ class World {
         });
     }
 
+    setLighting (bool) {
+        this.gl.uniform1i(this.u_UseLighting, bool ? 1 : 0);
+    }
+
+    setRenderNormals (bool) {
+        this.gl.uniform1i(this.u_RenderNormals, bool ? 1 : 0);
+    }
+
     getCamera () {
         return this.camera;
     }
 
     getFox () {
-        return this.opaqueShapes[0];
+        return this.opaqueShapes[1][1];
     }
 
     /**
@@ -291,13 +380,16 @@ class World {
      * @param {Boolean} day true -> sets the time to day, night otherwise
      */
     changeTime (day) {
+        this.isNight = !day;
         let textureName;
-        if (day) {
-            textureName = 'SkySmackdown';
-        } else {
+        if (this.isNight) {
             textureName = 'SkySmackdown_night';
+            this.updateAmbientColor(0.2, 0.2, 0.2);
+        } else {
+            textureName = 'SkySmackdown';
+            this.updateAmbientColor(0.9, 0.9, 0.9);
         }
-        this.opaqueShapes[2].changeTexture(this.textures.getTexture(textureName));
+        this.opaqueShapes[0][1].changeTexture(this.textures.getTexture(textureName));
     }
 
     /**

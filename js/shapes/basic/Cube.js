@@ -77,6 +77,16 @@ class Cube extends Shape {
         if (texture === null && colors === null) console.error('Please specify either the colors or the teture of the cube');
 
         // Lighting
+        /*
+        this.normals = new Float32Array([
+            0.0, 0.0,  1.0,   0.0,  0.0,  1.0,   0.0,  0.0,  1.0,   0.0,  0.0,  1.0, // Front  -> z++
+            1.0, 0.0,  0.0,   1.0,  0.0,  0.0,   1.0,  0.0,  0.0,   1.0,  0.0,  0.0, // Right  -> x++
+            0.0, 1.0,  0.0,   0.0,  1.0,  0.0,   0.0,  1.0,  0.0,   0.0,  1.0,  0.0, // Top    -> y ++
+            -1.0, 0.0, 0.0,  -1.0,  0.0,  0.0,  -1.0,  0.0,  0.0,  -1.0,  0.0,  0.0,  // Left   -> x --
+            0.0, -1.0, 0.0,   0.0, -1.0,  0.0,   0.0, -1.0,  0.0,   0.0, -1.0,  0.0, // Bottom -> y --
+            0.0, 0.0, -1.0,   0.0,  0.0, -1.0,   0.0,  0.0, -1.0,   0.0,  0.0, -1.0 // Back   -> z --
+        ]);*/
+
         this.normals = new Float32Array([
             0.0, 0.0,  1.0,   0.0,  0.0,  1.0,   0.0,  0.0,  1.0,   0.0,  0.0,  1.0, // Front  -> z++
             1.0, 0.0,  0.0,   1.0,  0.0,  0.0,   1.0,  0.0,  0.0,   1.0,  0.0,  0.0, // Right  -> x++
@@ -103,17 +113,6 @@ class Cube extends Shape {
             16,17,18,  16,18,19,    // down
             20,21,22,  20,22,23     // back
         ]);
-
-        // Color
-        this.a_Color = this.gl.getAttribLocation(this.gl.program, 'a_Color');
-        // Position
-        this.u_ModelMatrix = this.gl.getUniformLocation(this.gl.program, 'u_ModelMatrix')
-        this.a_Position = this.gl.getAttribLocation(this.gl.program, 'a_Position');
-        // Texture
-        this.u_Sampler = this.gl.getUniformLocation(this.gl.program,'u_Sampler');
-        this.a_TexCoord = this.gl.getAttribLocation(this.gl.program, 'a_TexCoord');
-        // Lighting
-        this.a_Normal = this.gl.getAttribLocation(this.gl.program, 'a_Normal');
     }
 
     /**

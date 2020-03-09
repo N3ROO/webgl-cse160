@@ -53,32 +53,78 @@ class HtmlEvents {
             }
         });
 
-        getElement('night').onclick = e => {
-            if (e.target.checked) {
-                this.world.changeTime(false);
-                this.world.updateAmbientColor(0.2, 0.2, 0.2);
-            } else {
-                this.world.changeTime(true);
-                this.world.updateAmbientColor(0.9, 0.9, 0.9);
-            }
-        };
-
         getElement('light-pos').onclick = e => {
             this.world.updateLightPosition();
         }
 
-        function updateLightColor () {
-            let r = getElement('light-red').value;
-            let g = getElement('light-green').value;
-            let b = getElement('light-blue').value;
-            this.world.updateLightColor(r, g, b);
+        getElement('renderHouse').onclick = e => {
+            this.world.renderHouse = e.target.checked
         }
 
-        updateLightColor = updateLightColor.bind(this);
+        getElement('renderAxis').onclick = e => {
+            this.world.renderAxis = e.target.checked;
+        }
 
-        getElement('light-red').oninput = e => updateLightColor();
-        getElement('light-green').oninput = e => updateLightColor();
-        getElement('light-blue').oninput = e => updateLightColor();
+        getElement('renderNormals').onclick = e => {
+            this.world.setRenderNormals(e.target.checked);
+        }
+
+        getElement('automateAmbientColor').onclick = e => {
+            this.world.setAutomateAmbientColor(e.target.checked);
+        }
+
+        getElement('cycle').onclick = e => {
+            this.world.setDayNightCycle(e.target.checked);
+
+            if (e.target.checked) {
+                getElement('automateAmbientColor').disabled = false;
+                getElement('night').disabled = true;
+                getElement('light-pos').disabled = true;
+            } else {
+                getElement('automateAmbientColor').disabled = true;
+                getElement('night').disabled = false;
+                getElement('light-pos').disabled = false;
+            }
+        }
+
+        getElement('night').onclick = e => {
+            if (e.target.checked) {
+                this.world.changeTime(this.world.isNight);
+            } else {
+                this.world.changeTime(this.world.isNight);
+            }
+        }
+
+        getElement('toggleLighting').onclick = e => {
+            this.world.setLighting(e.target.checked);
+        }
+
+        function updateDiffuseColor () {
+            let r = getElement('diffuse-red').value;
+            let g = getElement('diffuse-green').value;
+            let b = getElement('diffuse-blue').value;
+            this.world.updateDiffuseColor(r, g, b);
+        }
+
+        function updateSpecularColor () {
+            let r = getElement('specular-red').value;
+            let g = getElement('specular-green').value;
+            let b = getElement('specular-blue').value;
+            let n = getElement('specular-n').value;
+            this.world.updateSpecularColor(r, g, b, n);
+        }
+
+        updateDiffuseColor = updateDiffuseColor.bind(this);
+        updateSpecularColor = updateSpecularColor.bind(this);
+
+        getElement('diffuse-red').oninput = e => updateDiffuseColor();
+        getElement('diffuse-green').oninput = e => updateDiffuseColor();
+        getElement('diffuse-blue').oninput = e => updateDiffuseColor();
+
+        getElement('specular-red').oninput = e => updateSpecularColor();
+        getElement('specular-green').oninput = e => updateSpecularColor();
+        getElement('specular-blue').oninput = e => updateSpecularColor();
+        getElement('specular-n').oninput = e => updateSpecularColor();
     }
 
     /**
